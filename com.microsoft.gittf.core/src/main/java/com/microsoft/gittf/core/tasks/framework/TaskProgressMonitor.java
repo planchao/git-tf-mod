@@ -62,8 +62,7 @@ package com.microsoft.gittf.core.tasks.framework;
  * task monitors created with {@link TaskProgressMonitor#newSubTask(int)}.
  * 
  */
-public interface TaskProgressMonitor
-{
+public interface TaskProgressMonitor {
     /**
      * Indicates that the amount of work to perform is unknown. Status display
      * should be an "indeterminate" display rather than a percentage of

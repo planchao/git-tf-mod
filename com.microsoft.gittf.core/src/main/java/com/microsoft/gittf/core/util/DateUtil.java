@@ -32,10 +32,8 @@ import java.util.Date;
  * A utility class for formatting dates.
  * 
  */
-public final class DateUtil
-{
-    private DateUtil()
-    {
+public final class DateUtil {
+    private DateUtil() {
 
     }
 
@@ -52,8 +50,7 @@ public final class DateUtil
      * 
      * @return A formatted date string.
      */
-    public static String formatDate(final Date date)
-    {
+    public static String formatDate(final Date date) {
         Check.notNull(date, "date"); //$NON-NLS-1$
 
         return LOCAL_DATETIME_FORMAT.format(date);

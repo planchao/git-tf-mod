@@ -33,8 +33,7 @@ import com.microsoft.gittf.core.util.Check;
  * Represents an entry in the commit tree for a file or a folder
  * 
  */
-public class CommitTreeEntry
-{
+public class CommitTreeEntry {
     private final FileMode mode;
     private final ObjectId objectID;
 
@@ -46,8 +45,7 @@ public class CommitTreeEntry
      * @param objectID
      *        the object id
      */
-    public CommitTreeEntry(FileMode mode, ObjectId objectID)
-    {
+    public CommitTreeEntry(FileMode mode, ObjectId objectID) {
         Check.notNull(mode, "mode"); //$NON-NLS-1$
         Check.notNull(objectID, "objectID"); //$NON-NLS-1$
 
@@ -60,8 +58,7 @@ public class CommitTreeEntry
      * 
      * @return FileMode for the entry
      */
-    public FileMode getFileMode()
-    {
+    public FileMode getFileMode() {
         return mode;
     }
 
@@ -70,8 +67,7 @@ public class CommitTreeEntry
      * 
      * @return ObjectId for the entry
      */
-    public ObjectId getObjectID()
-    {
+    public ObjectId getObjectID() {
         return objectID;
     }
 }

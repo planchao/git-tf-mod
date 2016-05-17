@@ -43,9 +43,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class MessagesTest
-    extends TestCase
-{
+public class MessagesTest extends TestCase {
     private final Hashtable<String, ArrayList<String>> mapClassNames = new Hashtable<String, ArrayList<String>>();
     private final Hashtable<String, Integer> mapParameterCount = new Hashtable<String, Integer>();
     private final Hashtable<String, Integer> mapArgumentsPassed = new Hashtable<String, Integer>();
@@ -53,10 +51,8 @@ public class MessagesTest
     private final List<String> allReferences = new ArrayList<String>();
 
     @Test
-    public void testMessages()
-    {
-        try
-        {
+    public void testMessages() {
+        try {
             String propertiesPath = getDefaultPropertiesPath();
             assertNotNull("Path must not be null", propertiesPath); //$NON-NLS-1$
             assertTrue("Expected a .properties file", propertiesPath.endsWith(".properties")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -81,15 +77,12 @@ public class MessagesTest
 
             verifyReferences();
             verifyParameterizedReferences();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             assertTrue("Caught exception: " + e.getMessage(), false); //$NON-NLS-1$
         }
     }
 
-    private void verifyReferences()
-    {
+    private void verifyReferences() {
         HashSet<String> undefinedPropertyNames = new HashSet<String>();
         HashSet<String> unReferencedPropertyNames = new HashSet<String>(hashsetPropertyNames);
 
@@ -98,8 +91,7 @@ public class MessagesTest
          * they shouldn't be tested for references.
          */
         final List<String> dynamicPropertyNames = new ArrayList<String>();
-        for (Iterator<String> iterator = unReferencedPropertyNames.iterator(); iterator.hasNext();)
-        {
+        for (Iterator<String> iterator = unReferencedPropertyNames.iterator(); iterator.hasNext();) {
             final String name = iterator.next();
             if (name.contains("DYNAMIC")) //$NON-NLS-1$
             {
@@ -109,16 +101,13 @@ public class MessagesTest
         unReferencedPropertyNames.removeAll(dynamicPropertyNames);
 
         // Test for undefined and unreferenced properties
-        for (int i = 0; i < allReferences.size(); i++)
-        {
+        for (int i = 0; i < allReferences.size(); i++) {
             String refName = allReferences.get(i);
-            if (!hashsetPropertyNames.contains(refName))
-            {
+            if (!hashsetPropertyNames.contains(refName)) {
                 undefinedPropertyNames.add(refName);
             }
 
-            if (unReferencedPropertyNames.contains(refName))
-            {
+            if (unReferencedPropertyNames.contains(refName)) {
                 unReferencedPropertyNames.remove(refName);
             }
         }
@@ -133,11 +122,9 @@ public class MessagesTest
         assertEquals("Unreferenced messages (see console output)", 0, unReferencedPropertyNames.size()); //$NON-NLS-1$
     }
 
-    private void verifyParameterizedReferences()
-    {
+    private void verifyParameterizedReferences() {
         Enumeration<String> keys = mapArgumentsPassed.keys();
-        while (keys.hasMoreElements())
-        {
+        while (keys.hasMoreElements()) {
             String name = keys.nextElement();
             assertTrue("Expected '" + name + "' in parameter map", mapParameterCount.containsKey(name)); //$NON-NLS-1$ //$NON-NLS-2$
             assertTrue("Expected '" + name + "' in argument map", mapArgumentsPassed.containsKey(name)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -148,13 +135,11 @@ public class MessagesTest
         }
     }
 
-    private void processProperties(Properties properties)
-    {
+    private void processProperties(Properties properties) {
         final Enumeration<Object> keyEnumerator = properties.keys();
         int unescapedQuoteCount = 0;
 
-        while (keyEnumerator.hasMoreElements())
-        {
+        while (keyEnumerator.hasMoreElements()) {
             final String key = (String) keyEnumerator.nextElement();
 
             PropertyInfo property = new PropertyInfo(key, properties.getProperty(key));
@@ -168,8 +153,7 @@ public class MessagesTest
             assertTrue("Expected '.' in '" + property.name + "'", dotIndex > 0); //$NON-NLS-1$ //$NON-NLS-2$
 
             String className = property.name.substring(0, dotIndex);
-            if (!mapClassNames.containsKey(className))
-            {
+            if (!mapClassNames.containsKey(className)) {
                 mapClassNames.put(className, new ArrayList<String>());
             }
 
@@ -184,8 +168,7 @@ public class MessagesTest
             if (!property.name.contains("SKIPVALIDATE")) //$NON-NLS-1$
             {
                 int parameterCount = getParameterCount(property);
-                if (parameterCount > 0)
-                {
+                if (parameterCount > 0) {
                     mapParameterCount.put(property.name, new Integer(parameterCount));
 
                     boolean isFormat = property.name.endsWith("Format") || property.name.endsWith("FormatNOLOC"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -196,8 +179,7 @@ public class MessagesTest
                     String stripped = property.value.replaceAll("\'\'", ""); //$NON-NLS-1$ //$NON-NLS-2$
                     int index = stripped.indexOf('\'');
 
-                    if (index != -1)
-                    {
+                    if (index != -1) {
                         unescapedQuoteCount++;
                         System.out.println("Found unescaped single quote in " + property.name); //$NON-NLS-1$
                     }
@@ -205,17 +187,13 @@ public class MessagesTest
             }
         }
 
-        if (unescapedQuoteCount > 0)
-        {
+        if (unescapedQuoteCount > 0) {
             fail("Found " + unescapedQuoteCount + " unescaped single quotes, see console output for details"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
-    private void processJavaFiles(List<File> javaFiles)
-        throws IOException
-    {
-        for (int i = 0; i < javaFiles.size(); i++)
-        {
+    private void processJavaFiles(List<File> javaFiles) throws IOException {
+        for (int i = 0; i < javaFiles.size(); i++) {
             File javaFile = javaFiles.get(i);
             String javaSourceCode = readFile(javaFile);
 
@@ -223,42 +201,33 @@ public class MessagesTest
             allReferences.addAll(messageRefs);
 
             List<ArgumentInfo> argumentInfos = getMessageArguments(javaSourceCode);
-            for (int j = 0; j < argumentInfos.size(); j++)
-            {
+            for (int j = 0; j < argumentInfos.size(); j++) {
                 ArgumentInfo argumentInfo = argumentInfos.get(j);
                 String name = argumentInfo.name;
 
-                if (mapArgumentsPassed.contains(name))
-                {
+                if (mapArgumentsPassed.contains(name)) {
                     Integer other = mapArgumentsPassed.get(name);
                     assertEquals("Argument mismatch for id=" + name, argumentInfo.argCount, other.intValue()); //$NON-NLS-1$
-                }
-                else
-                {
+                } else {
                     mapArgumentsPassed.put(name, new Integer(argumentInfo.argCount));
                 }
             }
         }
     }
 
-    private List<String> getMessageReferences(String javaSourceCode)
-        throws IOException
-    {
+    private List<String> getMessageReferences(String javaSourceCode) throws IOException {
         List<String> refs = new ArrayList<String>();
 
-        String[] patterns = new String[]
-        {
+        String[] patterns = new String[] {
             "Messages.getString\\(\\s*\"([^\"]*)\"[^\\)]*\\)", //$NON-NLS-1$
             "Messages.formatString\\(\\s*\"([^\"]*)\"[^\\)]*\\)", //$NON-NLS-1$
         };
 
-        for (int i = 0; i < patterns.length; i++)
-        {
+        for (int i = 0; i < patterns.length; i++) {
             Pattern pattern = Pattern.compile(patterns[i], Pattern.MULTILINE);
             Matcher matcher = pattern.matcher(javaSourceCode);
 
-            while (matcher.find())
-            {
+            while (matcher.find()) {
                 String sub = matcher.group(1);
                 refs.add(sub);
             }
@@ -267,16 +236,13 @@ public class MessagesTest
         return refs;
     }
 
-    private List<ArgumentInfo> getMessageArguments(String javaSourceCode)
-        throws IOException
-    {
+    private List<ArgumentInfo> getMessageArguments(String javaSourceCode) throws IOException {
         String regex = "(?m)Messages.getString\\(\"[^\"]*\"\\).*$[^$]MessageFormat.format\\(.*;"; //$NON-NLS-1$
         Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(javaSourceCode);
 
         List<ArgumentInfo> infos = new ArrayList<ArgumentInfo>();
-        while (matcher.find())
-        {
+        while (matcher.find()) {
             String sub = javaSourceCode.substring(matcher.start(), matcher.end());
 
             int startIndex = sub.indexOf("MessageFormat.format("); //$NON-NLS-1$
@@ -284,8 +250,7 @@ public class MessagesTest
 
             int argumentCount = 0;
             int parenNestingLevel = 0;
-            for (int i = startIndex + 21; i < endIndex; i++)
-            {
+            for (int i = startIndex + 21; i < endIndex; i++) {
                 char ch = sub.charAt(i);
                 if (ch == '(')
                     parenNestingLevel++;
@@ -302,8 +267,7 @@ public class MessagesTest
         return infos;
     }
 
-    private int getParameterCount(PropertyInfo property)
-    {
+    private int getParameterCount(PropertyInfo property) {
         Pattern pattern = Pattern.compile("\\{[0-9]\\}"); //$NON-NLS-1$
         Matcher matcher = pattern.matcher(property.value);
 
@@ -312,21 +276,15 @@ public class MessagesTest
          * be equal to or less than the previous value, or increase it by 1.
          */
         int parameterIndex = -1;
-        while (matcher.find())
-        {
+        while (matcher.find()) {
             String sub = property.value.substring(matcher.start() + 1, matcher.end() - 1);
             int subValue = Integer.valueOf(sub).intValue();
 
-            if (subValue <= parameterIndex)
-            {
+            if (subValue <= parameterIndex) {
                 // Repeat of previous parameter; no increment.
-            }
-            else if (subValue == parameterIndex + 1)
-            {
+            } else if (subValue == parameterIndex + 1) {
                 parameterIndex++;
-            }
-            else
-            {
+            } else {
                 throw new AssertionFailedError("Parameter values must repeat the previous value or increase by 1: " //$NON-NLS-1$
                     + property.name
                     + " [" //$NON-NLS-1$
@@ -350,21 +308,17 @@ public class MessagesTest
      * @param directory
      * @param javaFiles
      */
-    private void getJavaFiles(File directory, List<File> javaFiles)
-    {
+    private void getJavaFiles(File directory, List<File> javaFiles) {
         assertNotNull("Directory must not be null", directory); //$NON-NLS-1$
         assertTrue("Directory does not exist", directory.exists()); //$NON-NLS-1$
         assertTrue("Expected a directory", directory.isDirectory()); //$NON-NLS-1$
 
         File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++)
-        {
+        for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (file.isDirectory())
-            {
+            if (file.isDirectory()) {
                 getJavaFiles(file, javaFiles);
-            }
-            else if (file.isFile() && file.getAbsolutePath().endsWith(".java")) //$NON-NLS-1$
+            } else if (file.isFile() && file.getAbsolutePath().endsWith(".java")) //$NON-NLS-1$
             {
                 javaFiles.add(file);
             }
@@ -377,9 +331,7 @@ public class MessagesTest
      * @return
      * @throws IOException
      */
-    private String readFile(File f)
-        throws IOException
-    {
+    private String readFile(File f) throws IOException {
         assertTrue("File does not exist=" + f.getAbsolutePath(), f.exists()); //$NON-NLS-1$
 
         FileInputStream in = new FileInputStream(f);
@@ -392,14 +344,12 @@ public class MessagesTest
         return new String(bytes);
     }
 
-    private String getDefaultPropertiesPath()
-    {
+    private String getDefaultPropertiesPath() {
         String className = this.getClass().getName();
         String[] dirs = className.split("\\."); //$NON-NLS-1$
         StringBuffer sb = new StringBuffer(getResourcesRoot());
 
-        for (int i = 0; i < dirs.length - 1; i++)
-        {
+        for (int i = 0; i < dirs.length - 1; i++) {
             sb.append("/"); //$NON-NLS-1$
             sb.append(dirs[i]);
         }
@@ -408,13 +358,11 @@ public class MessagesTest
         return sb.toString();
     }
 
-    private String getResourcesRoot()
-    {
+    private String getResourcesRoot() {
         StringBuffer sb = new StringBuffer();
 
         String sourcesRoot = System.getProperty("com.microsoft.gittf.MessagesTest.ResourcesRoot"); //$NON-NLS-1$
-        if (sourcesRoot != null)
-        {
+        if (sourcesRoot != null) {
             sb.append(sourcesRoot);
             sb.append(File.separatorChar);
             sb.append(this.getClass().getPackage().getName());
@@ -429,13 +377,11 @@ public class MessagesTest
         return sb.toString();
     }
 
-    private String getSourcesRoot()
-    {
+    private String getSourcesRoot() {
         StringBuffer sb = new StringBuffer();
 
         String sourcesRoot = System.getProperty("com.microsoft.gittf.MessagesTest.SourcesRoot"); //$NON-NLS-1$
-        if (sourcesRoot != null)
-        {
+        if (sourcesRoot != null) {
             sb.append(sourcesRoot);
             sb.append(File.separatorChar);
             sb.append(this.getClass().getPackage().getName());
@@ -450,25 +396,21 @@ public class MessagesTest
         return sb.toString();
     }
 
-    private class PropertyInfo
-    {
+    private class PropertyInfo {
         private final String name;
         private final String value;
 
-        public PropertyInfo(String name, String value)
-        {
+        public PropertyInfo(String name, String value) {
             this.name = name;
             this.value = value;
         }
     }
 
-    private class ArgumentInfo
-    {
+    private class ArgumentInfo {
         private final String name;
         private final int argCount;
 
-        public ArgumentInfo(String name, int argCount)
-        {
+        public ArgumentInfo(String name, int argCount) {
             this.name = name;
             this.argCount = argCount;
         }

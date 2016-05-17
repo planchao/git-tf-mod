@@ -28,23 +28,18 @@ package com.microsoft.gittf.core.tasks.framework;
  * An implementation of {@link TaskProgressMonitor} that ignores task progress.
  * 
  */
-public class NullTaskProgressMonitor
-    extends BaseTaskProgressMonitor
-{
+public class NullTaskProgressMonitor extends BaseTaskProgressMonitor {
     private boolean inTask = false;
     private String task;
     private int work;
     private TaskProgressDisplay displayOptions = TaskProgressDisplay.NONE;
     private String detail;
 
-    public NullTaskProgressMonitor()
-    {
+    public NullTaskProgressMonitor() {
     }
 
-    public void beginTask(String task, int work, final TaskProgressDisplay displayOptions)
-    {
-        if (this.inTask)
-        {
+    public void beginTask(String task, int work, final TaskProgressDisplay displayOptions) {
+        if (this.inTask) {
             return;
         }
 
@@ -54,61 +49,48 @@ public class NullTaskProgressMonitor
         this.displayOptions = displayOptions;
     }
 
-    public String getTask()
-    {
+    public String getTask() {
         return task;
     }
 
-    public int getWork()
-    {
+    public int getWork() {
         return work;
     }
 
-    public void setWork(int work)
-    {
+    public void setWork(int work) {
         this.work = work;
     }
 
-    public TaskProgressDisplay getTaskProgressDisplayOptions()
-    {
+    public TaskProgressDisplay getTaskProgressDisplayOptions() {
         return displayOptions;
     }
 
-    public TaskProgressMonitor newSubTask(final int subWork)
-    {
+    public TaskProgressMonitor newSubTask(final int subWork) {
         return new NullTaskProgressMonitor();
     }
 
-    public void setDetail(final String message)
-    {
+    public void setDetail(final String message) {
         this.detail = message;
     }
 
-    public String getDetail()
-    {
+    public String getDetail() {
         return detail;
     }
 
-    public void worked(final double amount)
-    {
+    public void worked(final double amount) {
     }
 
-    public void displayMessage(final String message)
-    {
+    public void displayMessage(final String message) {
     }
 
-    public void displayWarning(final String message)
-    {
+    public void displayWarning(final String message) {
     }
 
-    public void displayVerbose(final String message)
-    {
+    public void displayVerbose(final String message) {
     }
 
-    public void endTask()
-    {
-        if (!this.inTask)
-        {
+    public void endTask() {
+        if (!this.inTask) {
             return;
         }
 
@@ -119,7 +101,6 @@ public class NullTaskProgressMonitor
         this.detail = null;
     }
 
-    public void dispose()
-    {
+    public void dispose() {
     }
 }

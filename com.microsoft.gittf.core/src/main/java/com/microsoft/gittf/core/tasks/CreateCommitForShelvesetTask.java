@@ -35,17 +35,14 @@ import com.microsoft.gittf.core.util.Check;
 import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.PendingSet;
 import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
 
-public class CreateCommitForShelvesetTask
-    extends CreateCommitForPendingSetsTask
-{
+public class CreateCommitForShelvesetTask extends CreateCommitForPendingSetsTask {
     private final Shelveset shelveset;
 
     public CreateCommitForShelvesetTask(
         final Repository repository,
         final VersionControlService versionControlClient,
         Shelveset shelveset,
-        ObjectId parentCommitID)
-    {
+        ObjectId parentCommitID) {
         super(repository, versionControlClient, parentCommitID);
 
         Check.notNull(shelveset, "shelveset"); //$NON-NLS-1$
@@ -56,56 +53,47 @@ public class CreateCommitForShelvesetTask
     }
 
     @Override
-    public String getProgressMonitorMessage()
-    {
+    public String getProgressMonitorMessage() {
         return Messages.formatString("CreateCommitForShelvesetTask.UnshelvingShelvesetFormat", shelveset.getName()); //$NON-NLS-1$
     }
 
     @Override
-    public PendingSet[] getPendingSets()
-    {
+    public PendingSet[] getPendingSets() {
         return versionControlService.queryShelvesetChanges(shelveset, true);
     }
 
     @Override
-    public String getOwnerDisplayName()
-    {
+    public String getOwnerDisplayName() {
         return shelveset.getOwnerDisplayName();
     }
 
     @Override
-    public String getOwner()
-    {
+    public String getOwner() {
         return shelveset.getOwnerName();
     }
 
     @Override
-    public String getCommitterDisplayName()
-    {
+    public String getCommitterDisplayName() {
         return shelveset.getOwnerDisplayName();
     }
 
     @Override
-    public String getCommitter()
-    {
+    public String getCommitter() {
         return shelveset.getOwnerName();
     }
 
     @Override
-    public Calendar getCommitDate()
-    {
+    public Calendar getCommitDate() {
         return shelveset.getCreationDate();
     }
 
     @Override
-    public String getComment()
-    {
+    public String getComment() {
         return shelveset.getComment();
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return Messages.formatString("CreateCommitForShelvesetTask.ShelvesetNameFormat", shelveset.getName()); //$NON-NLS-1$
     }
 

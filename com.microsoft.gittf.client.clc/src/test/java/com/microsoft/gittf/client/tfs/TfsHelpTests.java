@@ -29,22 +29,17 @@ import java.text.MessageFormat;
 import com.microsoft.gittf.client.tfs.Library.GitTfCommand;
 import com.microsoft.gittf.client.tfs.Library.Logger;
 
-public class TfsHelpTests
-    extends GitTfTestBase
-{
+public class TfsHelpTests extends GitTfTestBase {
     /**
      * Quick sanity test to verify help returns a 0.
      */
-    public void testGitTfHelp()
-    {
-        if (!configured)
-        {
+    public void testGitTfHelp() {
+        if (!configured) {
             return;
         }
 
         Logger.logHeader("Starting Test: 'testGitTfHelp'"); //$NON-NLS-1$
-        try
-        {
+        try {
             Logger.log("Create GitTfCommand with '--help'"); //$NON-NLS-1$
             GitTfCommand cmd = new GitTfCommand("--help"); //$NON-NLS-1$
             cmd.getWorkingFolder(getWorkspaceFolder());
@@ -53,23 +48,19 @@ public class TfsHelpTests
 
             Logger.log(MessageFormat.format("Command Input:  {0}", cmd.getCommandInput())); //$NON-NLS-1$
             Logger.log(MessageFormat.format("Exit:  {0}", cmd.getExitCode())); //$NON-NLS-1$
-            Logger.log("Standard Output", cmd.getStandardOut()); //$NON-NLS-1$ 
+            Logger.log("Standard Output", cmd.getStandardOut()); //$NON-NLS-1$
             Logger.log("Standard Error", cmd.getStandardErr()); //$NON-NLS-1$
 
-            if (cmd.getExitCode() != 0)
-            {
+            if (cmd.getExitCode() != 0) {
                 cmd.logDetails();
             }
 
-            if (cmd.getStandardErr().length() != 0)
-            {
+            if (cmd.getStandardErr().length() != 0) {
                 super.fail(MessageFormat.format("Expected no standard error but received: {0}", cmd.getStandardErr())); //$NON-NLS-1$
             }
 
             assertEquals(0, cmd.getExitCode());
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.logException(e);
             fail(e.getMessage());
         }

@@ -30,8 +30,7 @@ import com.microsoft.gittf.core.util.Check;
  * Base class for command line argument identifiers.
  * 
  */
-public abstract class Argument
-{
+public abstract class Argument {
     private final String name;
     private final String helpText;
     private final ArgumentOptions options;
@@ -42,8 +41,7 @@ public abstract class Argument
      * Implementers may call if they require a nonstandard implementation - for
      * example, {@link LiteralArgument}.
      */
-    protected Argument()
-    {
+    protected Argument() {
         this.name = null;
         this.helpText = null;
         this.options = ArgumentOptions.NONE;
@@ -52,8 +50,7 @@ public abstract class Argument
     /**
      * @equivalence Argument(name, helpText, ArgumentOptions.NONE)
      */
-    public Argument(String name, String helpText)
-    {
+    public Argument(String name, String helpText) {
         this(name, helpText, ArgumentOptions.NONE);
     }
 
@@ -69,8 +66,7 @@ public abstract class Argument
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public Argument(String name, String helpText, ArgumentOptions options)
-    {
+    public Argument(String name, String helpText, ArgumentOptions options) {
         Check.notNullOrEmpty(name, "name"); //$NON-NLS-1$
         Check.notNull(options, "options"); //$NON-NLS-1$
         Check.notNullOrEmpty(helpText, "helpText"); //$NON-NLS-1$
@@ -89,8 +85,7 @@ public abstract class Argument
      * @param other
      *        {@link Argument} to clone (must not be <code>null</code>)
      */
-    protected Argument(Argument other)
-    {
+    protected Argument(Argument other) {
         Check.notNull(other, "other"); //$NON-NLS-1$
 
         this.name = other.name;
@@ -103,8 +98,7 @@ public abstract class Argument
      * 
      * @return The name of this argument (never <code>null</code>).
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -113,8 +107,7 @@ public abstract class Argument
      * 
      * @return The description of this argument (never <code>null</code>).
      */
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return helpText;
     }
 
@@ -124,8 +117,7 @@ public abstract class Argument
      * @return The {@link ArgumentOptions} for this argument (never
      *         <code>null</code>)
      */
-    public ArgumentOptions getOptions()
-    {
+    public ArgumentOptions getOptions() {
         return options;
     }
 
@@ -139,14 +131,12 @@ public abstract class Argument
     public abstract Argument clone();
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = 31 + (name != null ? name.hashCode() : 0);
         hashCode = 31 * hashCode + (helpText != null ? helpText.hashCode() : 0);
         hashCode = 31 * hashCode + options.hashCode();
@@ -154,32 +144,26 @@ public abstract class Argument
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof Argument))
-        {
+        if (!(o instanceof Argument)) {
             return false;
         }
 
         Argument other = (Argument) o;
 
-        if ((name == null && other.name != null) || (name != null && !name.equals(other.name)))
-        {
+        if ((name == null && other.name != null) || (name != null && !name.equals(other.name))) {
             return false;
         }
 
-        if ((helpText == null && other.helpText != null) || (helpText != null && !helpText.equals(other.helpText)))
-        {
+        if ((helpText == null && other.helpText != null) || (helpText != null && !helpText.equals(other.helpText))) {
             return false;
         }
 
-        if (!options.equals(other.options))
-        {
+        if (!options.equals(other.options)) {
             return false;
         }
 

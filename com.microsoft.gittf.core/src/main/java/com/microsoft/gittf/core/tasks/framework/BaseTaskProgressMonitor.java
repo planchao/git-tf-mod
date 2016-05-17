@@ -28,16 +28,12 @@ package com.microsoft.gittf.core.tasks.framework;
  * Base task ProgressMonitor
  * 
  */
-public abstract class BaseTaskProgressMonitor
-    implements TaskProgressMonitor
-{
-    public void beginTask(String task, int work)
-    {
+public abstract class BaseTaskProgressMonitor implements TaskProgressMonitor {
+    public void beginTask(String task, int work) {
         beginTask(task, work, TaskProgressDisplay.NONE);
     }
 
-    public void worked(int amount)
-    {
+    public void worked(int amount) {
         worked((double) amount);
     }
 }

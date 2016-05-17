@@ -32,8 +32,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.microsoft.gittf.core.Messages;
 
-public final class URIUtil
-{
+public final class URIUtil {
     private static final String hostedServerName = "visualstudio.com"; //$NON-NLS-1$
     private static final String hostedServerPreviewName = "tfspreview.com"; //$NON-NLS-1$
 
@@ -42,8 +41,7 @@ public final class URIUtil
 
     private static final Log log = LogFactory.getLog(URIUtil.class);
 
-    private URIUtil()
-    {
+    private URIUtil() {
     }
 
     /**
@@ -56,32 +54,24 @@ public final class URIUtil
      * @return
      * @throws Exception
      */
-    public static URI getServerURI(final String serverURIString)
-        throws Exception
-    {
-        try
-        {
+    public static URI getServerURI(final String serverURIString) throws Exception {
+        try {
             URI uri = new URI(serverURIString);
 
-            if (!uri.isAbsolute() || uri.isOpaque())
-            {
+            if (!uri.isAbsolute() || uri.isOpaque()) {
                 uri = null;
             }
 
-            if (uri != null)
-            {
+            if (uri != null) {
                 uri = updateIfNeededForHostedService(uri);
             }
 
-            if (uri == null)
-            {
+            if (uri == null) {
                 throw new Exception(Messages.formatString("URIUtil.InvalidURIFormat", serverURIString)); //$NON-NLS-1$
             }
 
             return uri;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.warn("Could not parse URI", e); //$NON-NLS-1$
         }
 
@@ -96,23 +86,18 @@ public final class URIUtil
      * @return
      * @throws URISyntaxException
      */
-    private static URI updateIfNeededForHostedService(URI uri)
-        throws URISyntaxException
-    {
+    private static URI updateIfNeededForHostedService(URI uri) throws URISyntaxException {
         Check.notNull(uri, "uri"); //$NON-NLS-1$
 
         String hostedServer = System.getProperty("tfs.hosted"); //$NON-NLS-1$
-        if (hostedServer == null || hostedServer.length() == 0)
-        {
+        if (hostedServer == null || hostedServer.length() == 0) {
             hostedServer = hostedServerName;
         }
 
         if (uri.getHost().toLowerCase().contains(hostedServer)
-            || uri.getHost().toLowerCase().contains(hostedServerPreviewName))
-        {
+            || uri.getHost().toLowerCase().contains(hostedServerPreviewName)) {
             String uriPath = uri.getPath().replaceAll("[/]+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
-            if (uriPath == null || uriPath.length() == 0)
-            {
+            if (uriPath == null || uriPath.length() == 0) {
                 uriPath = hostedServerPath;
             }
 

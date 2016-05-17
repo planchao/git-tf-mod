@@ -71,9 +71,7 @@ import com.microsoft.gittf.core.util.Check;
  * percentage of progress displayed.
  * 
  */
-public class ConsoleTaskProgressMonitor
-    extends BaseTaskProgressMonitor
-{
+public class ConsoleTaskProgressMonitor extends BaseTaskProgressMonitor {
     private static final Log log = LogFactory.getLog(ConsoleTaskProgressMonitor.class);
 
     private final Console console;
@@ -91,33 +89,29 @@ public class ConsoleTaskProgressMonitor
 
     private final List<TaskProgressMonitor> subMonitors = new ArrayList<TaskProgressMonitor>();
 
-    static
-    {
+    static {
         /*
          * Measure how many characters we add for the trailing ... to indicate
          * truncation
          */
-        CONSOLE_TRUNCATION_PADDING =
-            Messages.formatString("ConsoleTaskProgressMonitor.TaskTruncationFormat", "").length(); //$NON-NLS-1$ //$NON-NLS-2$
+        CONSOLE_TRUNCATION_PADDING = Messages.formatString("ConsoleTaskProgressMonitor.TaskTruncationFormat", "") //$NON-NLS-1$ //$NON-NLS-2$
+            .length();
     }
 
-    public ConsoleTaskProgressMonitor(final Console console)
-    {
+    public ConsoleTaskProgressMonitor(final Console console) {
         Check.notNull(console, "console"); //$NON-NLS-1$
 
         this.console = console;
     }
 
-    public void beginTask(final String task, final int workTotal, final TaskProgressDisplay displayOptions)
-    {
+    public void beginTask(final String task, final int workTotal, final TaskProgressDisplay displayOptions) {
         Check.notNull(task, "task"); //$NON-NLS-1$
         Check.isTrue(workTotal >= INDETERMINATE, "work >= INDETERMINATE"); //$NON-NLS-1$
         Check.notNull(displayOptions, "displayOptions"); //$NON-NLS-1$
 
         log.info(task + " started"); //$NON-NLS-1$
 
-        if (this.inTask)
-        {
+        if (this.inTask) {
             return;
         }
 
@@ -131,40 +125,33 @@ public class ConsoleTaskProgressMonitor
          * If we're displaying progress, let the updateProgress routine handle
          * all the display.
          */
-        if (this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS))
-        {
+        if (this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)) {
             startProgress();
         }
         /* Otherwise, just print that the task started. */
-        else if (console.getVerbosity() != Verbosity.QUIET)
-        {
+        else if (console.getVerbosity() != Verbosity.QUIET) {
             console.getOutputStream().println(task);
         }
     }
 
-    public String getTask()
-    {
+    public String getTask() {
         return task;
     }
 
-    public int getWork()
-    {
+    public int getWork() {
         return workTotal;
     }
 
-    public void setWork(int workTotal)
-    {
+    public void setWork(int workTotal) {
         this.workTotal = workTotal;
         worked(0);
     }
 
-    public TaskProgressDisplay getTaskProgressDisplayOptions()
-    {
+    public TaskProgressDisplay getTaskProgressDisplayOptions() {
         return displayOptions;
     }
 
-    public TaskProgressMonitor newSubTask(final int subWork)
-    {
+    public TaskProgressMonitor newSubTask(final int subWork) {
         final TaskProgressMonitor subMonitor;
 
         /*
@@ -172,15 +159,13 @@ public class ConsoleTaskProgressMonitor
          * from the submonitor should be *ignored* - instead we should just
          * proxy up their work so that we can update the percentage.
          */
-        if (this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS))
-        {
+        if (this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)) {
             subMonitor = new SubTaskProgressMonitor(this, subWork);
         }
         /*
          * Otherwise, just let it print status like it always would.
          */
-        else
-        {
+        else {
             subMonitor = new ConsoleTaskProgressMonitor(console);
         }
 
@@ -189,21 +174,17 @@ public class ConsoleTaskProgressMonitor
         return subMonitor;
     }
 
-    public void setDetail(final String detail)
-    {
+    public void setDetail(final String detail) {
         this.detail = detail;
         updateProgress();
     }
 
-    public String getDetail()
-    {
+    public String getDetail() {
         return detail;
     }
 
-    public void worked(final double amount)
-    {
-        if (!this.inTask)
-        {
+    public void worked(final double amount) {
+        if (!this.inTask) {
             return;
         }
 
@@ -213,87 +194,70 @@ public class ConsoleTaskProgressMonitor
         updateProgress();
     }
 
-    public void displayMessage(final String message)
-    {
-        if (console.getVerbosity() != Verbosity.QUIET)
-        {
+    public void displayMessage(final String message) {
+        if (console.getVerbosity() != Verbosity.QUIET) {
             clearProgressLine();
             console.getOutputStream().println(message);
             updateProgress();
         }
     }
 
-    public void displayWarning(final String message)
-    {
+    public void displayWarning(final String message) {
         clearProgressLine();
         console.getErrorStream().println(Messages.formatString("Main.WarningFormat", message)); //$NON-NLS-1$
         updateProgress();
     }
 
-    public void displayVerbose(final String message)
-    {
-        if (console.getVerbosity() == Verbosity.VERBOSE)
-        {
+    public void displayVerbose(final String message) {
+        if (console.getVerbosity() == Verbosity.VERBOSE) {
             clearProgressLine();
             console.getOutputStream().println(message);
             updateProgress();
         }
     }
 
-    private void clearProgressLine()
-    {
-        for (int i = 0; i < progressLine.length(); i++)
-        {
+    private void clearProgressLine() {
+        for (int i = 0; i < progressLine.length(); i++) {
             console.getOutputStream().print('\b');
         }
-        for (int i = 0; i < progressLine.length(); i++)
-        {
+        for (int i = 0; i < progressLine.length(); i++) {
             console.getOutputStream().print(' ');
         }
-        for (int i = 0; i < progressLine.length(); i++)
-        {
+        for (int i = 0; i < progressLine.length(); i++) {
             console.getOutputStream().print('\b');
         }
 
         progressLine = ""; //$NON-NLS-1$
     }
 
-    private void startProgress()
-    {
+    private void startProgress() {
         if (console.getVerbosity() != Verbosity.QUIET
-            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS))
-        {
-            if (this.workTotal == TaskProgressMonitor.INDETERMINATE || !console.supportsOverwrite())
-            {
+            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)) {
+            if (this.workTotal == TaskProgressMonitor.INDETERMINATE || !console.supportsOverwrite()) {
                 console.getOutputStream().print(
                     Messages.formatString("ConsoleTaskProgressMonitor.IndeterminateTaskStartedFormat", task)); //$NON-NLS-1$
                 console.getOutputStream().flush();
-            }
-            else
-            {
+            } else {
                 updateProgress();
             }
         }
     }
 
-    private void updateProgress()
-    {
+    private void updateProgress() {
         if (console.getVerbosity() != Verbosity.QUIET
             && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)
             && this.workTotal > TaskProgressMonitor.INDETERMINATE
-            && console.supportsOverwrite())
-        {
+            && console.supportsOverwrite()) {
             String newProgressLine;
-            if (detail != null && detail.length() > 0)
-            {
-                newProgressLine = Messages.formatString("ConsoleTaskProgressMonitor.TaskProgressWithDetailFormat", //$NON-NLS-1$
+            if (detail != null && detail.length() > 0) {
+                newProgressLine = Messages.formatString(
+                    "ConsoleTaskProgressMonitor.TaskProgressWithDetailFormat", //$NON-NLS-1$
                     task,
                     Integer.toString((int) ((worked / workTotal) * 100)),
                     detail);
-            }
-            else
-            {
-                newProgressLine = Messages.formatString("ConsoleTaskProgressMonitor.TaskProgressFormat", //$NON-NLS-1$
+            } else {
+                newProgressLine = Messages.formatString(
+                    "ConsoleTaskProgressMonitor.TaskProgressFormat", //$NON-NLS-1$
                     task,
                     Integer.toString((int) ((worked / workTotal) * 100)));
             }
@@ -301,9 +265,9 @@ public class ConsoleTaskProgressMonitor
             /* Truncate overly long progress lines */
             final int consoleWidth = console.getWidth();
 
-            if (newProgressLine.length() > (consoleWidth - 1))
-            {
-                newProgressLine = Messages.formatString("ConsoleTaskProgressMonitor.TaskTruncationFormat", //$NON-NLS-1$
+            if (newProgressLine.length() > (consoleWidth - 1)) {
+                newProgressLine = Messages.formatString(
+                    "ConsoleTaskProgressMonitor.TaskTruncationFormat", //$NON-NLS-1$
                     newProgressLine.substring(0, (consoleWidth - 1) - CONSOLE_TRUNCATION_PADDING));
             }
 
@@ -319,13 +283,11 @@ public class ConsoleTaskProgressMonitor
      * 
      * @param newProgressLine
      */
-    private void writeProgressLine(final String newProgressLine)
-    {
+    private void writeProgressLine(final String newProgressLine) {
         log.info(newProgressLine);
 
         /* Remove any characters at the end of the line */
-        if (newProgressLine.length() < progressLine.length())
-        {
+        if (newProgressLine.length() < progressLine.length()) {
             int trailing = progressLine.length() - newProgressLine.length();
 
             clearProgressChars(trailing);
@@ -340,41 +302,32 @@ public class ConsoleTaskProgressMonitor
         console.getOutputStream().flush();
     }
 
-    private void clearProgressChars(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
+    private void clearProgressChars(int count) {
+        for (int i = 0; i < count; i++) {
             console.getOutputStream().print('\b');
         }
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             console.getOutputStream().print(' ');
         }
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             console.getOutputStream().print('\b');
         }
     }
 
-    private void reverseProgressChars(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
+    private void reverseProgressChars(int count) {
+        for (int i = 0; i < count; i++) {
             console.getOutputStream().print('\b');
         }
     }
 
-    private static int getCommonSubstring(final String one, final String two)
-    {
+    private static int getCommonSubstring(final String one, final String two) {
         Check.notNull(one, "one"); //$NON-NLS-1$
         Check.notNull(two, "two"); //$NON-NLS-1$
 
         int i;
 
-        for (i = 0; i < one.length() && i < two.length(); i++)
-        {
-            if (one.charAt(i) != two.charAt(i))
-            {
+        for (i = 0; i < one.length() && i < two.length(); i++) {
+            if (one.charAt(i) != two.charAt(i)) {
                 break;
             }
         }
@@ -382,21 +335,17 @@ public class ConsoleTaskProgressMonitor
         return i;
     }
 
-    private void finishProgress()
-    {
+    private void finishProgress() {
         if (console.getVerbosity() != Verbosity.QUIET
-            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS))
-        {
-            if (this.workTotal == TaskProgressMonitor.INDETERMINATE || !console.supportsOverwrite())
-            {
+            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)) {
+            if (this.workTotal == TaskProgressMonitor.INDETERMINATE || !console.supportsOverwrite()) {
                 console.getOutputStream().println(Messages.getString("ConsoleTaskProgressMonitor.TaskProgressDone")); //$NON-NLS-1$
                 console.getOutputStream().flush();
-            }
-            else
-            {
+            } else {
                 clearProgressLine();
                 console.getOutputStream().println(
-                    Messages.formatString("ConsoleTaskProgressMonitor.TaskProgressWithDetailFormat", //$NON-NLS-1$
+                    Messages.formatString(
+                        "ConsoleTaskProgressMonitor.TaskProgressWithDetailFormat", //$NON-NLS-1$
                         task,
                         100,
                         Messages.getString("ConsoleTaskProgressMonitor.TaskProgressDone"))); //$NON-NLS-1$
@@ -405,16 +354,12 @@ public class ConsoleTaskProgressMonitor
         }
     }
 
-    public void endTask()
-    {
+    public void endTask() {
         log.info(task + " ended"); //$NON-NLS-1$
 
-        try
-        {
+        try {
             finishProgress();
-        }
-        finally
-        {
+        } finally {
             this.inTask = false;
             this.task = null;
             this.workTotal = 0;
@@ -424,28 +369,22 @@ public class ConsoleTaskProgressMonitor
         }
     }
 
-    public void dispose()
-    {
+    public void dispose() {
         /*
          * If there's still something on the display, we should print a newline
          * (we likely caught an exception.)
          */
         if (console.getVerbosity() != Verbosity.QUIET
             && this.task != null
-            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS))
-        {
+            && this.displayOptions.contains(TaskProgressDisplay.DISPLAY_PROGRESS)) {
             console.getOutputStream().println();
             console.getOutputStream().flush();
         }
 
-        for (TaskProgressMonitor subMonitor : subMonitors)
-        {
-            try
-            {
+        for (TaskProgressMonitor subMonitor : subMonitors) {
+            try {
                 subMonitor.dispose();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.warn("Exception disposing progress monitor", e); //$NON-NLS-1$
             }
         }

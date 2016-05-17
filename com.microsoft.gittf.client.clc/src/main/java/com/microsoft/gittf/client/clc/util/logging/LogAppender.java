@@ -47,26 +47,20 @@ import com.microsoft.tfs.util.locking.AdvisoryFileLock;
  * certain threshold is met)
  * 
  */
-public class LogAppender
-    extends FileAppender
-{
+public class LogAppender extends FileAppender {
     private static final int CLEANUP_THRESHOLD = 5;
 
     private static final Map<String, File> logTypesToInUseLogFiles = new HashMap<String, File>();
 
     @Override
-    public void setFile(final String logType)
-    {
+    public void setFile(final String logType) {
         /*
          * Create the logs directory if it doesn't already exist
          */
         VersionedVendorFilesystemPersistenceStore logStore = getLogLocation();
-        try
-        {
+        try {
             logStore.initialize();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             /*
              * Would be nice to log this, but we don't have logs yet. :) Print
              * the error and continue on; logging may actually succeed.
@@ -104,14 +98,12 @@ public class LogAppender
      *        true to call setInUseLogFileForLogType with the log file
      * @return a file object representing the log file
      */
-    private static File createLogFileObject(final String logType, final File location, final boolean setInUse)
-    {
+    private static File createLogFileObject(final String logType, final File location, final boolean setInUse) {
         LogFileName logFileName = new LogFileName(logType);
 
         File logFile = logFileName.createFileDescriptor(location);
 
-        if (setInUse)
-        {
+        if (setInUse) {
             setInUseLogFileForLogType(logType, logFile);
         }
 
@@ -127,10 +119,8 @@ public class LogAppender
      * @param logFile
      *        the in-use log file
      */
-    static void setInUseLogFileForLogType(final String logType, final File logFile)
-    {
-        synchronized (logTypesToInUseLogFiles)
-        {
+    static void setInUseLogFileForLogType(final String logType, final File logFile) {
+        synchronized (logTypesToInUseLogFiles) {
             logTypesToInUseLogFiles.put(logType, logFile);
         }
     }
@@ -142,13 +132,11 @@ public class LogAppender
      * 
      * @return the {@link PersistenceStore} described above
      */
-    private static VersionedVendorFilesystemPersistenceStore getLogLocation()
-    {
+    private static VersionedVendorFilesystemPersistenceStore getLogLocation() {
         return (VersionedVendorFilesystemPersistenceStore) DefaultPersistenceStoreProvider.INSTANCE.getLogPersistenceStore();
     }
 
-    private void cleanup(final String logType, final FilesystemPersistenceStore logStore)
-    {
+    private void cleanup(final String logType, final FilesystemPersistenceStore logStore) {
         /*
          * The basic algorithm here is to get an exclusive lock on the settings
          * location. If that exclusive lock can't be had, we return without
@@ -158,15 +146,13 @@ public class LogAppender
 
         AdvisoryFileLock lock = null;
 
-        try
-        {
+        try {
             lock = logStore.getStoreLock(false);
 
             /*
              * A null lock means the lock was not immediately available.
              */
-            if (lock == null)
-            {
+            if (lock == null) {
                 return;
             }
 
@@ -175,50 +161,38 @@ public class LogAppender
              * At this point we know we have the exclusive lock.
              */
             doCleanup(logType, logStore);
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             /*
              * Shouldn't ever happen because we aren't blocking on getting the
              * lock.
              */
             return;
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             /*
              * Exception trying to get lock - return without doing cleanup
              */
             return;
-        }
-        finally
-        {
-            try
-            {
+        } finally {
+            try {
                 /*
                  * Always release the lock
                  */
-                if (lock != null)
-                {
+                if (lock != null) {
                     lock.release();
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
             }
         }
     }
 
-    private void doCleanup(final String logType, final FilesystemPersistenceStore logFileLocation)
-    {
+    private void doCleanup(final String logType, final FilesystemPersistenceStore logFileLocation) {
         File[] logFiles = getAllLogFilesForLogType(logType, logFileLocation.getStoreFile(), true);
 
         /*
          * If the number of files is not under the cleanup threshold, this
          * method has nothing to do
          */
-        if (logFiles.length < CLEANUP_THRESHOLD)
-        {
+        if (logFiles.length < CLEANUP_THRESHOLD) {
             return;
         }
 
@@ -229,10 +203,8 @@ public class LogAppender
          */
         int numToDelete = logFiles.length - CLEANUP_THRESHOLD + 1;
         int numDeleted = 0;
-        for (int i = 0; i < logFiles.length && numDeleted < numToDelete; i++)
-        {
-            if (logFiles[i].delete())
-            {
+        for (int i = 0; i < logFiles.length && numDeleted < numToDelete; i++) {
+            if (logFiles[i].delete()) {
                 ++numDeleted;
             }
         }
@@ -256,8 +228,7 @@ public class LogAppender
     private static File[] getAllLogFilesForLogType(
         final String logType,
         final File location,
-        final boolean sortAscending)
-    {
+        final boolean sortAscending) {
         File[] files = location.listFiles(LogFileName.getFilterForLogFilesOfTypeForCurrentApplication(logType));
 
         FileLastModifiedComparator c = new FileLastModifiedComparator();

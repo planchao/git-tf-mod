@@ -36,28 +36,20 @@ import com.microsoft.gittf.core.tasks.framework.NullTaskProgressMonitor;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.test.Util;
 
-public class UnconfigureRepositoryTaskTest
-    extends TestCase
-{
+public class UnconfigureRepositoryTaskTest extends TestCase {
     private Repository repository;
 
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         Util.setUp(getName());
         repository = Util.initializeGitRepo(getName());
     }
 
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         Util.tearDown(getName());
     }
 
     @Test
-    public void testSimpleUnconfigure()
-        throws Exception
-    {
+    public void testSimpleUnconfigure() throws Exception {
         assertNotNull(repository);
 
         URI projectCollectionURI = new URI("http://fakeCollection:8080/tfs/DefaultCollection"); //$NON-NLS-1$

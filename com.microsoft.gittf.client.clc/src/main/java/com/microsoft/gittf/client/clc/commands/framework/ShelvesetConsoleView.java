@@ -36,34 +36,27 @@ import com.microsoft.tfs.core.clients.versioncontrol.workspacecache.WorkItemChec
 import com.microsoft.tfs.core.clients.workitem.CheckinWorkItemAction;
 import com.microsoft.tfs.util.Check;
 
-public class ShelvesetConsoleView
-    implements ShelvesetView
-{
+public class ShelvesetConsoleView implements ShelvesetView {
     private final Console console;
 
-    public ShelvesetConsoleView(final Console console)
-    {
+    public ShelvesetConsoleView(final Console console) {
         Check.notNull(console, "console"); //$NON-NLS-1$
 
         this.console = console;
     }
 
-    public void displayShelvesets(final Shelveset[] shelvesets, final boolean displayDetails)
-    {
+    public void displayShelvesets(final Shelveset[] shelvesets, final boolean displayDetails) {
         displayHeader(shelvesets.length);
 
-        if (!displayDetails)
-        {
+        if (!displayDetails) {
             displayTableHeader();
         }
 
         int count = 0;
-        for (Shelveset shelveset : shelvesets)
-        {
+        for (Shelveset shelveset : shelvesets) {
             displayShelveset(shelveset, displayDetails);
 
-            if (displayDetails)
-            {
+            if (displayDetails) {
                 if (count != shelvesets.length - 1)
                     displayMessage(""); //$NON-NLS-1$
             }
@@ -71,21 +64,18 @@ public class ShelvesetConsoleView
             count++;
         }
 
-        if (!displayDetails)
-        {
+        if (!displayDetails) {
             displayTableFooter();
         }
     }
 
-    public void displayShelvesetDetails(Shelveset shelveset, PendingSet[] shelvesetDetails)
-    {
+    public void displayShelvesetDetails(Shelveset shelveset, PendingSet[] shelvesetDetails) {
         displayHeader(1);
 
         displayShelveset(shelveset, shelvesetDetails);
     }
 
-    private void displayHeader(int shelvesetCount)
-    {
+    private void displayHeader(int shelvesetCount) {
         displayMessage(""); //$NON-NLS-1$
 
         displayMessage(Messages.formatString("ShelvesetConsoleView.HeaderFormat", shelvesetCount)); //$NON-NLS-1$
@@ -93,96 +83,86 @@ public class ShelvesetConsoleView
         displayMessage(""); //$NON-NLS-1$
     }
 
-    private void displayTableHeader()
-    {
+    private void displayTableHeader() {
         displayMessage(Messages.getString("ShelvesetConsoleView.TableHeader")); //$NON-NLS-1$
         displayMessage(Messages.getString("ShelvesetConsoleView.TableSeparator")); //$NON-NLS-1$
     }
 
-    private void displayTableFooter()
-    {
+    private void displayTableFooter() {
         displayMessage(Messages.getString("ShelvesetConsoleView.TableSeparator")); //$NON-NLS-1$
     }
 
-    private void displayShelveset(Shelveset shelveset, boolean displayDetails)
-    {
-        if (displayDetails)
-        {
-            displayMessage(Messages.formatString("ShelvesetConsoleView.ShelvesetNameFormat", //$NON-NLS-1$
+    private void displayShelveset(Shelveset shelveset, boolean displayDetails) {
+        if (displayDetails) {
+            displayMessage(Messages.formatString(
+                "ShelvesetConsoleView.ShelvesetNameFormat", //$NON-NLS-1$
                 shelveset.getName()));
 
-            displayMessage(Messages.formatString("ShelvesetConsoleView.ShelvesetOwnerFormat", //$NON-NLS-1$
+            displayMessage(Messages.formatString(
+                "ShelvesetConsoleView.ShelvesetOwnerFormat", //$NON-NLS-1$
                 shelveset.getOwnerDisplayName(),
                 shelveset.getOwnerName()));
 
             displayWorkItemInfo(shelveset.getBriefWorkItemInfo());
 
-            displayMessage(Messages.formatString("ShelvesetConsoleView.ShelvesetCommentFormat", //$NON-NLS-1$
-                shelveset.getComment() == null ? OutputConstants.NEW_LINE : shelveset.getComment()));
-        }
-        else
-        {
             displayMessage(Messages.formatString(
-                "ShelvesetConsoleView.ShelvesetFormat", shelveset.getName(), shelveset.getOwnerName())); //$NON-NLS-1$
+                "ShelvesetConsoleView.ShelvesetCommentFormat", //$NON-NLS-1$
+                shelveset.getComment() == null ? OutputConstants.NEW_LINE : shelveset.getComment()));
+        } else {
+            displayMessage(Messages.formatString(
+                "ShelvesetConsoleView.ShelvesetFormat", //$NON-NLS-1$
+                shelveset.getName(),
+                shelveset.getOwnerName()));
         }
     }
 
-    private void displayWorkItemInfo(WorkItemCheckedInfo[] workItemsInfo)
-    {
+    private void displayWorkItemInfo(WorkItemCheckedInfo[] workItemsInfo) {
         String associatedWorkItems = ""; //$NON-NLS-1$
         String resolvedWorkItems = ""; //$NON-NLS-1$
 
-        for (WorkItemCheckedInfo wi : workItemsInfo)
-        {
-            if (wi.getCheckinAction() == CheckinWorkItemAction.RESOLVE)
-            {
+        for (WorkItemCheckedInfo wi : workItemsInfo) {
+            if (wi.getCheckinAction() == CheckinWorkItemAction.RESOLVE) {
                 resolvedWorkItems += wi.getID() + " "; //$NON-NLS-1$
-            }
-            else
-            {
+            } else {
                 associatedWorkItems += wi.getID() + " "; //$NON-NLS-1$
             }
         }
 
-        if (resolvedWorkItems.length() == 0)
-        {
+        if (resolvedWorkItems.length() == 0) {
             resolvedWorkItems = Messages.getString("ShelvesetConsoleView.ShelvesetWorkItemNone"); //$NON-NLS-1$
         }
 
-        if (associatedWorkItems.length() == 0)
-        {
+        if (associatedWorkItems.length() == 0) {
             associatedWorkItems = Messages.getString("ShelvesetConsoleView.ShelvesetWorkItemNone"); //$NON-NLS-1$
         }
 
-        displayMessage(Messages.formatString("ShelvesetConsoleView.ShelvesetResolvedWorkItemsFormat", //$NON-NLS-1$
+        displayMessage(Messages.formatString(
+            "ShelvesetConsoleView.ShelvesetResolvedWorkItemsFormat", //$NON-NLS-1$
             resolvedWorkItems));
 
-        displayMessage(Messages.formatString("ShelvesetConsoleView.ShelvesetAssociatedWorkItemsFormat", //$NON-NLS-1$
+        displayMessage(Messages.formatString(
+            "ShelvesetConsoleView.ShelvesetAssociatedWorkItemsFormat", //$NON-NLS-1$
             associatedWorkItems));
     }
 
-    private void displayShelveset(Shelveset shelveset, PendingSet[] shelvesetDetails)
-    {
+    private void displayShelveset(Shelveset shelveset, PendingSet[] shelvesetDetails) {
         displayShelveset(shelveset, true);
 
         displayMessage(Messages.getString("ShelvesetConsoleView.ChangesTableHeader")); //$NON-NLS-1$
         displayMessage(Messages.getString("ShelvesetConsoleView.TableSeparator")); //$NON-NLS-1$
 
-        for (PendingSet pendingSet : shelvesetDetails)
-        {
-            for (PendingChange pendingChange : pendingSet.getPendingChanges())
-            {
-                displayMessage(Messages.formatString("ShelvesetConsoleView.PendingChangeFormat", //$NON-NLS-1$
+        for (PendingSet pendingSet : shelvesetDetails) {
+            for (PendingChange pendingChange : pendingSet.getPendingChanges()) {
+                displayMessage(Messages.formatString(
+                    "ShelvesetConsoleView.PendingChangeFormat", //$NON-NLS-1$
                     pendingChange.getChangeType().toUIString(false),
                     pendingChange.getServerItem()));
             }
         }
     }
 
-    private void displayMessage(String message)
-    {
-        if (console.getVerbosity() != Verbosity.QUIET)
-        {
+    private void displayMessage(String message) {
+        if (console.getVerbosity() != Verbosity.QUIET) {
             console.getOutputStream().println(message);
         }
     }

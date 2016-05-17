@@ -45,9 +45,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.ChangesetVers
  * specified version of the file, without having to download all the files from
  * the server
  */
-public class UpdateLocalVersionToLatestBridgedChangesetTask
-    extends UpdateLocalVersionTask
-{
+public class UpdateLocalVersionToLatestBridgedChangesetTask extends UpdateLocalVersionTask {
     private final Repository repository;
 
     private GetOperation[][] tfsGetOperations;
@@ -58,8 +56,7 @@ public class UpdateLocalVersionToLatestBridgedChangesetTask
      * @param workspace
      * @param repository
      */
-    public UpdateLocalVersionToLatestBridgedChangesetTask(final Workspace workspace, final Repository repository)
-    {
+    public UpdateLocalVersionToLatestBridgedChangesetTask(final Workspace workspace, final Repository repository) {
         super(workspace);
 
         Check.notNull(repository, "repository"); //$NON-NLS-1$
@@ -67,18 +64,15 @@ public class UpdateLocalVersionToLatestBridgedChangesetTask
         this.repository = repository;
     }
 
-    public GetOperation[][] getGetOperations()
-    {
-        if (tfsGetOperations == null)
-        {
+    public GetOperation[][] getGetOperations() {
+        if (tfsGetOperations == null) {
             tfsGetOperations = getLatestDownloadedChangesetGetOps();
         }
 
         return tfsGetOperations;
     }
 
-    private GetOperation[][] getLatestDownloadedChangesetGetOps()
-    {
+    private GetOperation[][] getLatestDownloadedChangesetGetOps() {
         GitTFConfiguration configuration = GitTFConfiguration.loadFrom(repository);
         ChangesetCommitMap commitMap = new ChangesetCommitMap(repository);
         int lastDownloadedChangeset = commitMap.getLastBridgedChangesetID(true);
@@ -87,26 +81,18 @@ public class UpdateLocalVersionToLatestBridgedChangesetTask
          * If this is a repo that was just configured and never checked in there
          * will be nothing to update here
          */
-        if (lastDownloadedChangeset < 0)
-        {
+        if (lastDownloadedChangeset < 0) {
             return null;
         }
 
-        GetOperation[][] tfsGetOperations =
-            workspace.getClient().getWebServiceLayer().get(
-                workspace.getName(),
-                workspace.getOwnerName(),
-                new GetRequest[]
-                {
-                    new GetRequest(
-                        new ItemSpec(configuration.getServerPath(), RecursionType.FULL),
-                        new ChangesetVersionSpec(lastDownloadedChangeset))
-                },
-                0,
-                GetOptions.NO_DISK_UPDATE.combine(GetOptions.GET_ALL),
-                null,
-                null,
-                false);
+        GetOperation[][] tfsGetOperations = workspace.getClient().getWebServiceLayer().get(
+            workspace.getName(),
+            workspace.getOwnerName(),
+            new GetRequest[] {
+                new GetRequest(
+                    new ItemSpec(configuration.getServerPath(), RecursionType.FULL),
+                    new ChangesetVersionSpec(lastDownloadedChangeset))
+            }, 0, GetOptions.NO_DISK_UPDATE.combine(GetOptions.GET_ALL), null, null, false);
 
         return tfsGetOperations;
     }

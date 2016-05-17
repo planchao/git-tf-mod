@@ -32,9 +32,7 @@ import com.microsoft.gittf.core.util.Check;
  * {@link ArgumentOptions#VALUE_REQUIRED}).
  * 
  */
-public class ValueArgument
-    extends NamedArgument
-{
+public class ValueArgument extends NamedArgument {
     private final String valueDescription;
 
     private String value;
@@ -43,8 +41,7 @@ public class ValueArgument
      * @equivalence ValueArgument(name, (char) 0, valueDescription, helpText,
      *              ArgumentOptions.NONE)
      */
-    public ValueArgument(String name, String valueDescription, String helpText)
-    {
+    public ValueArgument(String name, String valueDescription, String helpText) {
         this(name, (char) 0, valueDescription, helpText, ArgumentOptions.NONE);
     }
 
@@ -52,8 +49,7 @@ public class ValueArgument
      * @equivalence ValueArgument(name, (char) 0, valueDescription, helpText,
      *              options)
      */
-    public ValueArgument(String name, String valueDescription, String helpText, ArgumentOptions options)
-    {
+    public ValueArgument(String name, String valueDescription, String helpText, ArgumentOptions options) {
         this(name, (char) 0, valueDescription, helpText, options);
     }
 
@@ -61,8 +57,7 @@ public class ValueArgument
      * @equivalence ValueArgument(name, alias, valueDescription, helpText,
      *              ArgumentOptions.NONE)
      */
-    public ValueArgument(String name, char alias, String valueDescription, String helpText)
-    {
+    public ValueArgument(String name, char alias, String valueDescription, String helpText) {
         this(name, alias, valueDescription, helpText, ArgumentOptions.NONE);
     }
 
@@ -85,8 +80,7 @@ public class ValueArgument
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public ValueArgument(String name, char alias, String valueDescription, String helpText, ArgumentOptions options)
-    {
+    public ValueArgument(String name, char alias, String valueDescription, String helpText, ArgumentOptions options) {
         super(name, alias, helpText, options);
 
         Check.notNullOrEmpty(valueDescription, "valueDescription"); //$NON-NLS-1$
@@ -94,8 +88,7 @@ public class ValueArgument
         this.valueDescription = valueDescription;
     }
 
-    private ValueArgument(ValueArgument other)
-    {
+    private ValueArgument(ValueArgument other) {
         super(other);
 
         Check.notNull(other, "other"); //$NON-NLS-1$
@@ -110,8 +103,7 @@ public class ValueArgument
      * 
      * @return The help text description (never <code>null</code>).
      */
-    public String getValueDescription()
-    {
+    public String getValueDescription() {
         return valueDescription;
     }
 
@@ -122,8 +114,7 @@ public class ValueArgument
      *        The value provided to this argument or <code>null</code> if it was
      *        not provided.
      */
-    public void setValue(String value)
-    {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -134,20 +125,17 @@ public class ValueArgument
      *        The value provided to this argument or <code>null</code> if it was
      *        not provided.
      */
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         return new ValueArgument(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + valueDescription.hashCode();
         hashCode = 31 * hashCode + ((value == null) ? 0 : value.hashCode());
@@ -155,32 +143,26 @@ public class ValueArgument
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof ValueArgument))
-        {
+        if (!(o instanceof ValueArgument)) {
             return false;
         }
 
-        if (!super.equals(o))
-        {
+        if (!super.equals(o)) {
             return false;
         }
 
         ValueArgument other = (ValueArgument) o;
 
-        if (!valueDescription.equals(other.valueDescription.hashCode()))
-        {
+        if (!valueDescription.equals(other.valueDescription.hashCode())) {
             return false;
         }
 
-        if ((value == null && other.value != null) || (value != null && !value.equals(other)))
-        {
+        if ((value == null && other.value != null) || (value != null && !value.equals(other))) {
             return false;
         }
 

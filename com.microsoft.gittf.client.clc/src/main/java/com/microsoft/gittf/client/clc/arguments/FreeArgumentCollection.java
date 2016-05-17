@@ -35,16 +35,13 @@ import com.microsoft.gittf.core.util.Check;
  * "one" and "two" are a collection of free arguments.
  * 
  */
-public class FreeArgumentCollection
-    extends Argument
-{
+public class FreeArgumentCollection extends Argument {
     private final List<String> values = new ArrayList<String>();
 
     /**
      * @equivalence FreeArgumentCollection(name, helpText, ArgumentOptions.NONE)
      */
-    public FreeArgumentCollection(String name, String helpText)
-    {
+    public FreeArgumentCollection(String name, String helpText) {
         this(name, helpText, ArgumentOptions.NONE);
     }
 
@@ -60,19 +57,16 @@ public class FreeArgumentCollection
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public FreeArgumentCollection(String name, String helpText, ArgumentOptions options)
-    {
+    public FreeArgumentCollection(String name, String helpText, ArgumentOptions options) {
         super(name, helpText, options);
     }
 
-    private FreeArgumentCollection(FreeArgumentCollection other)
-    {
+    private FreeArgumentCollection(FreeArgumentCollection other) {
         super(other);
 
         Check.notNull(other, "other"); //$NON-NLS-1$
 
-        for (String value : other.values)
-        {
+        for (String value : other.values) {
             values.add(value);
         }
     }
@@ -81,10 +75,9 @@ public class FreeArgumentCollection
      * Adds a value for this argument
      * 
      * @param value
-     *        The value given to this argument. May not be <code>null</code>.
+     *        The value given to this argument. May not be <code>null</code> .
      */
-    public void addValue(String value)
-    {
+    public void addValue(String value) {
         Check.notNull(value, "value"); //$NON-NLS-1$
 
         values.add(value);
@@ -97,42 +90,35 @@ public class FreeArgumentCollection
      *        An array of values provided to this argument (never
      *        <code>null</code>)
      */
-    public String[] getValues()
-    {
+    public String[] getValues() {
         return values.toArray(new String[values.size()]);
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         return new FreeArgumentCollection(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + values.hashCode();
         return hashCode;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof FreeArgumentCollection))
-        {
+        if (!(o instanceof FreeArgumentCollection)) {
             return false;
         }
 
         FreeArgumentCollection other = (FreeArgumentCollection) o;
 
-        if (!values.equals(other.values))
-        {
+        if (!values.equals(other.values)) {
             return false;
         }
 

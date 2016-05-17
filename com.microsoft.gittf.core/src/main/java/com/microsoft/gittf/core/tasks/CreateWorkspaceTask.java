@@ -53,9 +53,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
 import com.microsoft.tfs.util.FileHelpers;
 import com.microsoft.tfs.util.GUID;
 
-public class CreateWorkspaceTask
-    extends Task
-{
+public class CreateWorkspaceTask extends Task {
     private final static Log log = LogFactory.getLog(CreateWorkspaceTask.class);
 
     private final VersionControlClient versionControlClient;
@@ -72,8 +70,7 @@ public class CreateWorkspaceTask
     public CreateWorkspaceTask(
         final VersionControlClient versionControlClient,
         final String serverPath,
-        final Repository repository)
-    {
+        final Repository repository) {
         Check.notNull(versionControlClient, "versionControlClient"); //$NON-NLS-1$
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNullOrEmpty(serverPath, "serverPath"); //$NON-NLS-1$
@@ -83,126 +80,109 @@ public class CreateWorkspaceTask
         this.serverPath = serverPath;
     }
 
-    public boolean getPreview()
-    {
+    public boolean getPreview() {
         return preview;
     }
 
-    public void setPreview(boolean preview)
-    {
+    public void setPreview(boolean preview) {
         this.preview = preview;
     }
 
-    public void setVersionSpec(VersionSpec versionSpec)
-    {
+    public void setVersionSpec(VersionSpec versionSpec) {
         localVersionSpec = versionSpec;
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
-        final String workspaceName =
-            MessageFormat.format("{0}-{1}", GitTFConstants.GIT_TF_NAME, GUID.newGUID().getGUIDString()); //$NON-NLS-1$
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
+        final String workspaceName = MessageFormat.format(
+            "{0}-{1}", //$NON-NLS-1$
+            GitTFConstants.GIT_TF_NAME,
+            GUID.newGUID().getGUIDString());
 
         File tempFolder = null;
         Workspace tempWorkspace = null;
         boolean cleanup = false;
 
-        progressMonitor.beginTask(Messages.getString("CreateWorkspaceTask.CreatingWorkspace"), //$NON-NLS-1$
+        progressMonitor.beginTask(
+            Messages.getString("CreateWorkspaceTask.CreatingWorkspace"), //$NON-NLS-1$
             TaskProgressMonitor.INDETERMINATE,
             TaskProgressDisplay.DISPLAY_PROGRESS);
 
-        try
-        {
-            if (!ServerPath.isServerPath(serverPath))
-            {
-                return new TaskStatus(TaskStatus.ERROR, Messages.formatString(
-                    "CreateWorkspaceTask.TFSPathNotValidFormat", //$NON-NLS-1$
-                    serverPath));
+        try {
+            if (!ServerPath.isServerPath(serverPath)) {
+                return new TaskStatus(
+                    TaskStatus.ERROR,
+                    Messages.formatString(
+                        "CreateWorkspaceTask.TFSPathNotValidFormat", //$NON-NLS-1$
+                        serverPath));
             }
 
             tempFolder = DirectoryUtil.getTempDir(repository);
 
-            if (!tempFolder.mkdirs())
-            {
-                return new TaskStatus(TaskStatus.ERROR, Messages.formatString(
-                    "CreateWorkspaceTask.CouldNotCreateTempDirFormat", //$NON-NLS-1$
-                    workingFolder.getAbsolutePath()));
+            if (!tempFolder.mkdirs()) {
+                return new TaskStatus(
+                    TaskStatus.ERROR,
+                    Messages.formatString(
+                        "CreateWorkspaceTask.CouldNotCreateTempDirFormat", //$NON-NLS-1$
+                        workingFolder.getAbsolutePath()));
             }
 
-            if (!preview)
-            {
-                tempWorkspace = versionControlClient.createWorkspace(new WorkingFolder[]
-                {
+            if (!preview) {
+                tempWorkspace = versionControlClient.createWorkspace(
+                new WorkingFolder[] {
                     new WorkingFolder(serverPath, tempFolder.getAbsolutePath())
-                }, workspaceName, Messages.getString("CreateWorkspaceTask.WorkspaceComment"), //$NON-NLS-1$
+                },
+                    workspaceName,
+                    Messages.getString("CreateWorkspaceTask.WorkspaceComment"), //$NON-NLS-1$
                     WorkspaceLocation.SERVER,
                     WorkspaceOptions.NONE);
 
-                if (updateLocalVersion)
-                {
+                if (updateLocalVersion) {
                     UpdateLocalVersionTask updateLocalVersionTask = null;
-                    if (localVersionSpec != null)
-                    {
+                    if (localVersionSpec != null) {
                         updateLocalVersionTask =
                             new UpdateLocalVersionToSpecificVersionsTask(tempWorkspace, repository, localVersionSpec);
-                    }
-                    else
-                    {
+                    } else {
                         updateLocalVersionTask =
                             new UpdateLocalVersionToLatestBridgedChangesetTask(tempWorkspace, repository);
                     }
 
                     TaskStatus updateStatus =
-                        new TaskExecutor(progressMonitor.newSubTask(TaskProgressMonitor.INDETERMINATE)).execute(updateLocalVersionTask);
+                        new TaskExecutor(progressMonitor.newSubTask(TaskProgressMonitor.INDETERMINATE)).execute(
+                            updateLocalVersionTask);
 
-                    if (!updateStatus.isOK())
-                    {
+                    if (!updateStatus.isOK()) {
                         cleanup = true;
                         return updateStatus;
                     }
                 }
 
                 this.workspace = new TfsWorkspace(tempWorkspace);
-            }
-            else
-            {
+            } else {
                 this.workspace = new PreviewOnlyWorkspace(progressMonitor);
             }
 
             this.workingFolder = tempFolder;
 
             progressMonitor.endTask();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             cleanup = true;
             return new TaskStatus(TaskStatus.ERROR, e);
-        }
-        finally
-        {
-            if (cleanup && tempFolder != null)
-            {
-                try
-                {
+        } finally {
+            if (cleanup && tempFolder != null) {
+                try {
                     FileHelpers.deleteDirectory(tempFolder);
-                }
-                catch (Exception e)
-                {
-                    log.warn(
-                        MessageFormat.format("Could not clean up temporary folder {0}", tempFolder.getAbsolutePath()), //$NON-NLS-1$
-                        e);
+                } catch (Exception e) {
+                    log.warn(MessageFormat.format(
+                        "Could not clean up temporary folder {0}", //$NON-NLS-1$
+                        tempFolder.getAbsolutePath()), e);
                 }
             }
 
-            if (cleanup && tempWorkspace != null)
-            {
-                try
-                {
+            if (cleanup && tempWorkspace != null) {
+                try {
                     versionControlClient.deleteWorkspace(tempWorkspace);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     log.warn(MessageFormat.format("Could not clean up temporary workspace {0}", workspaceName), e); //$NON-NLS-1$
                 }
             }
@@ -211,13 +191,11 @@ public class CreateWorkspaceTask
         return TaskStatus.OK_STATUS;
     }
 
-    public WorkspaceService getWorkspace()
-    {
+    public WorkspaceService getWorkspace() {
         return workspace;
     }
 
-    public File getWorkingFolder()
-    {
+    public File getWorkingFolder() {
         return workingFolder;
     }
 }

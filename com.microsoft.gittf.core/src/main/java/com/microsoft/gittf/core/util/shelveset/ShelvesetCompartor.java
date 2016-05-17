@@ -33,9 +33,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
  * Compares two shelvesets based on the sort options specified
  * 
  */
-public class ShelvesetCompartor
-    implements Comparator<Shelveset>
-{
+public class ShelvesetCompartor implements Comparator<Shelveset> {
     private final ShelvesetSortOption sortOption;
 
     /**
@@ -43,17 +41,14 @@ public class ShelvesetCompartor
      * 
      * @param sortOption
      */
-    public ShelvesetCompartor(ShelvesetSortOption sortOption)
-    {
+    public ShelvesetCompartor(ShelvesetSortOption sortOption) {
         Check.notNull(sortOption, "sortOption"); //$NON-NLS-1$
 
         this.sortOption = sortOption;
     }
 
-    public int compare(Shelveset arg0, Shelveset arg1)
-    {
-        switch (sortOption)
-        {
+    public int compare(Shelveset arg0, Shelveset arg1) {
+        switch (sortOption) {
             case NAME:
                 return arg0.getName().compareToIgnoreCase(arg1.getName());
             case OWNER:

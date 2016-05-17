@@ -26,8 +26,7 @@ package com.microsoft.gittf.core.mock;
 
 import java.util.Calendar;
 
-public class MockChangesetProperties
-{
+public class MockChangesetProperties {
     private String ownerDisplayName;
     private String ownerName;
     private String committerDisplayName;
@@ -43,8 +42,7 @@ public class MockChangesetProperties
         String committerDisplayName,
         String committerName,
         String comment,
-        Calendar date)
-    {
+        Calendar date) {
         this.ownerDisplayName = ownerDisplayName;
         this.ownerName = ownerName;
         this.committerDisplayName = committerDisplayName;
@@ -55,63 +53,51 @@ public class MockChangesetProperties
         this.date = date;
     }
 
-    public String getownerDisplayName()
-    {
+    public String getownerDisplayName() {
         return ownerDisplayName;
     }
 
-    public void setownerDisplayName(String ownerDisplayName)
-    {
+    public void setownerDisplayName(String ownerDisplayName) {
         this.ownerDisplayName = ownerDisplayName;
     }
 
-    public String getownerName()
-    {
+    public String getownerName() {
         return ownerName;
     }
 
-    public void setownerName(String ownerName)
-    {
+    public void setownerName(String ownerName) {
         this.ownerName = ownerName;
     }
 
-    public String getcommitterDisplayName()
-    {
+    public String getcommitterDisplayName() {
         return committerDisplayName;
     }
 
-    public void setcommitterDisplayName(String committerDisplayName)
-    {
+    public void setcommitterDisplayName(String committerDisplayName) {
         this.committerDisplayName = committerDisplayName;
     }
 
-    public String getcommitterName()
-    {
+    public String getcommitterName() {
         return committerName;
     }
 
-    public void setcommitterName(String committerName)
-    {
+    public void setcommitterName(String committerName) {
         this.committerName = committerName;
     }
 
-    public String getComment()
-    {
+    public String getComment() {
         return comment;
     }
 
-    public void setComment(String comment)
-    {
+    public void setComment(String comment) {
         this.comment = comment;
     }
 
-    public Calendar getDate()
-    {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(Calendar date)
-    {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 }

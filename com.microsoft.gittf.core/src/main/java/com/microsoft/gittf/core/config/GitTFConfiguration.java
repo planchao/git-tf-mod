@@ -41,7 +41,7 @@ import com.microsoft.gittf.core.GitTFConstants;
 import com.microsoft.gittf.core.Messages;
 import com.microsoft.gittf.core.OutputConstants;
 import com.microsoft.gittf.core.util.Check;
-import com.microsoft.gittf.core.util.StringUtil;
+import com.microsoft.tfs.util.StringUtil;
 
 /**
  * Configuration data for the git-tf command, read from the .git/config file.
@@ -55,8 +55,7 @@ import com.microsoft.gittf.core.util.StringUtil;
  * 
  * @threadsafety unknown
  */
-public class GitTFConfiguration
-{
+public class GitTFConfiguration {
     private static final Log log = LogFactory.getLog(GitTFConfiguration.class);
 
     /* Server section parameters */
@@ -115,8 +114,7 @@ public class GitTFConfiguration
         final String tempDirectory,
         final boolean keepAuthor,
         final String userMap,
-        final Map<String, Boolean> locallyDefinedNames)
-    {
+        final Map<String, Boolean> locallyDefinedNames) {
         Check.notNull(serverURI, "serverURI"); //$NON-NLS-1$
         Check.notNullOrEmpty(tfsPath, "tfsPath"); //$NON-NLS-1$
         Check.notNull(locallyDefinedNames, "definedNames"); //$NON-NLS-1$
@@ -146,8 +144,7 @@ public class GitTFConfiguration
      *        The server path that will be bridged to the git repository (must
      *        not be <code>null</code>)
      */
-    public GitTFConfiguration(final URI serverURI, final String tfsPath)
-    {
+    public GitTFConfiguration(final URI serverURI, final String tfsPath) {
         Check.notNull(serverURI, "serverURI"); //$NON-NLS-1$
         Check.notNullOrEmpty(tfsPath, "tfsPath"); //$NON-NLS-1$
 
@@ -162,8 +159,7 @@ public class GitTFConfiguration
     /**
      * @return The URI of the TFS server (never <code>null</code>)
      */
-    public URI getServerURI()
-    {
+    public URI getServerURI() {
         return serverURI;
     }
 
@@ -171,8 +167,7 @@ public class GitTFConfiguration
      * @return The server path bridged to the git repository (never
      *         <code>null</code>)
      */
-    public String getServerPath()
-    {
+    public String getServerPath() {
         return tfsPath;
     }
 
@@ -185,13 +180,11 @@ public class GitTFConfiguration
      * @return The username to connect to TFS as, or <code>null</code> if none
      *         has been saved
      */
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
-    public static String getUsername(final Repository repository)
-    {
+    public static String getUsername(final Repository repository) {
         /*
          * The repository could be not initialized yet, in this case we'll get
          * the value (if any) from a global config file
@@ -210,13 +203,11 @@ public class GitTFConfiguration
      * @return The password to connect to TFS with, or <code>null</code> if none
      *         has been saved
      */
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
-    public static String getPassword(final Repository repository)
-    {
+    public static String getPassword(final Repository repository) {
         /*
          * The repository could be not initialized yet, in this case we'll get
          * the value (if any) from a global config file
@@ -240,13 +231,11 @@ public class GitTFConfiguration
      * 
      * @return the default depth
      */
-    public boolean getDeep()
-    {
+    public boolean getDeep() {
         return deep;
     }
 
-    public boolean getTag()
-    {
+    public boolean getTag() {
         return tag;
     }
 
@@ -260,18 +249,15 @@ public class GitTFConfiguration
      * 
      * @return the default setting for including metadata on changesets
      */
-    public boolean getIncludeMetaData()
-    {
+    public boolean getIncludeMetaData() {
         return includeMetaData;
     }
 
-    public int getFileFormatVersion()
-    {
+    public int getFileFormatVersion() {
         return fileFormatVersion;
     }
 
-    public String getBuildDefinition()
-    {
+    public String getBuildDefinition() {
         return buildDefinition;
     }
 
@@ -283,18 +269,15 @@ public class GitTFConfiguration
      * @return The temp directory to use for staging changes, or
      *         <code>null</code> to use the default
      */
-    public String getTempDirectory()
-    {
+    public String getTempDirectory() {
         return tempDirectory;
     }
 
-    public boolean getKeepAuthor()
-    {
+    public boolean getKeepAuthor() {
         return keepAuthor;
     }
 
-    public String getUserMap()
-    {
+    public String getUserMap() {
         return userMap;
     }
 
@@ -302,62 +285,52 @@ public class GitTFConfiguration
      * Configuration field setters. Each setter keeps track that the field has
      * changed along with changig the fields value
      */
-    public void setUsername(final String username)
-    {
+    public void setUsername(final String username) {
         this.username = username;
         locallyDefinedNames.put(ConfigurationConstants.USERNAME, true);
     }
 
-    public void setPassword(final String password)
-    {
+    public void setPassword(final String password) {
         this.password = password;
         locallyDefinedNames.put(ConfigurationConstants.PASSWORD, true);
     }
 
-    public void setDeep(final boolean deep)
-    {
+    public void setDeep(final boolean deep) {
         this.deep = deep;
         locallyDefinedNames.put(ConfigurationConstants.DEPTH, true);
     }
 
-    public void setTag(final boolean tag)
-    {
+    public void setTag(final boolean tag) {
         this.tag = tag;
         locallyDefinedNames.put(ConfigurationConstants.TAG, true);
     }
 
-    public void setIncludeMetaData(final boolean includeMetaData)
-    {
+    public void setIncludeMetaData(final boolean includeMetaData) {
         this.includeMetaData = includeMetaData;
         locallyDefinedNames.put(ConfigurationConstants.INCLUDE_METADATA, true);
     }
 
-    public void setFileFormatVersion(final int fileFormatVersion)
-    {
+    public void setFileFormatVersion(final int fileFormatVersion) {
         this.fileFormatVersion = fileFormatVersion;
         locallyDefinedNames.put(ConfigurationConstants.FILE_FORMAT_VERSION, true);
     }
 
-    public void setBuildDefinition(final String buildDefinition)
-    {
+    public void setBuildDefinition(final String buildDefinition) {
         this.buildDefinition = buildDefinition;
         locallyDefinedNames.put(ConfigurationConstants.GATED_BUILD_DEFINITION, true);
     }
 
-    public void setTempDirectory(final String tempDirectory)
-    {
+    public void setTempDirectory(final String tempDirectory) {
         this.tempDirectory = tempDirectory;
         locallyDefinedNames.put(ConfigurationConstants.TEMP_DIRECTORY, true);
     }
 
-    public void setKeepAuthor(final boolean keepAuthor)
-    {
+    public void setKeepAuthor(final boolean keepAuthor) {
         this.keepAuthor = keepAuthor;
         locallyDefinedNames.put(ConfigurationConstants.KEEP_AUTHOR, true);
     }
 
-    public void setUserMap(final String userMap)
-    {
+    public void setUserMap(final String userMap) {
         this.userMap = userMap;
         locallyDefinedNames.put(ConfigurationConstants.USER_MAP, true);
     }
@@ -373,8 +346,7 @@ public class GitTFConfiguration
      * @return <code>true</code> if the named parameter has been or has to be
      *         explicitly specified in the local config file
      */
-    private boolean isLocallyDefined(final String name)
-    {
+    private boolean isLocallyDefined(final String name) {
         Check.notNull(name, "name"); //$NON-NLS-1$
         return locallyDefinedNames.containsKey(name);
     }
@@ -387,8 +359,7 @@ public class GitTFConfiguration
      *        <code>null</code>)
      * @return <code>true</code> if the configuration was saved successfully
      */
-    public boolean saveTo(final Repository repository)
-    {
+    public boolean saveTo(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
         repository.getConfig().setString(
@@ -403,8 +374,7 @@ public class GitTFConfiguration
             ConfigurationConstants.SERVER_PATH,
             tfsPath);
 
-        if (isLocallyDefined(ConfigurationConstants.DEPTH))
-        {
+        if (isLocallyDefined(ConfigurationConstants.DEPTH)) {
             repository.getConfig().setInt(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -412,8 +382,7 @@ public class GitTFConfiguration
                 deep ? Integer.MAX_VALUE : 1);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.FILE_FORMAT_VERSION))
-        {
+        if (isLocallyDefined(ConfigurationConstants.FILE_FORMAT_VERSION)) {
             repository.getConfig().setInt(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -421,8 +390,7 @@ public class GitTFConfiguration
                 GitTFConstants.GIT_TF_CURRENT_FORMAT_VERSION);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.TAG))
-        {
+        if (isLocallyDefined(ConfigurationConstants.TAG)) {
             repository.getConfig().setBoolean(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -430,8 +398,7 @@ public class GitTFConfiguration
                 tag);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.INCLUDE_METADATA))
-        {
+        if (isLocallyDefined(ConfigurationConstants.INCLUDE_METADATA)) {
             repository.getConfig().setBoolean(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -439,8 +406,7 @@ public class GitTFConfiguration
                 includeMetaData);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.KEEP_AUTHOR))
-        {
+        if (isLocallyDefined(ConfigurationConstants.KEEP_AUTHOR)) {
             repository.getConfig().setBoolean(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -448,18 +414,14 @@ public class GitTFConfiguration
                 keepAuthor);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.USER_MAP))
-        {
-            if (!StringUtil.isNullOrEmpty(userMap))
-            {
+        if (isLocallyDefined(ConfigurationConstants.USER_MAP)) {
+            if (!StringUtil.isNullOrEmpty(userMap)) {
                 repository.getConfig().setString(
                     ConfigurationConstants.CONFIGURATION_SECTION,
                     ConfigurationConstants.GENERAL_SUBSECTION,
                     ConfigurationConstants.USER_MAP,
                     userMap);
-            }
-            else
-            {
+            } else {
                 repository.getConfig().unset(
                     ConfigurationConstants.CONFIGURATION_SECTION,
                     ConfigurationConstants.GENERAL_SUBSECTION,
@@ -468,8 +430,7 @@ public class GitTFConfiguration
         }
 
         if (isLocallyDefined(ConfigurationConstants.GATED_BUILD_DEFINITION)
-            && !StringUtil.isNullOrEmpty(buildDefinition))
-        {
+            && !StringUtil.isNullOrEmpty(buildDefinition)) {
             repository.getConfig().setString(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.SERVER_SUBSECTION,
@@ -477,8 +438,7 @@ public class GitTFConfiguration
                 buildDefinition);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.USERNAME))
-        {
+        if (isLocallyDefined(ConfigurationConstants.USERNAME)) {
             repository.getConfig().setString(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.SERVER_SUBSECTION,
@@ -486,8 +446,7 @@ public class GitTFConfiguration
                 username);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.PASSWORD))
-        {
+        if (isLocallyDefined(ConfigurationConstants.PASSWORD)) {
             repository.getConfig().setString(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.SERVER_SUBSECTION,
@@ -495,8 +454,7 @@ public class GitTFConfiguration
                 password);
         }
 
-        if (isLocallyDefined(ConfigurationConstants.TEMP_DIRECTORY) && !StringUtil.isNullOrEmpty(tempDirectory))
-        {
+        if (isLocallyDefined(ConfigurationConstants.TEMP_DIRECTORY) && !StringUtil.isNullOrEmpty(tempDirectory)) {
             repository.getConfig().setString(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.GENERAL_SUBSECTION,
@@ -510,12 +468,9 @@ public class GitTFConfiguration
             ConfigConstants.CONFIG_KEY_AUTOCRLF,
             AutoCRLF.FALSE);
 
-        try
-        {
+        try {
             repository.getConfig().save();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             log.error("Could not save server configuration to repository", e); //$NON-NLS-1$
             return false;
         }
@@ -524,44 +479,45 @@ public class GitTFConfiguration
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder result = new StringBuilder();
 
-        result.append(Messages.formatString("GitTFConfiguration.ToString.ServerURIFormat", this.serverURI) + OutputConstants.NEW_LINE); //$NON-NLS-1$
-        result.append(Messages.formatString("GitTFConfiguration.ToString.TfsPathFormat", this.tfsPath) + OutputConstants.NEW_LINE); //$NON-NLS-1$
+        result.append(Messages.formatString("GitTFConfiguration.ToString.ServerURIFormat", this.serverURI) //$NON-NLS-1$
+            + OutputConstants.NEW_LINE);
+        result.append(Messages.formatString("GitTFConfiguration.ToString.TfsPathFormat", this.tfsPath) //$NON-NLS-1$
+            + OutputConstants.NEW_LINE);
 
-        if (!StringUtil.isNullOrEmpty(buildDefinition))
-        {
-            result.append(Messages.formatString("GitTFConfiguration.ToString.GatedBuildFormat", this.buildDefinition) + OutputConstants.NEW_LINE); //$NON-NLS-1$
+        if (!StringUtil.isNullOrEmpty(buildDefinition)) {
+            result.append(Messages.formatString("GitTFConfiguration.ToString.GatedBuildFormat", this.buildDefinition) //$NON-NLS-1$
+                + OutputConstants.NEW_LINE);
         }
 
-        if (!StringUtil.isNullOrEmpty(tempDirectory))
-        {
-            result.append(Messages.formatString("GitTFConfiguration.ToString.TempDirectoryFormat", this.tempDirectory) + OutputConstants.NEW_LINE); //$NON-NLS-1$
+        if (!StringUtil.isNullOrEmpty(tempDirectory)) {
+            result.append(Messages.formatString("GitTFConfiguration.ToString.TempDirectoryFormat", this.tempDirectory) //$NON-NLS-1$
+                + OutputConstants.NEW_LINE);
         }
 
-        result.append(Messages.formatString("GitTFConfiguration.ToString.DepthFormat", getDepthString()) + OutputConstants.NEW_LINE); //$NON-NLS-1$
-        result.append(Messages.formatString("GitTFConfiguration.ToString.TagFormat", this.tag) + OutputConstants.NEW_LINE); //$NON-NLS-1$
-        result.append(Messages.formatString("GitTFConfiguration.ToString.IncludeMetaDataFormat", this.includeMetaData) + OutputConstants.NEW_LINE); //$NON-NLS-1$
-        result.append(Messages.formatString("GitTFConfiguration.KeepAuthorFormat", this.keepAuthor) + OutputConstants.NEW_LINE); //$NON-NLS-1$
-        if (!StringUtil.isNullOrEmpty(userMap))
-        {
-            result.append(Messages.formatString("GitTFConfiguration.UserMapFormat", this.userMap) + OutputConstants.NEW_LINE); //$NON-NLS-1$
+        result.append(Messages.formatString("GitTFConfiguration.ToString.DepthFormat", getDepthString()) //$NON-NLS-1$
+            + OutputConstants.NEW_LINE);
+        result.append(
+            Messages.formatString("GitTFConfiguration.ToString.TagFormat", this.tag) + OutputConstants.NEW_LINE); //$NON-NLS-1$
+        result.append(Messages.formatString("GitTFConfiguration.ToString.IncludeMetaDataFormat", this.includeMetaData) //$NON-NLS-1$
+            + OutputConstants.NEW_LINE);
+        result.append(Messages.formatString("GitTFConfiguration.KeepAuthorFormat", this.keepAuthor) //$NON-NLS-1$
+            + OutputConstants.NEW_LINE);
+        if (!StringUtil.isNullOrEmpty(userMap)) {
+            result.append(
+                Messages.formatString("GitTFConfiguration.UserMapFormat", this.userMap) + OutputConstants.NEW_LINE); //$NON-NLS-1$
 
         }
 
         return result.toString();
     }
 
-    private String getDepthString()
-    {
-        if (getDeep())
-        {
+    private String getDepthString() {
+        if (getDeep()) {
             return Messages.getString("GitTFConfiguration.Deep"); //$NON-NLS-1$
-        }
-        else
-        {
+        } else {
             return Messages.getString("GitTFConfiguration.Shallow"); //$NON-NLS-1$
         }
     }
@@ -575,124 +531,104 @@ public class GitTFConfiguration
      * @return A new {@link GitTFConfiguration}, or <code>null</code> if the git
      *         repository does not contain a valid git-tf configuration
      */
-    public static GitTFConfiguration loadFrom(final Repository repository)
-    {
+    public static GitTFConfiguration loadFrom(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
-        final String projectCollection =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.SERVER_SUBSECTION,
-                ConfigurationConstants.SERVER_COLLECTION_URI);
+        final String projectCollection = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.SERVER_SUBSECTION,
+            ConfigurationConstants.SERVER_COLLECTION_URI);
 
-        final String tfsPath =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.SERVER_SUBSECTION,
-                ConfigurationConstants.SERVER_PATH);
+        final String tfsPath = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.SERVER_SUBSECTION,
+            ConfigurationConstants.SERVER_PATH);
 
-        final String username =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.SERVER_SUBSECTION,
-                ConfigurationConstants.USERNAME);
+        final String username = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.SERVER_SUBSECTION,
+            ConfigurationConstants.USERNAME);
 
-        final String password =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.SERVER_SUBSECTION,
-                ConfigurationConstants.PASSWORD);
+        final String password = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.SERVER_SUBSECTION,
+            ConfigurationConstants.PASSWORD);
 
-        final int depth =
-            repository.getConfig().getInt(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.DEPTH,
-                GitTFConstants.GIT_TF_SHALLOW_DEPTH);
+        final int depth = repository.getConfig().getInt(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.DEPTH,
+            GitTFConstants.GIT_TF_SHALLOW_DEPTH);
 
-        final boolean tag =
-            repository.getConfig().getBoolean(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.TAG,
-                true);
+        final boolean tag = repository.getConfig().getBoolean(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.TAG,
+            true);
 
-        final boolean includeMetaData =
-            repository.getConfig().getBoolean(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.INCLUDE_METADATA,
-                GitTFConstants.GIT_TF_DEFAULT_INCLUDE_METADATA);
+        final boolean includeMetaData = repository.getConfig().getBoolean(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.INCLUDE_METADATA,
+            GitTFConstants.GIT_TF_DEFAULT_INCLUDE_METADATA);
 
-        final int fileFormatVersion =
-            repository.getConfig().getInt(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.FILE_FORMAT_VERSION,
-                0);
+        final int fileFormatVersion = repository.getConfig().getInt(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.FILE_FORMAT_VERSION,
+            0);
 
-        final String buildDefinition =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.SERVER_SUBSECTION,
-                ConfigurationConstants.GATED_BUILD_DEFINITION);
+        final String buildDefinition = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.SERVER_SUBSECTION,
+            ConfigurationConstants.GATED_BUILD_DEFINITION);
 
-        final String tempDirectory =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.TEMP_DIRECTORY);
+        final String tempDirectory = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.TEMP_DIRECTORY);
 
-        final boolean keepAuthor =
-            repository.getConfig().getBoolean(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.KEEP_AUTHOR,
-                GitTFConstants.GIT_TF_DEFAULT_KEEP_AUTHOR);
+        final boolean keepAuthor = repository.getConfig().getBoolean(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.KEEP_AUTHOR,
+            GitTFConstants.GIT_TF_DEFAULT_KEEP_AUTHOR);
 
-        final String userMap =
-            repository.getConfig().getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.GENERAL_SUBSECTION,
-                ConfigurationConstants.USER_MAP);
+        final String userMap = repository.getConfig().getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.USER_MAP);
 
-        if (projectCollection == null)
-        {
+        if (projectCollection == null) {
             log.error("No project collection configuration in repository"); //$NON-NLS-1$
             return null;
         }
 
-        if (tfsPath == null)
-        {
+        if (tfsPath == null) {
             log.error("No TFS server path configuration in repository"); //$NON-NLS-1$
             return null;
         }
 
         URI serverURI;
 
-        try
-        {
+        try {
             serverURI = new URI(projectCollection);
-        }
-        catch (URISyntaxException e)
-        {
+        } catch (URISyntaxException e) {
             log.error("TFS project collection URI is malformed", e); //$NON-NLS-1$
             return null;
         }
 
-        final String[] sectionNames = new String[]
-        {
-            ConfigurationConstants.GENERAL_SUBSECTION, ConfigurationConstants.SERVER_SUBSECTION
+        final String[] sectionNames = new String[] {
+            ConfigurationConstants.GENERAL_SUBSECTION,
+            ConfigurationConstants.SERVER_SUBSECTION
         };
         final Map<String, Boolean> isDefined = new HashMap<String, Boolean>();
 
-        for (final String sectionName : sectionNames)
-        {
+        for (final String sectionName : sectionNames) {
             final Set<String> definedNames =
                 repository.getConfig().getNames(ConfigurationConstants.CONFIGURATION_SECTION, sectionName);
 
-            for (final String name : definedNames)
-            {
+            for (final String name : definedNames) {
                 isDefined.put(name, true);
             }
         }
@@ -720,8 +656,7 @@ public class GitTFConfiguration
      *        The {@link Repository} to remove configuration from (must not be
      *        <code>null</code>)
      */
-    public static void removeFrom(final Repository repository)
-    {
+    public static void removeFrom(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
         repository.getConfig().unsetSection(

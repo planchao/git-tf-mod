@@ -44,15 +44,12 @@ import com.microsoft.gittf.core.tasks.framework.TaskProgressMonitor;
  * 
  * @threadsafety unknown
  */
-public class CommandTaskExecutor
-    extends TaskExecutor
-{
+public class CommandTaskExecutor extends TaskExecutor {
     public static final ConsoleOutputTaskHandler CONSOLE_OUTPUT_TASK_HANDLER = new ConsoleOutputTaskHandler();
 
     public static final LoggingTaskHandler LOGGING_TASK_HANDLER = new LoggingTaskHandler();
 
-    public CommandTaskExecutor(final TaskProgressMonitor progressMonitor)
-    {
+    public CommandTaskExecutor(final TaskProgressMonitor progressMonitor) {
         super(progressMonitor);
 
         addTaskStartedHandler(LOGGING_TASK_HANDLER);

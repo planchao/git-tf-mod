@@ -28,7 +28,6 @@ package com.microsoft.gittf.core.tasks.framework;
  * An event handler called after a task is completed by the TaskExecutor
  * 
  */
-public interface TaskCompletedHandler
-{
+public interface TaskCompletedHandler {
     void onTaskCompleted(final Task task, final TaskStatus status);
 }

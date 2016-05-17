@@ -43,9 +43,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
  * specified version of the file, without having to download all the files from
  * the server
  */
-public class UpdateLocalVersionToSpecificVersionsTask
-    extends UpdateLocalVersionTask
-{
+public class UpdateLocalVersionToSpecificVersionsTask extends UpdateLocalVersionTask {
     private final VersionSpec versionSpec;
     private final Repository repository;
 
@@ -64,8 +62,7 @@ public class UpdateLocalVersionToSpecificVersionsTask
     public UpdateLocalVersionToSpecificVersionsTask(
         final Workspace workspace,
         final Repository repository,
-        final VersionSpec versionSpec)
-    {
+        final VersionSpec versionSpec) {
         super(workspace);
 
         Check.notNull(repository, "repository"); //$NON-NLS-1$
@@ -76,10 +73,8 @@ public class UpdateLocalVersionToSpecificVersionsTask
     }
 
     @Override
-    protected GetOperation[][] getGetOperations()
-    {
-        if (tfsGetOperations == null)
-        {
+    protected GetOperation[][] getGetOperations() {
+        if (tfsGetOperations == null) {
             tfsGetOperations = getVersionSpecGetOps();
         }
 
@@ -91,27 +86,19 @@ public class UpdateLocalVersionToSpecificVersionsTask
      * 
      * @return
      */
-    private GetOperation[][] getVersionSpecGetOps()
-    {
+    private GetOperation[][] getVersionSpecGetOps() {
         GitTFConfiguration configuration = GitTFConfiguration.loadFrom(repository);
 
         /*
          * Use the web service layer to find out the getOps needed to update
          * this workspace with local version information
          */
-        GetOperation[][] tfsGetOperations =
-            workspace.getClient().getWebServiceLayer().get(
-                workspace.getName(),
-                workspace.getOwnerName(),
-                new GetRequest[]
-                {
-                    new GetRequest(new ItemSpec(configuration.getServerPath(), RecursionType.FULL), versionSpec)
-                },
-                0,
-                GetOptions.NO_DISK_UPDATE.combine(GetOptions.GET_ALL),
-                null,
-                null,
-                false);
+        GetOperation[][] tfsGetOperations = workspace.getClient().getWebServiceLayer().get(
+            workspace.getName(),
+            workspace.getOwnerName(),
+            new GetRequest[] {
+                new GetRequest(new ItemSpec(configuration.getServerPath(), RecursionType.FULL), versionSpec)
+            }, 0, GetOptions.NO_DISK_UPDATE.combine(GetOptions.GET_ALL), null, null, false);
 
         return tfsGetOperations;
     }

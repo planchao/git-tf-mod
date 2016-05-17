@@ -41,8 +41,7 @@ import com.microsoft.gittf.core.GitTFConstants;
 import com.microsoft.gittf.core.Messages;
 import com.microsoft.gittf.core.config.GitTFConfiguration;
 
-public final class TagUtil
-{
+public final class TagUtil {
     private static final Log log = LogFactory.getLog(TagUtil.class);
 
     /**
@@ -56,19 +55,19 @@ public final class TagUtil
      *        the changeset id
      * @return
      */
-    public static boolean createTFSChangesetTag(final Repository repository, ObjectId commitID, int changesetID)
-    {
+    public static boolean createTFSChangesetTag(final Repository repository, ObjectId commitID, int changesetID) {
         GitTFConfiguration configuration = GitTFConfiguration.loadFrom(repository);
 
-        if (!configuration.getTag())
-        {
+        if (!configuration.getTag()) {
             return false;
         }
 
-        String tagName = Messages.formatString("CreateCommitTask.TagNameFormat", //$NON-NLS-1$
+        String tagName = Messages.formatString(
+            "CreateCommitTask.TagNameFormat", //$NON-NLS-1$
             Integer.toString(changesetID));
 
-        PersonIdent tagOwner = new PersonIdent(GitTFConstants.GIT_TF_NAME, MessageFormat.format("{0} - {1}", //$NON-NLS-1$
+        PersonIdent tagOwner = new PersonIdent(GitTFConstants.GIT_TF_NAME, MessageFormat.format(
+            "{0} - {1}", //$NON-NLS-1$
             configuration.getServerURI().toString(),
             configuration.getServerPath()));
 
@@ -88,16 +87,22 @@ public final class TagUtil
      *        the tag owner
      * @return
      */
-    public static boolean createTag(final Repository repository, ObjectId commitID, String tagName, PersonIdent tagOwner)
-    {
+    public static boolean createTag(
+        final Repository repository,
+        ObjectId commitID,
+        String tagName,
+        PersonIdent tagOwner) {
         final RevWalk walker = new RevWalk(repository);
-        try
-        {
+        try {
             /* Look up the object to tag */
             RevObject objectToTag = walker.lookupCommit(commitID);
 
             /* Create a tag command */
-            TagCommand tagCommand = new Git(repository).tag();
+            TagCommand tagCommand;
+            try (Git git = new Git(repository)) {
+                tagCommand = git.tag();
+            }
+
             tagCommand.setName(tagName);
             tagCommand.setObjectId(objectToTag);
             tagCommand.setForceUpdate(true);
@@ -106,29 +111,23 @@ public final class TagUtil
             /* Call the tag command */
             Ref tagRef = tagCommand.call();
 
-            if (tagRef == null || tagRef == ObjectId.zeroId())
-            {
+            if (tagRef == null || tagRef == ObjectId.zeroId()) {
                 log.warn("Failed to tag commit."); //$NON-NLS-1$
 
                 return false;
             }
 
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             // this is not a critical failure so we can still continue with the
             // operation even if tagging failed.
 
             log.error(e);
 
             return false;
-        }
-        finally
-        {
-            if (walker != null)
-            {
-                walker.release();
+        } finally {
+            if (walker != null) {
+                walker.close();
             }
         }
     }

@@ -36,14 +36,11 @@ import com.microsoft.gittf.client.tfs.TestEnvironmentConstants;
  * @author jpresto
  * 
  */
-public class GitTfCommand
-    extends CommandBase
-{
+public class GitTfCommand extends CommandBase {
     private String workingFolder = null;
     private String args = null;
 
-    public GitTfCommand(String programArgs)
-    {
+    public GitTfCommand(String programArgs) {
         args = programArgs;
 
         addEnvironmentVariable(
@@ -55,41 +52,33 @@ public class GitTfCommand
     }
 
     @Override
-    public String getExeFullPath()
-    {
+    public String getExeFullPath() {
         return TestEnvironment.getGitTfExeFullPath();
     }
 
     @Override
-    public String getExeFolder()
-    {
+    public String getExeFolder() {
         return TestEnvironment.getGitTfExeFolder();
     }
 
     // Run the command.
     @Override
-    public int runCommand()
-        throws IOException,
-            InterruptedException
-    {
+    public int runCommand() throws IOException, InterruptedException {
         return super.run();
     }
 
     @Override
-    public String getProcessArgs()
-    {
+    public String getProcessArgs() {
         return args;
     }
 
     @Override
-    public String getWorkingFolder()
-    {
+    public String getWorkingFolder() {
         return workingFolder;
     }
 
     @Override
-    public void getWorkingFolder(String folder)
-    {
+    public void getWorkingFolder(String folder) {
         workingFolder = folder;
     }
 }

@@ -28,8 +28,7 @@ package com.microsoft.gittf.client.clc;
  * Exit codes
  * 
  */
-public class ExitCode
-{
+public class ExitCode {
     /**
      * Success exit code
      */

@@ -50,10 +50,8 @@ import com.microsoft.gittf.core.GitTFConstants;
  * non-bare we only create a remote reference
  * 
  */
-public final class TfsBranchUtil
-{
-    private TfsBranchUtil()
-    {
+public final class TfsBranchUtil {
+    private TfsBranchUtil() {
     }
 
     /**
@@ -72,8 +70,7 @@ public final class TfsBranchUtil
             RefNotFoundException,
             InvalidRefNameException,
             GitAPIException,
-            IOException
-    {
+            IOException {
         create(repository, null);
     }
 
@@ -95,15 +92,15 @@ public final class TfsBranchUtil
             RefNotFoundException,
             InvalidRefNameException,
             GitAPIException,
-            IOException
-    {
-        if (repository.isBare())
-        {
-            CreateBranchCommand createBranch = new Git(repository).branchCreate();
+            IOException {
+        if (repository.isBare()) {
+            CreateBranchCommand createBranch;
+            try (Git git = new Git(repository)) {
+                createBranch = git.branchCreate();
+            }
             createBranch.setName(GitTFConstants.GIT_TF_BRANCHNAME);
             createBranch.setForce(true);
-            if (startPoint != null && startPoint.length() > 0)
-            {
+            if (startPoint != null && startPoint.length() > 0) {
                 createBranch.setStartPoint(startPoint);
             }
             createBranch.call();
@@ -130,13 +127,10 @@ public final class TfsBranchUtil
             RefAlreadyExistsException,
             RefNotFoundException,
             InvalidRefNameException,
-            GitAPIException
-    {
-        if (repository.isBare())
-        {
-            Ref tfsBranchRef = repository.getRef(Constants.R_HEADS + GitTFConstants.GIT_TF_BRANCHNAME);
-            if (tfsBranchRef == null)
-            {
+            GitAPIException {
+        if (repository.isBare()) {
+            Ref tfsBranchRef = repository.findRef(Constants.R_HEADS + GitTFConstants.GIT_TF_BRANCHNAME);
+            if (tfsBranchRef == null) {
                 create(repository);
             }
 
@@ -151,35 +145,28 @@ public final class TfsBranchUtil
 
     }
 
-    private static class TfsRemoteReferenceUpdate
-        extends RemoteRefUpdate
-    {
+    private static class TfsRemoteReferenceUpdate extends RemoteRefUpdate {
         private final Repository repository;
 
-        public TfsRemoteReferenceUpdate(Repository repository, String referenceName)
-            throws IOException
-        {
+        public TfsRemoteReferenceUpdate(Repository repository, String referenceName) throws IOException {
             super(
                 repository,
                 referenceName,
-                "", true, Constants.R_REMOTES + GitTFConstants.GIT_TF_REMOTE + GitTFConstants.GIT_TF_BRANCHNAME, null); //$NON-NLS-1$
+                "", //$NON-NLS-1$
+                true,
+                Constants.R_REMOTES + GitTFConstants.GIT_TF_REMOTE + GitTFConstants.GIT_TF_BRANCHNAME,
+                null);
 
             this.repository = repository;
         }
 
-        public void update()
-            throws IOException
-        {
+        public void update() throws IOException {
             RevWalk revWalk = new RevWalk(repository);
-            try
-            {
+            try {
                 updateTrackingRef(revWalk);
-            }
-            finally
-            {
-                if (revWalk != null)
-                {
-                    revWalk.release();
+            } finally {
+                if (revWalk != null) {
+                    revWalk.close();
                 }
             }
         }

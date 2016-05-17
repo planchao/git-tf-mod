@@ -41,31 +41,33 @@ import com.microsoft.gittf.core.tasks.ShelvesetsDisplayTask;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.util.shelveset.ShelvesetSortOption;
 
-public class ShelvesetsCommand
-    extends Command
-{
+public class ShelvesetsCommand extends Command {
     public static final String COMMAND_NAME = "shelvesets"; //$NON-NLS-1$
 
-    private static Argument[] ARGUMENTS = new Argument[]
-    {
+    private static Argument[] ARGUMENTS = new Argument[] {
         new SwitchArgument("help", Messages.getString("Command.Argument.Help.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
 
-        new ChoiceArgument(Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
-            new SwitchArgument("quiet", //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
+            new SwitchArgument(
+                "quiet", //$NON-NLS-1$
                 'q',
                 Messages.getString("Command.Argument.Quiet.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("verbose", //$NON-NLS-1$
+            new SwitchArgument(
+                "verbose", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Verbose.HelpText")) //$NON-NLS-1$
         ),
 
-        new ValueArgument("user", //$NON-NLS-1$
+        new ValueArgument(
+            "user", //$NON-NLS-1$
             'u',
             Messages.getString("ShelvesetsCommand.Argument.User.ValueDescription"), //$NON-NLS-1$
             Messages.getString("ShelvesetsCommand.Argument.User.HelpText"), //$NON-NLS-1$
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ValueArgument("sort", //$NON-NLS-1$
+        new ValueArgument(
+            "sort", //$NON-NLS-1$
             's',
             Messages.getString("ShelvesetsCommand.Argument.Sort.ValueDescription"), //$NON-NLS-1$
             Messages.getString("ShelvesetsCommand.Argument.Sort.HelpText"), //$NON-NLS-1$
@@ -77,43 +79,37 @@ public class ShelvesetsCommand
 
         new FreeArgument("name", Messages.getString("ShelvesetsCommand.Argument.Name.HelpText")) //$NON-NLS-1$ //$NON-NLS-2$
 
-        };
+    };
 
     @Override
-    protected String getCommandName()
-    {
+    protected String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override
-    public Argument[] getPossibleArguments()
-    {
+    public Argument[] getPossibleArguments() {
         return ARGUMENTS;
     }
 
     @Override
-    public String getHelpDescription()
-    {
+    public String getHelpDescription() {
         return Messages.getString("ShelvesetsCommand.HelpDescription"); //$NON-NLS-1$
     }
 
     @Override
-    public int run()
-        throws Exception
-    {
+    public int run() throws Exception {
         verifyGitTfConfigured();
 
         boolean delete = getArguments().contains("delete"); //$NON-NLS-1$
 
-        String name =
-            getArguments().contains("name") ? ((FreeArgument) getArguments().getArgument("name")).getValue() : null; //$NON-NLS-1$ //$NON-NLS-2$
+        String name = getArguments().contains("name") ? ((FreeArgument) getArguments().getArgument("name")).getValue() //$NON-NLS-1$ //$NON-NLS-2$
+            : null;
 
         String user = getArguments().contains("user") ? ((ValueArgument) getArguments().getArgument("user")).getValue() //$NON-NLS-1$ //$NON-NLS-2$
             : getConnection().getAuthenticatedIdentity().getUniqueName();
         user = user.equals("*") ? null : user; //$NON-NLS-1$
 
-        if (delete)
-        {
+        if (delete) {
             // delete shelveset
 
             if (getArguments().contains("sort")) //$NON-NLS-1$
@@ -131,16 +127,11 @@ public class ShelvesetsCommand
                 throw new Exception(Messages.getString("ShelvesetsCommand.DeleteNotSupportedWithoutName")); //$NON-NLS-1$
             }
 
-            final TaskStatus shelvesetsDeleteTaskResult =
-                new CommandTaskExecutor(getProgressMonitor()).execute(new ShelvesetDeleteTask(
-                    getVersionControlService(),
-                    name,
-                    user));
+            final TaskStatus shelvesetsDeleteTaskResult = new CommandTaskExecutor(getProgressMonitor()).execute(
+                new ShelvesetDeleteTask(getVersionControlService(), name, user));
 
             return shelvesetsDeleteTaskResult.isOK() ? ExitCode.SUCCESS : ExitCode.FAILURE;
-        }
-        else
-        {
+        } else {
             // display shelveset(s)
 
             boolean displayShelvesetDetails = getArguments().contains("details"); //$NON-NLS-1$
@@ -162,23 +153,17 @@ public class ShelvesetsCommand
         }
     }
 
-    private ShelvesetSortOption getShelvesetSortOptionIfSpecified()
-        throws Exception
-    {
+    private ShelvesetSortOption getShelvesetSortOptionIfSpecified() throws Exception {
         String sortOption = getArguments().contains("sort") ? //$NON-NLS-1$
             ((ValueArgument) getArguments().getArgument("sort")).getValue() : null; //$NON-NLS-1$
 
-        if (sortOption == null)
-        {
+        if (sortOption == null) {
             return ShelvesetSortOption.DATE;
         }
 
-        try
-        {
+        try {
             return ShelvesetSortOption.valueOf(sortOption.toUpperCase());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new Exception(Messages.formatString("ShelvesetsCommand.InvalidShelvetSortModeFormat", sortOption)); //$NON-NLS-1$
         }
     }

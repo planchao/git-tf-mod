@@ -52,17 +52,14 @@ import com.microsoft.tfs.util.Check;
 import com.microsoft.tfs.util.CollatorFactory;
 import com.microsoft.tfs.util.LocaleInvariantStringHelpers;
 
-public class GitTFHTTPClientFactory
-    extends DefaultHTTPClientFactory
-{
+public class GitTFHTTPClientFactory extends DefaultHTTPClientFactory {
     private static final Log log = LogFactory.getLog(GitTFHTTPClientFactory.class);
 
     private final CredentialsManager credentialsManager;
 
     public GitTFHTTPClientFactory(
         final ConnectionInstanceData connectionInstanceData,
-        final CredentialsManager credentialsManager)
-    {
+        final CredentialsManager credentialsManager) {
         super(connectionInstanceData);
 
         Check.notNull(credentialsManager, "credentialsManager"); //$NON-NLS-1$
@@ -77,8 +74,7 @@ public class GitTFHTTPClientFactory
         final HttpClient httpClient,
         final HostConfiguration hostConfiguration,
         final HttpState httpState,
-        final ConnectionInstanceData connectionInstanceData)
-    {
+        final ConnectionInstanceData connectionInstanceData) {
         CLCHTTPProxyConfiguration proxyConfiguration = null;
 
         /*
@@ -93,8 +89,7 @@ public class GitTFHTTPClientFactory
         /*
          * Try environment variables.
          */
-        if (proxyConfiguration == null)
-        {
+        if (proxyConfiguration == null) {
             proxyConfiguration =
                 configureClientProxyFromEnvironment(httpClient, hostConfiguration, httpState, connectionInstanceData);
         }
@@ -102,46 +97,40 @@ public class GitTFHTTPClientFactory
         /*
          * Return early if still no proxy configured.
          */
-        if (proxyConfiguration == null)
-        {
+        if (proxyConfiguration == null) {
             final String message =
-                MessageFormat.format("Environment variables {0},{1} not set, no global proxy configured", //$NON-NLS-1$
+                MessageFormat.format(
+                    "Environment variables {0},{1} not set, no global proxy configured", //$NON-NLS-1$
                     EnvironmentVariables.HTTP_PROXY_URL,
                     EnvironmentVariables.HTTP_PROXY_URL_ALTERNATE);
             log.debug(message);
             return;
         }
 
-        final String message = MessageFormat.format("Using global proxy URL {0}:{1}", //$NON-NLS-1$
+        final String message = MessageFormat.format(
+            "Using global proxy URL {0}:{1}", //$NON-NLS-1$
             proxyConfiguration.getHost(),
             Integer.toString(proxyConfiguration.getPort()));
         log.debug(message);
 
         hostConfiguration.setProxy(proxyConfiguration.getHost(), proxyConfiguration.getPort());
 
-        if (proxyConfiguration.getUsername() != null && proxyConfiguration.getPassword() != null)
-        {
+        if (proxyConfiguration.getUsername() != null && proxyConfiguration.getPassword() != null) {
             String username;
 
-            try
-            {
+            try {
                 username = proxyConfiguration.getUsername();
-            }
-            catch (TFSUsernameParseException e)
-            {
+            } catch (TFSUsernameParseException e) {
                 log.warn("Unable to determine domain from proxy username", e); //$NON-NLS-1$
                 username = proxyConfiguration.getUsername();
             }
 
-            if (username != null)
-            {
-                httpState.setProxyCredentials(AuthScope.ANY, new UsernamePasswordCredentials(
-                    username,
-                    proxyConfiguration.getPassword()));
+            if (username != null) {
+                httpState.setProxyCredentials(
+                    AuthScope.ANY,
+                    new UsernamePasswordCredentials(username, proxyConfiguration.getPassword()));
             }
-        }
-        else
-        {
+        } else {
             httpState.setProxyCredentials(AuthScope.ANY, new DefaultNTCredentials());
         }
     }
@@ -150,8 +139,7 @@ public class GitTFHTTPClientFactory
         final HttpClient httpClient,
         final HostConfiguration hostConfiguration,
         final HttpState httpState,
-        final ConnectionInstanceData connectionInstanceData)
-    {
+        final ConnectionInstanceData connectionInstanceData) {
         String proxyHost = null;
         String proxyPort = null;
         String nonProxyHosts = null;
@@ -161,39 +149,31 @@ public class GitTFHTTPClientFactory
             proxyHost = System.getProperty("http.proxyHost"); //$NON-NLS-1$
             proxyPort = System.getProperty("http.proxyPort"); //$NON-NLS-1$
             nonProxyHosts = System.getProperty("http.nonProxyHosts"); //$NON-NLS-1$
-        }
-        else if ("https".equalsIgnoreCase(connectionInstanceData.getServerURI().getScheme())) //$NON-NLS-1$
+        } else if ("https".equalsIgnoreCase(connectionInstanceData.getServerURI().getScheme())) //$NON-NLS-1$
         {
             proxyHost = System.getProperty("https.proxyHost"); //$NON-NLS-1$
             proxyPort = System.getProperty("https.proxyPort"); //$NON-NLS-1$
-            nonProxyHosts = System.getProperty("https.nonProxyHosts"); //$NON-NLS-1$                
+            nonProxyHosts = System.getProperty("https.nonProxyHosts"); //$NON-NLS-1$
         }
 
         if (proxyHost != null
             && proxyHost.length() > 0
-            && !hostExcludedFromProxyProperties(connectionInstanceData.getServerURI(), nonProxyHosts))
-        {
+            && !hostExcludedFromProxyProperties(connectionInstanceData.getServerURI(), nonProxyHosts)) {
             int proxyPortValue = -1;
 
-            if (proxyPort != null && proxyPort.length() > 0)
-            {
-                try
-                {
+            if (proxyPort != null && proxyPort.length() > 0) {
+                try {
                     proxyPortValue = Integer.parseInt(proxyPort);
-                }
-                catch (NumberFormatException e)
-                {
+                } catch (NumberFormatException e) {
                     log.warn(MessageFormat.format("Could not parse proxy port {0}, using default", proxyPort), e); //$NON-NLS-1$
                 }
             }
 
-            try
-            {
+            try {
                 URI proxyURI = new URI("http", null, proxyHost, proxyPortValue, "/", null, null); //$NON-NLS-1$ //$NON-NLS-2$
 
                 /* Make sure proxy host is well-formed */
-                if (proxyURI.getHost() == null)
-                {
+                if (proxyURI.getHost() == null) {
                     final String messageFormat =
                         Messages.getString("GitTFHTTPClientFactory.ProxyURLDoesNotContainValidHostnameFormat"); //$NON-NLS-1$
                     final String message = MessageFormat.format(messageFormat, proxyURI.toString());
@@ -208,9 +188,7 @@ public class GitTFHTTPClientFactory
                 String password = proxyCredentials != null ? proxyCredentials.getPassword() : null;
 
                 return new CLCHTTPProxyConfiguration(proxyHost, proxyPortValue, username, password);
-            }
-            catch (URISyntaxException e)
-            {
+            } catch (URISyntaxException e) {
                 log.warn("Could not parse proxy URI, proxy will not be configured", e); //$NON-NLS-1$
             }
         }
@@ -222,8 +200,7 @@ public class GitTFHTTPClientFactory
         final HttpClient httpClient,
         final HostConfiguration hostConfiguration,
         final HttpState httpState,
-        final ConnectionInstanceData connectionInstanceData)
-    {
+        final ConnectionInstanceData connectionInstanceData) {
         String proxyUrl = null;
         String nonProxyHosts;
 
@@ -235,11 +212,9 @@ public class GitTFHTTPClientFactory
         {
             proxyUrl = PlatformMiscUtils.getInstance().getEnvironmentVariable(EnvironmentVariables.HTTPS_PROXY_URL);
 
-            if (proxyUrl == null || proxyUrl.length() == 0)
-            {
-                proxyUrl =
-                    PlatformMiscUtils.getInstance().getEnvironmentVariable(
-                        EnvironmentVariables.HTTPS_PROXY_URL_ALTERNATE);
+            if (proxyUrl == null || proxyUrl.length() == 0) {
+                proxyUrl = PlatformMiscUtils.getInstance().getEnvironmentVariable(
+                    EnvironmentVariables.HTTPS_PROXY_URL_ALTERNATE);
             }
         }
 
@@ -247,25 +222,20 @@ public class GitTFHTTPClientFactory
          * Check for the presence of an HTTP proxy environment variable and use
          * that as the global proxy. (lynx documented the environment variable
          * as lower case "http_proxy", so we need to check both the variable and
-         * its alternate.)
-         * 
-         * (Note, we have always tried using the HTTP_PROXY environment variable
-         * for HTTPS connections, so continue to support this.)
+         * its alternate.) (Note, we have always tried using the HTTP_PROXY
+         * environment variable for HTTPS connections, so continue to support
+         * this.)
          */
-        if (proxyUrl == null || proxyUrl.length() == 0)
-        {
+        if (proxyUrl == null || proxyUrl.length() == 0) {
             proxyUrl = PlatformMiscUtils.getInstance().getEnvironmentVariable(EnvironmentVariables.HTTP_PROXY_URL);
 
-            if (proxyUrl == null || proxyUrl.length() == 0)
-            {
-                proxyUrl =
-                    PlatformMiscUtils.getInstance().getEnvironmentVariable(
-                        EnvironmentVariables.HTTP_PROXY_URL_ALTERNATE);
+            if (proxyUrl == null || proxyUrl.length() == 0) {
+                proxyUrl = PlatformMiscUtils.getInstance().getEnvironmentVariable(
+                    EnvironmentVariables.HTTP_PROXY_URL_ALTERNATE);
             }
         }
 
-        if (proxyUrl == null || proxyUrl.length() == 0)
-        {
+        if (proxyUrl == null || proxyUrl.length() == 0) {
             return null;
         }
 
@@ -276,33 +246,27 @@ public class GitTFHTTPClientFactory
          */
         nonProxyHosts = PlatformMiscUtils.getInstance().getEnvironmentVariable(EnvironmentVariables.NO_PROXY_HOSTS);
 
-        if (nonProxyHosts == null || nonProxyHosts.length() == 0)
-        {
+        if (nonProxyHosts == null || nonProxyHosts.length() == 0) {
             nonProxyHosts =
                 PlatformMiscUtils.getInstance().getEnvironmentVariable(EnvironmentVariables.NO_PROXY_HOSTS_ALTERNATE);
         }
 
-        if (hostExcludedFromProxyEnvironment(connectionInstanceData.getServerURI(), nonProxyHosts))
-        {
+        if (hostExcludedFromProxyEnvironment(connectionInstanceData.getServerURI(), nonProxyHosts)) {
             return null;
         }
 
         URI proxyURI;
 
-        try
-        {
+        try {
             proxyURI = new URI(proxyUrl);
-        }
-        catch (URISyntaxException e)
-        {
+        } catch (URISyntaxException e) {
             final String messageFormat = Messages.getString("GitTFHTTPClientFactory.IllegalProxyURLFormat"); //$NON-NLS-1$
             final String message = MessageFormat.format(messageFormat, proxyUrl);
             log.warn(message, e);
             throw new IllegalConfigurationException(message, e);
         }
 
-        if (proxyURI.getHost() == null)
-        {
+        if (proxyURI.getHost() == null) {
             final String messageFormat = Messages.getString("GitTFHTTPClientFactory.IllegalProxyURLFormat"); //$NON-NLS-1$
             final String message = MessageFormat.format(messageFormat, proxyUrl);
             log.warn(message);
@@ -310,22 +274,16 @@ public class GitTFHTTPClientFactory
         }
 
         String username = null, password = null;
-        if (proxyURI.getRawUserInfo() != null)
-        {
+        if (proxyURI.getRawUserInfo() != null) {
             String[] userInfo = proxyURI.getRawUserInfo().split(":", 2); //$NON-NLS-1$
 
-            try
-            {
+            try {
                 username = URLDecoder.decode(userInfo[0], "UTF-8"); //$NON-NLS-1$
                 password = URLDecoder.decode(userInfo[1], "UTF-8"); //$NON-NLS-1$
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.warn("Could not decode user info as UTF-8", e); //$NON-NLS-1$
             }
-        }
-        else
-        {
+        } else {
             /*
              * If the proxy credentials were NOT specified in the URI itself,
              * look up the credentials
@@ -352,10 +310,8 @@ public class GitTFHTTPClientFactory
      * @return <code>true</code> if the host should be proxied,
      *         <code>false</code> otherwise
      */
-    static boolean hostExcludedFromProxyProperties(URI serverURI, String nonProxyHosts)
-    {
-        if (serverURI == null || serverURI.getHost() == null || nonProxyHosts == null)
-        {
+    static boolean hostExcludedFromProxyProperties(URI serverURI, String nonProxyHosts) {
+        if (serverURI == null || serverURI.getHost() == null || nonProxyHosts == null) {
             return false;
         }
 
@@ -365,16 +321,14 @@ public class GitTFHTTPClientFactory
              * Note: for wildcards, the java specification says that the host
              * "may start OR end with a *" (emphasis: mine).
              */
-            if (nonProxyHost.startsWith("*") && LocaleInvariantStringHelpers.caseInsensitiveEndsWith(serverURI.getHost(), nonProxyHost.substring(1))) //$NON-NLS-1$
-            {
+            if (nonProxyHost.startsWith("*") && LocaleInvariantStringHelpers //$NON-NLS-1$
+                .caseInsensitiveEndsWith(serverURI.getHost(), nonProxyHost.substring(1))) {
                 return true;
-            }
-            else if (nonProxyHost.endsWith("*") && LocaleInvariantStringHelpers.caseInsensitiveStartsWith(serverURI.getHost(), nonProxyHost.substring(0, nonProxyHost.length() - 1))) //$NON-NLS-1$
-            {
+            } else if (nonProxyHost.endsWith("*") && LocaleInvariantStringHelpers.caseInsensitiveStartsWith( //$NON-NLS-1$
+                serverURI.getHost(),
+                nonProxyHost.substring(0, nonProxyHost.length() - 1))) {
                 return true;
-            }
-            else if (CollatorFactory.getCaseInsensitiveCollator().equals(serverURI.getHost(), nonProxyHost))
-            {
+            } else if (CollatorFactory.getCaseInsensitiveCollator().equals(serverURI.getHost(), nonProxyHost)) {
                 return true;
             }
         }
@@ -395,16 +349,13 @@ public class GitTFHTTPClientFactory
      * @return <code>true</code> if the host should be proxied,
      *         <code>false</code> otherwise
      */
-    static boolean hostExcludedFromProxyEnvironment(URI serverURI, String nonProxyHosts)
-    {
-        if (serverURI == null || serverURI.getHost() == null || nonProxyHosts == null)
-        {
+    static boolean hostExcludedFromProxyEnvironment(URI serverURI, String nonProxyHosts) {
+        if (serverURI == null || serverURI.getHost() == null || nonProxyHosts == null) {
             return false;
         }
 
         nonProxyHosts = nonProxyHosts.trim();
-        if (nonProxyHosts.length() == 0)
-        {
+        if (nonProxyHosts.length() == 0) {
             return false;
         }
 
@@ -422,14 +373,10 @@ public class GitTFHTTPClientFactory
         /* Map default ports to the appropriate default. */
         int serverPort = serverURI.getPort();
 
-        if (serverPort == -1)
-        {
-            try
-            {
+        if (serverPort == -1) {
+            try {
                 serverPort = Protocol.getProtocol(serverURI.getScheme().toLowerCase()).getDefaultPort();
-            }
-            catch (IllegalStateException e)
-            {
+            } catch (IllegalStateException e) {
                 serverPort = 80;
             }
         }
@@ -444,14 +391,12 @@ public class GitTFHTTPClientFactory
 
                 nonProxyHost = nonProxyParts[0];
 
-                try
-                {
+                try {
                     nonProxyPort = Integer.parseInt(nonProxyParts[1]);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     log.warn(MessageFormat.format(
-                        "Could not parse port in non_proxy setting: {0}, ignoring port", nonProxyParts[1])); //$NON-NLS-1$
+                        "Could not parse port in non_proxy setting: {0}, ignoring port", //$NON-NLS-1$
+                        nonProxyParts[1]));
                 }
             }
 
@@ -459,8 +404,7 @@ public class GitTFHTTPClientFactory
              * If the no_proxy entry specifies a port, match it exactly. If it
              * does not, this means to match all ports.
              */
-            if (nonProxyPort != -1 && serverPort != nonProxyPort)
-            {
+            if (nonProxyPort != -1 && serverPort != nonProxyPort) {
                 continue;
             }
 
@@ -468,8 +412,7 @@ public class GitTFHTTPClientFactory
              * Otherwise, the nonProxyHost portion is treated as the trailing
              * DNS entry
              */
-            if (LocaleInvariantStringHelpers.caseInsensitiveEndsWith(serverHost, nonProxyHost))
-            {
+            if (LocaleInvariantStringHelpers.caseInsensitiveEndsWith(serverHost, nonProxyHost)) {
                 return true;
             }
         }
@@ -477,16 +420,14 @@ public class GitTFHTTPClientFactory
         return false;
     }
 
-    private static class CLCHTTPProxyConfiguration
-    {
+    private static class CLCHTTPProxyConfiguration {
         private final String host;
         private final int port;
 
         private final String username;
         private final String password;
 
-        public CLCHTTPProxyConfiguration(String host, int port, String username, String password)
-        {
+        public CLCHTTPProxyConfiguration(String host, int port, String username, String password) {
             Check.notNull(host, "host"); //$NON-NLS-1$
 
             this.host = host;
@@ -495,23 +436,19 @@ public class GitTFHTTPClientFactory
             this.password = password;
         }
 
-        public String getHost()
-        {
+        public String getHost() {
             return host;
         }
 
-        public int getPort()
-        {
+        public int getPort() {
             return port;
         }
 
-        public String getUsername()
-        {
+        public String getUsername() {
             return username;
         }
 
-        public String getPassword()
-        {
+        public String getPassword() {
             return password;
         }
     }

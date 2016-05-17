@@ -33,49 +33,37 @@ import java.util.ResourceBundle;
  * Handles messages and localized strings in the clc
  * 
  */
-public class Messages
-{
+public class Messages {
     private static final String BUNDLE_NAME = "com.microsoft.gittf.client.clc.messages"; //$NON-NLS-1$
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     /**
      * Constructor
      */
-    private Messages()
-    {
+    private Messages() {
     }
 
-    public static String getString(String key)
-    {
-        try
-        {
+    public static String getString(String key) {
+        try {
             return RESOURCE_BUNDLE.getString(key);
-        }
-        catch (MissingResourceException e)
-        {
+        } catch (MissingResourceException e) {
             return '!' + key + '!';
         }
     }
 
-    public static String formatString(String key, Object... arguments)
-    {
+    public static String formatString(String key, Object... arguments) {
         MessageFormat formatter = new MessageFormat(getString(key));
         return formatter.format(arguments);
     }
 
-    public static String getString(final String key, Locale locale)
-    {
-        if (locale == null)
-        {
+    public static String getString(final String key, Locale locale) {
+        if (locale == null) {
             locale = Locale.getDefault();
         }
 
-        try
-        {
+        try {
             return ResourceBundle.getBundle(BUNDLE_NAME, locale).getString(key);
-        }
-        catch (MissingResourceException e)
-        {
+        } catch (MissingResourceException e) {
             return getString(key);
         }
     }

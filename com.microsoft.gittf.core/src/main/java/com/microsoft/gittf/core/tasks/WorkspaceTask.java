@@ -44,9 +44,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
  * Base task for the tasks that need to create and maintain a workspace object.
  * 
  */
-public abstract class WorkspaceTask
-    extends Task
-{
+public abstract class WorkspaceTask extends Task {
     private final Log log = LogFactory.getLog(this.getClass());
 
     private WorkspaceInfo workspaceData;
@@ -65,8 +63,7 @@ public abstract class WorkspaceTask
     protected WorkspaceTask(
         final Repository repository,
         final VersionControlClient versionControlClient,
-        final String serverPath)
-    {
+        final String serverPath) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(versionControlClient, "versionControlClient"); //$NON-NLS-1$
         Check.notNullOrEmpty(serverPath, "serverPath"); //$NON-NLS-1$
@@ -83,9 +80,7 @@ public abstract class WorkspaceTask
      * @return
      * @throws Exception
      */
-    protected WorkspaceInfo createWorkspace(final TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+    protected WorkspaceInfo createWorkspace(final TaskProgressMonitor progressMonitor) throws Exception {
         return createWorkspace(progressMonitor, false);
     }
 
@@ -98,8 +93,7 @@ public abstract class WorkspaceTask
      * @throws Exception
      */
     protected WorkspaceInfo createWorkspace(final TaskProgressMonitor progressMonitor, boolean previewOnly)
-        throws Exception
-    {
+        throws Exception {
         return createWorkspace(progressMonitor, previewOnly, null);
     }
 
@@ -116,17 +110,14 @@ public abstract class WorkspaceTask
     protected WorkspaceInfo createWorkspace(
         final TaskProgressMonitor progressMonitor,
         boolean previewOnly,
-        VersionSpec versionSpec)
-        throws Exception
-    {
+        VersionSpec versionSpec) throws Exception {
         Check.notNull(progressMonitor, "progressMonitor"); //$NON-NLS-1$
 
         /*
          * If the workspace has already been created return that workspace
          * object
          */
-        if (workspaceData == null)
-        {
+        if (workspaceData == null) {
             /* Create workspace task */
             final CreateWorkspaceTask createTask =
                 new CreateWorkspaceTask(versionControlClient, serverPath, repository);
@@ -136,12 +127,9 @@ public abstract class WorkspaceTask
 
             final TaskStatus createStatus = new TaskExecutor(progressMonitor).execute(createTask);
 
-            if (!createStatus.isOK() && createStatus.getException() != null)
-            {
+            if (!createStatus.isOK() && createStatus.getException() != null) {
                 throw createStatus.getException();
-            }
-            else if (!createStatus.isOK())
-            {
+            } else if (!createStatus.isOK()) {
                 throw new Exception(createStatus.getMessage());
             }
 
@@ -156,39 +144,29 @@ public abstract class WorkspaceTask
      * 
      * @param progressMonitor
      */
-    protected void disposeWorkspace(final TaskProgressMonitor progressMonitor)
-    {
+    protected void disposeWorkspace(final TaskProgressMonitor progressMonitor) {
         TaskStatus deleteWorkspaceStatus = TaskStatus.OK_STATUS;
 
-        if (workspaceData != null)
-        {
-            try
-            {
+        if (workspaceData != null) {
+            try {
                 /* Delete the workspace task */
-                deleteWorkspaceStatus =
-                    new TaskExecutor(progressMonitor).execute(new DeleteWorkspaceTask(
-                        workspaceData.getWorkspace(),
-                        workspaceData.getWorkingFolder()));
-            }
-            finally
-            {
+                deleteWorkspaceStatus = new TaskExecutor(progressMonitor).execute(
+                    new DeleteWorkspaceTask(workspaceData.getWorkspace(), workspaceData.getWorkingFolder()));
+            } finally {
                 workspaceData = null;
             }
         }
 
-        if (!deleteWorkspaceStatus.isOK())
-        {
+        if (!deleteWorkspaceStatus.isOK()) {
             log.warn(MessageFormat.format("Could not delete workspace: {0}", deleteWorkspaceStatus.getMessage())); //$NON-NLS-1$
         }
     }
 
-    protected static final class WorkspaceInfo
-    {
+    protected static final class WorkspaceInfo {
         private final WorkspaceService workspace;
         private final File workingFolder;
 
-        private WorkspaceInfo(final WorkspaceService workspace, final File workingFolder)
-        {
+        private WorkspaceInfo(final WorkspaceService workspace, final File workingFolder) {
             Check.notNull(workspace, "workspace"); //$NON-NLS-1$
             Check.notNull(workingFolder, "workingFolder"); //$NON-NLS-1$
 
@@ -196,13 +174,11 @@ public abstract class WorkspaceTask
             this.workingFolder = workingFolder;
         }
 
-        public WorkspaceService getWorkspace()
-        {
+        public WorkspaceService getWorkspace() {
             return workspace;
         }
 
-        public File getWorkingFolder()
-        {
+        public File getWorkingFolder() {
             return workingFolder;
         }
     }

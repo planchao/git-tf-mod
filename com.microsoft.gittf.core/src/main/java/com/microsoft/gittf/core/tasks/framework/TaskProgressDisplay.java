@@ -30,9 +30,7 @@ import com.microsoft.tfs.util.BitField;
  * Task display progress options
  * 
  */
-public final class TaskProgressDisplay
-    extends BitField
-{
+public final class TaskProgressDisplay extends BitField {
     private static final long serialVersionUID = -179375741555801765L;
 
     /**
@@ -60,8 +58,7 @@ public final class TaskProgressDisplay
      * 
      * @param flags
      */
-    private TaskProgressDisplay(int flags)
-    {
+    private TaskProgressDisplay(int flags) {
         super(flags);
     }
 
@@ -71,8 +68,7 @@ public final class TaskProgressDisplay
      * @param other
      * @return
      */
-    public boolean contains(TaskProgressDisplay other)
-    {
+    public boolean contains(TaskProgressDisplay other) {
         return super.containsInternal(other);
     }
 
@@ -82,8 +78,7 @@ public final class TaskProgressDisplay
      * @param other
      * @return
      */
-    public TaskProgressDisplay combine(final TaskProgressDisplay other)
-    {
+    public TaskProgressDisplay combine(final TaskProgressDisplay other) {
         return new TaskProgressDisplay(super.combineInternal(other));
     }
 }

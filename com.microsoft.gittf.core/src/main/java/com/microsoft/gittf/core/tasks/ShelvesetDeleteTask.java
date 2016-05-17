@@ -37,9 +37,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
  * Deletes a shelveset
  * 
  */
-public class ShelvesetDeleteTask
-    extends Task
-{
+public class ShelvesetDeleteTask extends Task {
     private final VersionControlService versionControlService;
     private final String shelvesetName;
     private final String shelvesetOwnerName;
@@ -54,8 +52,7 @@ public class ShelvesetDeleteTask
     public ShelvesetDeleteTask(
         final VersionControlService versionControlService,
         final String shelvesetName,
-        final String shelvesetOwnerName)
-    {
+        final String shelvesetOwnerName) {
         Check.notNull(versionControlService, "versionControlService"); //$NON-NLS-1$
         Check.notNullOrEmpty(shelvesetName, "shelvesetName"); //$NON-NLS-1$
 
@@ -65,10 +62,9 @@ public class ShelvesetDeleteTask
     }
 
     @Override
-    public TaskStatus run(TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
-        progressMonitor.beginTask(Messages.getString("ShelvesetDeleteTask.DeletingShelveset"), //$NON-NLS-1$
+    public TaskStatus run(TaskProgressMonitor progressMonitor) throws Exception {
+        progressMonitor.beginTask(
+            Messages.getString("ShelvesetDeleteTask.DeletingShelveset"), //$NON-NLS-1$
             1,
             TaskProgressDisplay.DISPLAY_PROGRESS.combine(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL));
 
@@ -76,15 +72,13 @@ public class ShelvesetDeleteTask
         Shelveset[] results = versionControlService.queryShelvesets(shelvesetName, shelvesetOwnerName);
 
         /* If there are no matching shelvesets error out */
-        if (results.length == 0)
-        {
+        if (results.length == 0) {
             progressMonitor.endTask();
             return new TaskStatus(TaskStatus.ERROR, Messages.getString("ShelvesetDeleteTask.NoShelvesetsFound")); //$NON-NLS-1$
         }
 
         /* If there are more than one matching shelveset error out */
-        if (results.length > 1)
-        {
+        if (results.length > 1) {
             progressMonitor.endTask();
             return new TaskStatus(TaskStatus.ERROR, Messages.getString("ShelvesetDeleteTask.MultipleShelvesetsFound")); //$NON-NLS-1$
         }
@@ -94,7 +88,8 @@ public class ShelvesetDeleteTask
 
         progressMonitor.endTask();
 
-        progressMonitor.displayMessage(Messages.formatString("ShelvesetDeleteTask.ShlvesetDeletedSuccessfullyFormat", //$NON-NLS-1$
+        progressMonitor.displayMessage(Messages.formatString(
+            "ShelvesetDeleteTask.ShlvesetDeletedSuccessfullyFormat", //$NON-NLS-1$
             results[0].getName()));
 
         return TaskStatus.OK_STATUS;

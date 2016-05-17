@@ -30,8 +30,6 @@ import java.net.URI;
 import java.util.Calendar;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -51,25 +49,19 @@ import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.test.Util;
 import com.microsoft.gittf.core.util.RepositoryUtil;
 
-public class FetchTaskTest
-    extends TestCase
-{
-    protected void setUp()
-        throws Exception
-    {
+import junit.framework.TestCase;
+
+public class FetchTaskTest extends TestCase {
+    protected void setUp() throws Exception {
         Util.setUp(getName());
     }
 
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         Util.tearDown(getName());
     }
 
     @Test
-    public void testFetchShallow()
-        throws Exception
-    {
+    public void testFetchShallow() throws Exception {
         URI projectCollectionURI = new URI("http://fakeCollection:8080/tfs/DefaultCollection"); //$NON-NLS-1$
         String tfsPath = "$/project"; //$NON-NLS-1$
         String gitRepositoryPath = Util.getRepositoryFile(getName()).getAbsolutePath();
@@ -91,7 +83,8 @@ public class FetchTaskTest
         Calendar date = Calendar.getInstance();
         date.set(2012, 11, 12, 18, 15);
 
-        MockChangesetProperties changesetProperties = new MockChangesetProperties("ownerDisplayName", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties = new MockChangesetProperties(
+            "ownerDisplayName", //$NON-NLS-1$
             "ownerName", //$NON-NLS-1$
             "committerDisplayName", //$NON-NLS-1$
             "committerName", //$NON-NLS-1$
@@ -112,7 +105,8 @@ public class FetchTaskTest
         mockVersionControlService.AddFile("$/project/folder2/file1.txt", 4); //$NON-NLS-1$
         mockVersionControlService.AddFile("$/project/folder/nestedFolder/file1.txt", 4); //$NON-NLS-1$
 
-        MockChangesetProperties changesetProperties2 = new MockChangesetProperties("ownerDisplayName4", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties2 = new MockChangesetProperties(
+            "ownerDisplayName4", //$NON-NLS-1$
             "ownerName4", //$NON-NLS-1$
             "committerDisplayName4", //$NON-NLS-1$
             "committerName4", //$NON-NLS-1$
@@ -127,8 +121,8 @@ public class FetchTaskTest
         assertTrue(fetchTaskStatus.isOK());
 
         // Verify the commit fetched
-        Ref fetchHeadRef = repository.getRef(Constants.FETCH_HEAD);
-        Ref headRef = repository.getRef(Constants.HEAD);
+        Ref fetchHeadRef = repository.findRef(Constants.FETCH_HEAD);
+        Ref headRef = repository.findRef(Constants.HEAD);
 
         assertNotNull(fetchHeadRef);
         assertNotNull(headRef);
@@ -136,9 +130,12 @@ public class FetchTaskTest
         ObjectId fetchHeadCommitID = fetchHeadRef.getObjectId();
         ObjectId headCommitID = headRef.getObjectId();
 
-        RevWalk revWalk = new RevWalk(repository);
-        RevCommit fetchedCommit = revWalk.parseCommit(fetchHeadCommitID);
-        RevCommit headCommit = revWalk.parseCommit(headCommitID);
+        RevCommit fetchedCommit;
+        RevCommit headCommit;
+        try (RevWalk revWalk = new RevWalk(repository)) {
+            fetchedCommit = revWalk.parseCommit(fetchHeadCommitID);
+            headCommit = revWalk.parseCommit(headCommitID);
+        }
 
         assertEquals(fetchedCommit.getFullMessage(), "comment4"); //$NON-NLS-1$
 
@@ -160,43 +157,48 @@ public class FetchTaskTest
         treeWalk.setFilter(TreeFilter.ANY_DIFF);
 
         int count = 0;
-        while (treeWalk.next())
-        {
+        while (treeWalk.next()) {
             ObjectId fileObjectId = treeWalk.getObjectId(1);
             byte[] fileContent = repository.getObjectDatabase().open(fileObjectId, OBJ_BLOB).getBytes();
 
-            switch (count)
-            {
+            switch (count) {
                 case 0:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder/file1.txt", //$NON-NLS-1$
                         4));
                     break;
                 case 2:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder2/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder2/file1.txt", //$NON-NLS-1$
                         4));
                     break;
                 case 1:
-                    assertTrue(mockVersionControlService.verifyFileContent(
-                        fileContent,
-                        "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-                        4));
+                    assertTrue(
+                        mockVersionControlService.verifyFileContent(
+                            fileContent,
+                            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                            4));
                     break;
             }
 
             count++;
         }
 
+        treeWalk.close();
+
         Git git = new Git(repository);
 
         // Verify the tags
         List<Ref> tags = git.tagList().call();
         assertEquals(2, tags.size());
+
+        git.close();
     }
 
     @Test
-    public void testFetchDeep()
-        throws Exception
-    {
+    public void testFetchDeep() throws Exception {
         URI projectCollectionURI = new URI("http://fakeCollection:8080/tfs/DefaultCollection"); //$NON-NLS-1$
         String tfsPath = "$/project"; //$NON-NLS-1$
         String gitRepositoryPath = Util.getRepositoryFile(getName()).getAbsolutePath();
@@ -218,7 +220,8 @@ public class FetchTaskTest
         Calendar date = Calendar.getInstance();
         date.set(2012, 11, 12, 18, 15);
 
-        MockChangesetProperties changesetProperties = new MockChangesetProperties("ownerDisplayName", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties = new MockChangesetProperties(
+            "ownerDisplayName", //$NON-NLS-1$
             "ownerName", //$NON-NLS-1$
             "committerDisplayName", //$NON-NLS-1$
             "committerName", //$NON-NLS-1$
@@ -239,7 +242,8 @@ public class FetchTaskTest
         mockVersionControlService.AddFile("$/project/folder2/file1.txt", 4); //$NON-NLS-1$
         mockVersionControlService.AddFile("$/project/folder/nestedFolder/file1.txt", 4); //$NON-NLS-1$
 
-        MockChangesetProperties changesetProperties2 = new MockChangesetProperties("ownerDisplayName4", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties2 = new MockChangesetProperties(
+            "ownerDisplayName4", //$NON-NLS-1$
             "ownerName4", //$NON-NLS-1$
             "committerDisplayName4", //$NON-NLS-1$
             "committerName4", //$NON-NLS-1$
@@ -251,7 +255,8 @@ public class FetchTaskTest
         mockVersionControlService.AddFile("$/project/folder2/file1.txt", 5); //$NON-NLS-1$
         mockVersionControlService.AddFile("$/project/folder/nestedFolder/file1.txt", 5); //$NON-NLS-1$
 
-        MockChangesetProperties changesetProperties3 = new MockChangesetProperties("ownerDisplayName5", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties3 = new MockChangesetProperties(
+            "ownerDisplayName5", //$NON-NLS-1$
             "ownerName5", //$NON-NLS-1$
             "committerDisplayName5", //$NON-NLS-1$
             "committerName5", //$NON-NLS-1$
@@ -267,8 +272,8 @@ public class FetchTaskTest
         assertTrue(fetchTaskStatus.isOK());
 
         // Retrieve commits
-        Ref fetchHeadRef = repository.getRef(Constants.FETCH_HEAD);
-        Ref headRef = repository.getRef(Constants.HEAD);
+        Ref fetchHeadRef = repository.findRef(Constants.FETCH_HEAD);
+        Ref headRef = repository.findRef(Constants.HEAD);
 
         assertNotNull(fetchHeadRef);
         assertNotNull(headRef);
@@ -283,6 +288,8 @@ public class FetchTaskTest
         assertEquals(fetchedCommit.getParentCount(), 1);
 
         RevCommit intermediateCommit = revWalk.parseCommit(fetchedCommit.getParent(0).getId());
+
+        revWalk.close();
 
         // Verify intermediateCommit
         assertEquals(intermediateCommit.getFullMessage(), "comment4"); //$NON-NLS-1$
@@ -316,26 +323,29 @@ public class FetchTaskTest
         treeWalk.setFilter(TreeFilter.ANY_DIFF);
 
         int count = 0;
-        while (treeWalk.next())
-        {
+        while (treeWalk.next()) {
             ObjectId fileObjectId = treeWalk.getObjectId(1);
             byte[] fileContent = repository.getObjectDatabase().open(fileObjectId, OBJ_BLOB).getBytes();
 
-            switch (count)
-            {
+            switch (count) {
                 case 0:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder/file1.txt", //$NON-NLS-1$
                         4));
                     break;
                 case 2:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder2/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder2/file1.txt", //$NON-NLS-1$
                         4));
                     break;
                 case 1:
-                    assertTrue(mockVersionControlService.verifyFileContent(
-                        fileContent,
-                        "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-                        4));
+                    assertTrue(
+                        mockVersionControlService.verifyFileContent(
+                            fileContent,
+                            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                            4));
                     break;
             }
 
@@ -351,36 +361,43 @@ public class FetchTaskTest
         treeWalk.setFilter(TreeFilter.ANY_DIFF);
 
         count = 0;
-        while (treeWalk.next())
-        {
+        while (treeWalk.next()) {
             ObjectId fileObjectId = treeWalk.getObjectId(1);
             byte[] fileContent = repository.getObjectDatabase().open(fileObjectId, OBJ_BLOB).getBytes();
 
-            switch (count)
-            {
+            switch (count) {
                 case 0:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder/file1.txt", //$NON-NLS-1$
                         5));
                     break;
                 case 2:
-                    assertTrue(mockVersionControlService.verifyFileContent(fileContent, "$/project/folder2/file1.txt", //$NON-NLS-1$
+                    assertTrue(mockVersionControlService.verifyFileContent(
+                        fileContent,
+                        "$/project/folder2/file1.txt", //$NON-NLS-1$
                         5));
                     break;
                 case 1:
-                    assertTrue(mockVersionControlService.verifyFileContent(
-                        fileContent,
-                        "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-                        5));
+                    assertTrue(
+                        mockVersionControlService.verifyFileContent(
+                            fileContent,
+                            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                            5));
                     break;
             }
 
             count++;
         }
 
+        treeWalk.close();
+
         Git git = new Git(repository);
 
         // Verify the tags
         List<Ref> tags = git.tagList().call();
         assertEquals(3, tags.size());
+
+        git.close();
     }
 }

@@ -28,8 +28,7 @@ package com.microsoft.gittf.client.clc;
  * Environment variables used by git-tf
  * 
  */
-public final class EnvironmentVariables
-{
+public final class EnvironmentVariables {
     /**
      * Specifies the value to use as the HTTP <em>and</em> HTTPS proxy for all
      * connections. Upper-case and lower-case variables are supported.
@@ -57,7 +56,6 @@ public final class EnvironmentVariables
     public static final String NO_PROXY_HOSTS = "NO_PROXY"; //$NON-NLS-1$
     public static final String NO_PROXY_HOSTS_ALTERNATE = "no_proxy"; //$NON-NLS-1$
 
-    private EnvironmentVariables()
-    {
+    private EnvironmentVariables() {
     }
 }

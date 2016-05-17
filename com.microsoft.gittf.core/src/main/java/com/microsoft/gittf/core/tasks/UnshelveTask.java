@@ -47,9 +47,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
  * unshelves this shelveset into the git repository
  * 
  */
-public class UnshelveTask
-    extends Task
-{
+public class UnshelveTask extends Task {
     private final VersionControlService versionControlService;
     private final Repository repository;
     private final String shelvesetOwnerName;
@@ -73,8 +71,7 @@ public class UnshelveTask
         final VersionControlService versionControlService,
         final Repository repository,
         final String shelvesetName,
-        final String shelvesetOwnerName)
-    {
+        final String shelvesetOwnerName) {
         Check.notNull(versionControlService, "versionControlService"); //$NON-NLS-1$
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNullOrEmpty(shelvesetName, "shelvesetName"); //$NON-NLS-1$
@@ -90,16 +87,14 @@ public class UnshelveTask
      * 
      * @param apply
      */
-    public void setApply(boolean apply)
-    {
+    public void setApply(boolean apply) {
         this.apply = apply;
     }
 
     @Override
-    public TaskStatus run(TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
-        progressMonitor.beginTask(Messages.getString("UnshelveTask.LookingUpShelveset"), //$NON-NLS-1$
+    public TaskStatus run(TaskProgressMonitor progressMonitor) throws Exception {
+        progressMonitor.beginTask(
+            Messages.getString("UnshelveTask.LookingUpShelveset"), //$NON-NLS-1$
             1,
             TaskProgressDisplay.DISPLAY_PROGRESS.combine(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL));
 
@@ -107,15 +102,13 @@ public class UnshelveTask
         Shelveset[] results = versionControlService.queryShelvesets(shelvesetName, shelvesetOwnerName);
 
         /* If there is no matching shelveset show an error */
-        if (results.length == 0)
-        {
+        if (results.length == 0) {
             progressMonitor.endTask();
             return new TaskStatus(TaskStatus.ERROR, Messages.getString("UnshelveTask.NoShelvesetsFound")); //$NON-NLS-1$
         }
 
         /* If there is more than one matching shelveset show an error */
-        if (results.length > 1)
-        {
+        if (results.length > 1) {
             progressMonitor.endTask();
             return new TaskStatus(TaskStatus.ERROR, Messages.getString("UnshelveTask.MultipleShelvesetsFound")); //$NON-NLS-1$
         }
@@ -128,8 +121,7 @@ public class UnshelveTask
 
         TaskStatus unshelveTaskStatus = new TaskExecutor(progressMonitor.newSubTask(1)).execute(unshelveTask);
 
-        if (!unshelveTaskStatus.isOK())
-        {
+        if (!unshelveTaskStatus.isOK()) {
             return unshelveTaskStatus;
         }
 
@@ -141,14 +133,14 @@ public class UnshelveTask
         boolean tagCreated = TagUtil.createTag(repository, shelvesetCommitId, shelvesetTagName, shelvesetOwner);
 
         /* If apply is specified, apply the shelveset */
-        if (apply)
-        {
+        if (apply) {
             StashUtil.apply(repository, shelvesetCommitId);
         }
 
         progressMonitor.endTask();
 
-        progressMonitor.displayMessage(Messages.formatString("UnshelveTask.SuccessMessageFormat", //$NON-NLS-1$
+        progressMonitor.displayMessage(Messages.formatString(
+            "UnshelveTask.SuccessMessageFormat", //$NON-NLS-1$
             tagCreated ? shelvesetTagName : ObjectIdUtil.abbreviate(repository, shelvesetCommitId),
             shelveset.getName()));
 
@@ -163,19 +155,16 @@ public class UnshelveTask
      * @param shelveset
      * @return
      */
-    private String generateValidTagName(Shelveset shelveset)
-    {
+    private String generateValidTagName(Shelveset shelveset) {
         String tagName = Messages.formatString("UnshelveTask.ShelvesetTagFormat", shelveset.getName()); //$NON-NLS-1$
 
-        if (Repository.isValidRefName(Constants.R_TAGS + tagName))
-        {
+        if (Repository.isValidRefName(Constants.R_TAGS + tagName)) {
             return tagName;
         }
 
         tagName = tagName.replace(' ', '_');
 
-        if (Repository.isValidRefName(Constants.R_TAGS + tagName))
-        {
+        if (Repository.isValidRefName(Constants.R_TAGS + tagName)) {
             return tagName;
         }
 

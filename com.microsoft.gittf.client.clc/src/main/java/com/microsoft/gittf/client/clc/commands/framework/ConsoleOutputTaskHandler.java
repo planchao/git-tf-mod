@@ -30,32 +30,23 @@ import com.microsoft.gittf.core.tasks.framework.Task;
 import com.microsoft.gittf.core.tasks.framework.TaskCompletedHandler;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 
-public class ConsoleOutputTaskHandler
-    implements TaskCompletedHandler
-{
-    public void onTaskCompleted(final Task task, final TaskStatus status)
-    {
+public class ConsoleOutputTaskHandler implements TaskCompletedHandler {
+    public void onTaskCompleted(final Task task, final TaskStatus status) {
         String message;
 
-        if (status.getSeverity() == TaskStatus.ERROR)
-        {
-            if (status.getMessage() != null && status.getException() != null)
-            {
-                message = Messages.formatString("ConsoleOutputTaskHandler.ExtendedErrorFormat", //$NON-NLS-1$
+        if (status.getSeverity() == TaskStatus.ERROR) {
+            if (status.getMessage() != null && status.getException() != null) {
+                message = Messages.formatString(
+                    "ConsoleOutputTaskHandler.ExtendedErrorFormat", //$NON-NLS-1$
                     status.getMessage(),
                     status.getException().getLocalizedMessage());
-            }
-            else if (status.getMessage() != null)
-            {
+            } else if (status.getMessage() != null) {
                 message = status.getMessage();
-            }
-            else if (status.getException() != null)
-            {
-                message = Messages.formatString("ConsoleOutputTaskHandler.ExceptionFormat", //$NON-NLS-1$
+            } else if (status.getException() != null) {
+                message = Messages.formatString(
+                    "ConsoleOutputTaskHandler.ExceptionFormat", //$NON-NLS-1$
                     status.getException().getLocalizedMessage());
-            }
-            else
-            {
+            } else {
                 message = Messages.getString("ConsoleOutputTaskHandler.UnknownError"); //$NON-NLS-1$
             }
 

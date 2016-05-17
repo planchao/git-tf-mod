@@ -36,25 +36,20 @@ package com.microsoft.gittf.client.clc.arguments;
  * <code>rm -- --help</code>
  * 
  */
-public final class LiteralArgument
-    extends Argument
-{
+public final class LiteralArgument extends Argument {
     /**
      * Constructs a literal argument separator.
      */
-    public LiteralArgument()
-    {
+    public LiteralArgument() {
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         throw new RuntimeException("cannot clone literalargument"); //$NON-NLS-1$
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         /*
          * All LiteralArguments are equal, so this is just some random int -
          * don't call super() because that would just use 31, which seems like a
@@ -64,10 +59,8 @@ public final class LiteralArgument
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o instanceof LiteralArgument)
-        {
+    public boolean equals(Object o) {
+        if (o instanceof LiteralArgument) {
             return true;
         }
 

@@ -49,9 +49,7 @@ import com.microsoft.tfs.core.util.FileEncoding;
  * An implementation of the WorkspaceService that talks to a TFS workspace
  * 
  */
-public class TfsWorkspace
-    implements WorkspaceService
-{
+public class TfsWorkspace implements WorkspaceService {
     private final Workspace workspace;
 
     /**
@@ -59,25 +57,25 @@ public class TfsWorkspace
      * 
      * @param workspace
      */
-    public TfsWorkspace(Workspace workspace)
-    {
+    public TfsWorkspace(Workspace workspace) {
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
 
         this.workspace = workspace;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return workspace.getName();
     }
 
-    public void deleteWorkspace()
-    {
+    public void deleteWorkspace() {
         workspace.getClient().deleteWorkspace(workspace);
     }
 
-    public int setLock(ItemSpec[] itemSpecs, LockLevel lockLevel, GetOptions getOptions, PendChangesOptions pendOptions)
-    {
+    public int setLock(
+        ItemSpec[] itemSpecs,
+        LockLevel lockLevel,
+        GetOptions getOptions,
+        PendChangesOptions pendOptions) {
         return workspace.setLock(itemSpecs, lockLevel, getOptions, pendOptions);
     }
 
@@ -87,8 +85,7 @@ public class TfsWorkspace
         FileEncoding fileEncoding,
         LockLevel lockLevel,
         GetOptions getOptions,
-        PendChangesOptions pendOptions)
-    {
+        PendChangesOptions pendOptions) {
         return workspace.pendAdd(items, recursive, fileEncoding, lockLevel, getOptions, pendOptions);
     }
 
@@ -96,8 +93,7 @@ public class TfsWorkspace
         ItemSpec[] itemSpecs,
         LockLevel lockLevel,
         GetOptions getOptions,
-        PendChangesOptions pendOptions)
-    {
+        PendChangesOptions pendOptions) {
         return workspace.pendDelete(itemSpecs, lockLevel, getOptions, pendOptions);
     }
 
@@ -108,8 +104,7 @@ public class TfsWorkspace
         GetOptions getOptions,
         PendChangesOptions pendOptions,
         String[] arg5,
-        boolean display)
-    {
+        boolean display) {
         return workspace.pendEdit(itemSpecs, loclLevels, fileEncodings, getOptions, pendOptions, arg5);
     }
 
@@ -120,8 +115,7 @@ public class TfsWorkspace
         LockLevel lockLevel,
         GetOptions getOptions,
         boolean detectTargetItemType,
-        PendChangesOptions pendOptions)
-    {
+        PendChangesOptions pendOptions) {
         return workspace.pendRename(oldPaths, newPaths, lockLevel, getOptions, detectTargetItemType, pendOptions);
     }
 
@@ -129,28 +123,26 @@ public class TfsWorkspace
         final String path,
         final PropertyValue[] properties,
         final RecursionType recursion,
-        final LockLevel lockLevel)
-    {
+        final LockLevel lockLevel) {
         return workspace.pendPropertyChange(path, properties, recursion, lockLevel);
     }
 
-    public void undo(ItemSpec[] itemSpecs)
-    {
+    public void undo(ItemSpec[] itemSpecs) {
         workspace.undo(itemSpecs);
     }
 
-    public void undo(ItemSpec[] itemSpecs, GetOptions getOptions)
-    {
+    public void undo(ItemSpec[] itemSpecs, GetOptions getOptions) {
         workspace.undo(itemSpecs, getOptions);
     }
 
-    public PendingSet getPendingChanges(String[] serverPaths, RecursionType recursionType, boolean includeDownloadInfo)
-    {
+    public PendingSet getPendingChanges(
+        String[] serverPaths,
+        RecursionType recursionType,
+        boolean includeDownloadInfo) {
         return workspace.getPendingChanges(serverPaths, recursionType, includeDownloadInfo);
     }
 
-    public boolean canCheckIn()
-    {
+    public boolean canCheckIn() {
         return true;
     }
 
@@ -162,8 +154,7 @@ public class TfsWorkspace
         CheckinNote checkinNote,
         WorkItemCheckinInfo[] associatedWorkItems,
         PolicyOverrideInfo policyOverrideInfo,
-        CheckinFlags flags)
-    {
+        CheckinFlags flags) {
         return workspace.checkIn(
             changes,
             author,
@@ -185,8 +176,7 @@ public class TfsWorkspace
         CheckinNote checkinNote,
         WorkItemCheckinInfo[] associatedWorkItems,
         PolicyOverrideInfo policyOverrideInfo,
-        CheckinFlags flags)
-    {
+        CheckinFlags flags) {
         return workspace.checkIn(
             changes,
             committer,
@@ -200,23 +190,19 @@ public class TfsWorkspace
             flags);
     }
 
-    public void shelve(Shelveset shelveset, PendingChange[] changes, boolean replace, boolean move)
-    {
+    public void shelve(Shelveset shelveset, PendingChange[] changes, boolean replace, boolean move) {
         workspace.shelve(shelveset, changes, replace, move);
     }
 
-    public WorkspaceOperationErrorListener getErrorListener()
-    {
+    public WorkspaceOperationErrorListener getErrorListener() {
         return new WorkspaceOperationErrorListener(workspace);
     }
 
-    public IBuildServer getBuildServer()
-    {
+    public IBuildServer getBuildServer() {
         return workspace.getClient().getConnection().getBuildServer();
     }
 
-    public WebServiceLevel getServiceLevel()
-    {
+    public WebServiceLevel getServiceLevel() {
         return workspace.getClient().getServiceLevel();
     }
 }

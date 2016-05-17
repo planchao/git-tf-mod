@@ -24,8 +24,7 @@
 
 package com.microsoft.gittf.core;
 
-public final class OutputConstants
-{
+public final class OutputConstants {
     /**
      * The new line constant to use
      */
@@ -37,7 +36,6 @@ public final class OutputConstants
      */
     public static final int DEFAULT_MAXCOMMENTROLLUP = 25;
 
-    private OutputConstants()
-    {
+    private OutputConstants() {
     }
 }

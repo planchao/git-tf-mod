@@ -66,15 +66,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>3.1.0.201310021548-r</version>
+            <version>4.3.1.201605051710-r</version>
         </dependency>
 
         <dependency>
             <groupId>com.microsoft.tfs.sdk</groupId>
             <artifactId>com.microsoft.tfs.sdk</artifactId>
-            <version>14.0.1</version>
+            <version>14.0.4</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/com.microsoft.tfs.sdk-14.0.1.jar</systemPath>
+            <systemPath>${project.basedir}/lib/com.microsoft.tfs.sdk-14.0.4.jar</systemPath>
         </dependency>
     </dependencies>
 

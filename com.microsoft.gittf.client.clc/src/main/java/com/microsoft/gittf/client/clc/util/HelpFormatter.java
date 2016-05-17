@@ -43,10 +43,8 @@ import com.microsoft.tfs.jni.ConsoleUtils;
  * Static utility class for formatting usage and help strings.
  * 
  */
-public class HelpFormatter
-{
-    private HelpFormatter()
-    {
+public class HelpFormatter {
+    private HelpFormatter() {
     }
 
     /**
@@ -57,30 +55,23 @@ public class HelpFormatter
      *        The command-line arguments accepted
      * @return A string representing the argument usage
      */
-    public static String getArgumentSyntax(Argument[] arguments)
-    {
+    public static String getArgumentSyntax(Argument[] arguments) {
         Check.notNull(arguments, "arguments"); //$NON-NLS-1$
 
         StringBuffer syntax = new StringBuffer();
 
-        for (Argument argument : arguments)
-        {
-            if (argument.getOptions().contains(ArgumentOptions.HIDDEN))
-            {
+        for (Argument argument : arguments) {
+            if (argument.getOptions().contains(ArgumentOptions.HIDDEN)) {
                 continue;
             }
 
-            if (syntax.length() > 0)
-            {
+            if (syntax.length() > 0) {
                 syntax.append(" "); //$NON-NLS-1$
             }
 
-            if (!argument.getOptions().contains(ArgumentOptions.REQUIRED))
-            {
+            if (!argument.getOptions().contains(ArgumentOptions.REQUIRED)) {
                 syntax.append(MessageFormat.format("[{0}]", getArgumentSyntax(argument, "|"))); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            else
-            {
+            } else {
                 syntax.append(getArgumentSyntax(argument, "|")); //$NON-NLS-1$
             }
         }
@@ -96,14 +87,11 @@ public class HelpFormatter
      *        The command-line arguments accepted
      * @return A string representing the help information for the arguments
      */
-    public static String getArgumentHelp(Argument[] arguments)
-    {
+    public static String getArgumentHelp(Argument[] arguments) {
         StringBuffer help = new StringBuffer();
 
-        for (Argument argument : expandArguments(arguments))
-        {
-            if (argument.getOptions().contains(ArgumentOptions.HIDDEN))
-            {
+        for (Argument argument : expandArguments(arguments)) {
+            if (argument.getOptions().contains(ArgumentOptions.HIDDEN)) {
                 continue;
             }
 
@@ -112,13 +100,10 @@ public class HelpFormatter
             help.append("    "); //$NON-NLS-1$
             help.append(String.format("%-21s", argumentSyntax)); //$NON-NLS-1$
 
-            if (argumentSyntax.length() > 21)
-            {
+            if (argumentSyntax.length() > 21) {
                 help.append("\n"); //$NON-NLS-1$
                 help.append("                          "); //$NON-NLS-1$
-            }
-            else
-            {
+            } else {
                 help.append(" "); //$NON-NLS-1$
             }
 
@@ -129,22 +114,17 @@ public class HelpFormatter
         return help.toString();
     }
 
-    private static List<Argument> expandArguments(Argument[] arguments)
-    {
+    private static List<Argument> expandArguments(Argument[] arguments) {
         final List<Argument> expanded = new ArrayList<Argument>();
 
-        for (Argument argument : arguments)
-        {
+        for (Argument argument : arguments) {
             /*
              * If a choice argument has help text of its own, it is to explain
              * all choices and we should flatten that.
              */
-            if (argument instanceof ChoiceArgument && argument.getHelpText() == null)
-            {
+            if (argument instanceof ChoiceArgument && argument.getHelpText() == null) {
                 expanded.addAll(expandArguments(((ChoiceArgument) argument).getArguments()));
-            }
-            else
-            {
+            } else {
                 expanded.add(argument);
             }
         }
@@ -152,100 +132,77 @@ public class HelpFormatter
         return expanded;
     }
 
-    private static String getArgumentSyntax(Argument argument, String aliasSeparator)
-    {
+    private static String getArgumentSyntax(Argument argument, String aliasSeparator) {
         StringBuffer syntax = new StringBuffer();
 
-        if (argument instanceof ChoiceArgument)
-        {
+        if (argument instanceof ChoiceArgument) {
             Argument[] subArguments = ((ChoiceArgument) argument).getArguments();
 
-            for (int i = 0; i < subArguments.length; i++)
-            {
-                if (i > 0)
-                {
+            for (int i = 0; i < subArguments.length; i++) {
+                if (i > 0) {
                     syntax.append(aliasSeparator);
                 }
 
                 syntax.append(getArgumentSyntax(subArguments[i], aliasSeparator));
             }
-        }
-        else if (argument instanceof NamedArgument)
-        {
+        } else if (argument instanceof NamedArgument) {
             syntax.append(MessageFormat.format("--{0}", argument.getName())); //$NON-NLS-1$
 
-            if (((NamedArgument) argument).getAlias() != (char) 0)
-            {
+            if (((NamedArgument) argument).getAlias() != (char) 0) {
                 syntax.append(aliasSeparator);
                 syntax.append(MessageFormat.format("-{0}", ((NamedArgument) argument).getAlias())); //$NON-NLS-1$
             }
 
-            if (argument instanceof ValueArgument)
-            {
+            if (argument instanceof ValueArgument) {
                 syntax.append("="); //$NON-NLS-1$
 
-                if (!argument.getOptions().contains(ArgumentOptions.VALUE_REQUIRED))
-                {
+                if (!argument.getOptions().contains(ArgumentOptions.VALUE_REQUIRED)) {
                     syntax.append("["); //$NON-NLS-1$
                 }
 
                 syntax.append(MessageFormat.format("<{0}>", ((ValueArgument) argument).getValueDescription())); //$NON-NLS-1$
 
-                if (!argument.getOptions().contains(ArgumentOptions.VALUE_REQUIRED))
-                {
+                if (!argument.getOptions().contains(ArgumentOptions.VALUE_REQUIRED)) {
                     syntax.append("]"); //$NON-NLS-1$
                 }
             }
-        }
-        else if (argument instanceof LiteralArgument)
-        {
+        } else if (argument instanceof LiteralArgument) {
             syntax.append("--"); //$NON-NLS-1$
-        }
-        else if (argument instanceof FreeArgument)
-        {
+        } else if (argument instanceof FreeArgument) {
             syntax.append(MessageFormat.format("<{0}>", argument.getName())); //$NON-NLS-1$
-        }
-        else if (argument instanceof FreeArgumentCollection)
-        {
+        } else if (argument instanceof FreeArgumentCollection) {
             syntax.append(MessageFormat.format("<{0}...>", argument.getName())); //$NON-NLS-1$
         }
 
         return syntax.toString();
     }
 
-    public static String wrap(String paragraph)
-    {
+    public static String wrap(String paragraph) {
         return wrap(paragraph, 0);
     }
 
-    private static String wrap(String paragraph, final int indent)
-    {
+    private static String wrap(String paragraph, final int indent) {
         Check.notNullOrEmpty(paragraph, "paragraph"); //$NON-NLS-1$
 
         StringBuilder wrapped = new StringBuilder();
 
         int wrapWidth = (ConsoleUtils.getInstance().getConsoleColumns() - 2) - indent;
-        if (wrapWidth < 0)
-        {
+        if (wrapWidth < 0) {
             wrapWidth = 60;
         }
 
-        while (paragraph.length() > wrapWidth)
-        {
+        while (paragraph.length() > wrapWidth) {
             /*
              * Pass one: check for a newline between us and the wrap width - if
              * there is one, we should advance to that line.
              */
             boolean modified = false;
 
-            for (int i = 0; i < wrapWidth; i++)
-            {
-                if (paragraph.charAt(i) == '\n')
-                {
+            for (int i = 0; i < wrapWidth; i++) {
+                if (paragraph.charAt(i) == '\n') {
                     wrapped.append(paragraph.substring(0, i + 1));
 
-                    for (int j = 0; j < indent; j++)
-                    {
+                    for (int j = 0; j < indent; j++) {
                         wrapped.append(' ');
                     }
 
@@ -255,8 +212,7 @@ public class HelpFormatter
                 }
             }
 
-            if (modified)
-            {
+            if (modified) {
                 continue;
             }
 
@@ -264,15 +220,12 @@ public class HelpFormatter
              * Pass two: walk backwards from wrapping width, break on the first
              * whitespace.
              */
-            for (int i = wrapWidth; i >= 0; i--)
-            {
-                if (Character.isWhitespace(paragraph.charAt(i)))
-                {
+            for (int i = wrapWidth; i >= 0; i--) {
+                if (Character.isWhitespace(paragraph.charAt(i))) {
                     wrapped.append(paragraph.substring(0, i));
                     wrapped.append('\n');
 
-                    for (int j = 0; j < indent; j++)
-                    {
+                    for (int j = 0; j < indent; j++) {
                         wrapped.append(' ');
                     }
 
@@ -282,8 +235,7 @@ public class HelpFormatter
             }
         }
 
-        if (paragraph.length() > 0)
-        {
+        if (paragraph.length() > 0) {
             wrapped.append(paragraph);
         }
 

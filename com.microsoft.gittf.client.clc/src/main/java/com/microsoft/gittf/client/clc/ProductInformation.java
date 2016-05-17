@@ -33,8 +33,7 @@ import java.util.Properties;
  * Extracts the git-tf product information from the version file
  * 
  */
-public class ProductInformation
-{
+public class ProductInformation {
     /**
      * If you change this resource, make sure to update the build script that
      * writes the version info into the file.
@@ -53,50 +52,36 @@ public class ProductInformation
 
     private static Throwable loadException;
 
-    static
-    {
+    static {
         InputStream in = ProductInformation.class.getResourceAsStream(VERSION_PROPERTIES_RESOURCE);
 
-        if (in != null)
-        {
-            try
-            {
+        if (in != null) {
+            try {
                 Properties props = new Properties();
-                try
-                {
+                try {
                     props.load(in);
                     buildNumber = props.getProperty("buildNumber"); //$NON-NLS-1$
                     major = props.getProperty("version.major"); //$NON-NLS-1$
                     minor = props.getProperty("version.minor"); //$NON-NLS-1$
                     service = props.getProperty("version.service"); //$NON-NLS-1$
-                    build = props.containsKey("version.build") ? props.getProperty("version.build") : developVersion; //$NON-NLS-1$ //$NON-NLS-2$ 
+                    build = props.containsKey("version.build") ? props.getProperty("version.build") : developVersion; //$NON-NLS-1$ //$NON-NLS-2$
 
-                    if (build.equals(snapshotVersion) || build.equals(developVersion))
-                    {
-                        buildNumber = MessageFormat.format("{0}.{1}.{2}.{3}", major, minor, service, developVersion); //$NON-NLS-1$ 
+                    if (build.equals(snapshotVersion) || build.equals(developVersion)) {
+                        buildNumber = MessageFormat.format("{0}.{1}.{2}.{3}", major, minor, service, developVersion); //$NON-NLS-1$
                     }
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     loadException = e;
                 }
-            }
-            finally
-            {
-                try
-                {
+            } finally {
+                try {
                     in.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     loadException = e;
                 }
             }
-        }
-        else
-        {
-            loadException =
-                new Exception(MessageFormat.format(
+        } else {
+            loadException = new Exception(
+                MessageFormat.format(
                     Messages.getString("ProductInformation.UnableToLoadVersionPropertiesResourceFormat"), //$NON-NLS-1$
                     VERSION_PROPERTIES_RESOURCE));
         }
@@ -105,55 +90,43 @@ public class ProductInformation
     /**
      * Constructor
      */
-    private ProductInformation()
-    {
+    private ProductInformation() {
     }
 
-    public static String getProductName()
-    {
+    public static String getProductName() {
         return productName;
     }
 
-    public static String getMajorVersion()
-    {
-        if (loadException != null)
-        {
+    public static String getMajorVersion() {
+        if (loadException != null) {
             throw new RuntimeException(loadException);
         }
         return major;
     }
 
-    public static String getMinorVersion()
-    {
-        if (loadException != null)
-        {
+    public static String getMinorVersion() {
+        if (loadException != null) {
             throw new RuntimeException(loadException);
         }
         return minor;
     }
 
-    public static String getServiceVersion()
-    {
-        if (loadException != null)
-        {
+    public static String getServiceVersion() {
+        if (loadException != null) {
             throw new RuntimeException(loadException);
         }
         return service;
     }
 
-    public static String getBuildVersion()
-    {
-        if (loadException != null)
-        {
+    public static String getBuildVersion() {
+        if (loadException != null) {
             throw new RuntimeException(loadException);
         }
         return build;
     }
 
-    public static String getBuildNumber()
-    {
-        if (loadException != null)
-        {
+    public static String getBuildNumber() {
+        if (loadException != null) {
             throw new RuntimeException(loadException);
         }
         return buildNumber;

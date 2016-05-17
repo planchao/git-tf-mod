@@ -34,28 +34,22 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.RecursionTyp
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.ChangesetVersionSpec;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.LatestVersionSpec;
 
-public final class ChangesetCommitMapUtil
-{
-    private ChangesetCommitMapUtil()
-    {
+public final class ChangesetCommitMapUtil {
+    private ChangesetCommitMapUtil() {
     }
 
-    public static ChangesetCommitDetails getLastBridgedChangeset(ChangesetCommitMap commitMap)
-        throws Exception
-    {
+    public static ChangesetCommitDetails getLastBridgedChangeset(ChangesetCommitMap commitMap) throws Exception {
         Check.notNull(commitMap, "commitMap"); //$NON-NLS-1$
 
         int lastChangesetID = commitMap.getLastBridgedChangesetID(true);
 
-        if (lastChangesetID < 0)
-        {
+        if (lastChangesetID < 0) {
             return null;
         }
 
         ObjectId lastCommitID = commitMap.getCommitID(lastChangesetID, true);
 
-        if (lastCommitID == null)
-        {
+        if (lastCommitID == null) {
             return null;
         }
 
@@ -65,8 +59,7 @@ public final class ChangesetCommitMapUtil
     public static ChangesetCommitDetails getLatestChangeset(
         ChangesetCommitMap commitMap,
         VersionControlClient versionControlClient,
-        final String serverPath)
-    {
+        final String serverPath) {
         Check.notNull(commitMap, "commitMap"); //$NON-NLS-1$
         Check.notNull(versionControlClient, "versionControlClient"); //$NON-NLS-1$
         Check.notNull(serverPath, "serverPath"); //$NON-NLS-1$
@@ -76,52 +69,44 @@ public final class ChangesetCommitMapUtil
          * Query the last changeset on the server to determine if the
          * destination path exists and its current changeset.
          */
-        Changeset[] changesets =
-            versionControlClient.queryHistory(
-                serverPath,
-                LatestVersionSpec.INSTANCE,
-                0,
-                RecursionType.FULL,
-                null,
-                new ChangesetVersionSpec(0),
-                LatestVersionSpec.INSTANCE,
-                1,
-                false,
-                false,
-                false,
-                false);
+        Changeset[] changesets = versionControlClient.queryHistory(
+            serverPath,
+            LatestVersionSpec.INSTANCE,
+            0,
+            RecursionType.FULL,
+            null,
+            new ChangesetVersionSpec(0),
+            LatestVersionSpec.INSTANCE,
+            1,
+            false,
+            false,
+            false,
+            false);
 
-        if (changesets.length == 1)
-        {
+        if (changesets.length == 1) {
             final int latestChangesetID = changesets[0].getChangesetID();
             final ObjectId latestCommitID = commitMap.getCommitID(latestChangesetID, true);
 
             return new ChangesetCommitDetails(latestChangesetID, latestCommitID);
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
-    public static final class ChangesetCommitDetails
-    {
+    public static final class ChangesetCommitDetails {
         private final int changesetID;
         private final ObjectId commitID;
 
-        public ChangesetCommitDetails(final int changesetID, final ObjectId commitID)
-        {
+        public ChangesetCommitDetails(final int changesetID, final ObjectId commitID) {
             this.changesetID = changesetID;
             this.commitID = commitID;
         }
 
-        public final int getChangesetID()
-        {
+        public final int getChangesetID() {
             return changesetID;
         }
 
-        public final ObjectId getCommitID()
-        {
+        public final ObjectId getCommitID() {
             return commitID;
         }
     }

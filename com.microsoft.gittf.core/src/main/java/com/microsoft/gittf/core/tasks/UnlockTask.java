@@ -38,9 +38,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.ItemSpec;
  * Clears the lock on a workspace
  * 
  */
-public class UnlockTask
-    extends Task
-{
+public class UnlockTask extends Task {
     private final WorkspaceService workspace;
     private final String serverPath;
 
@@ -52,8 +50,7 @@ public class UnlockTask
      * @param serverPath
      *        the server path to unlock
      */
-    public UnlockTask(final WorkspaceService workspace, final String serverPath)
-    {
+    public UnlockTask(final WorkspaceService workspace, final String serverPath) {
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
         Check.notNullOrEmpty(serverPath, "serverPath"); //$NON-NLS-1$
 
@@ -62,14 +59,13 @@ public class UnlockTask
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         progressMonitor.beginTask(
-            Messages.formatString("UnlockTask.UnlockingFormat", serverPath), TaskProgressMonitor.INDETERMINATE); //$NON-NLS-1$
+            Messages.formatString("UnlockTask.UnlockingFormat", serverPath), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE);
 
         /* Undo all changes in the workspace */
-        workspace.undo(new ItemSpec[]
-        {
+        workspace.undo(new ItemSpec[] {
             new ItemSpec(serverPath, RecursionType.FULL)
         }, GetOptions.NO_DISK_UPDATE);
 

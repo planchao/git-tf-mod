@@ -32,9 +32,7 @@ import com.microsoft.gittf.core.util.Check;
  * Defines a choice argument
  * 
  */
-public class ChoiceArgument
-    extends Argument
-{
+public class ChoiceArgument extends Argument {
     private final String helpText;
     private final Argument[] arguments;
 
@@ -43,8 +41,7 @@ public class ChoiceArgument
      * 
      * @param arguments
      */
-    public ChoiceArgument(Argument... arguments)
-    {
+    public ChoiceArgument(Argument... arguments) {
         Check.notNull(arguments, "argumnets"); //$NON-NLS-1$
 
         this.helpText = null;
@@ -57,8 +54,7 @@ public class ChoiceArgument
      * @param helpText
      * @param arguments
      */
-    public ChoiceArgument(String helpText, Argument... arguments)
-    {
+    public ChoiceArgument(String helpText, Argument... arguments) {
         Check.notNullOrEmpty(helpText, "helpText"); //$NON-NLS-1$
         Check.notNull(arguments, "arguments"); //$NON-NLS-1$
 
@@ -71,39 +67,33 @@ public class ChoiceArgument
      * 
      * @param other
      */
-    protected ChoiceArgument(ChoiceArgument other)
-    {
+    protected ChoiceArgument(ChoiceArgument other) {
         Check.notNull(other, "other"); //$NON-NLS-1$
 
         this.helpText = other.helpText;
         this.arguments = new Argument[other.arguments.length];
 
-        for (int i = 0; i < arguments.length; i++)
-        {
+        for (int i = 0; i < arguments.length; i++) {
             this.arguments[i] = other.arguments[i].clone();
         }
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return helpText;
     }
 
-    public Argument[] getArguments()
-    {
+    public Argument[] getArguments() {
         return arguments;
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         return new ChoiceArgument(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + helpText.hashCode();
         hashCode = 31 * hashCode + Arrays.hashCode(arguments);
@@ -111,32 +101,26 @@ public class ChoiceArgument
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof ChoiceArgument))
-        {
+        if (!(o instanceof ChoiceArgument)) {
             return false;
         }
 
-        if (!super.equals(o))
-        {
+        if (!super.equals(o)) {
             return false;
         }
 
         ChoiceArgument other = (ChoiceArgument) o;
 
-        if (!helpText.equals(other.helpText))
-        {
+        if (!helpText.equals(other.helpText)) {
             return false;
         }
 
-        if (!Arrays.equals(arguments, other.arguments))
-        {
+        if (!Arrays.equals(arguments, other.arguments)) {
             return false;
         }
 

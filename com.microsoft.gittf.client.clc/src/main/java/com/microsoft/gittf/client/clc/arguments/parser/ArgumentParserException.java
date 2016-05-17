@@ -24,18 +24,14 @@
 
 package com.microsoft.gittf.client.clc.arguments.parser;
 
-public class ArgumentParserException
-    extends Exception
-{
+public class ArgumentParserException extends Exception {
     private static final long serialVersionUID = -38754378722217690L;
 
-    public ArgumentParserException(String message)
-    {
+    public ArgumentParserException(String message) {
         super(message);
     }
 
-    public ArgumentParserException(String message, Throwable cause)
-    {
+    public ArgumentParserException(String message, Throwable cause) {
         super(message, cause);
     }
 }

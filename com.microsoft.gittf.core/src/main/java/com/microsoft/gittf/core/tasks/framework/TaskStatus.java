@@ -31,8 +31,7 @@ import com.microsoft.tfs.util.TypesafeEnum;
  * Represents the task execution status
  * 
  */
-public class TaskStatus
-{
+public class TaskStatus {
     /**
      * Task executed successfully
      */
@@ -73,8 +72,7 @@ public class TaskStatus
      * 
      * @param severity
      */
-    public TaskStatus(final TaskStatusSeverity severity)
-    {
+    public TaskStatus(final TaskStatusSeverity severity) {
         this(severity, 0, null, null);
     }
 
@@ -84,8 +82,7 @@ public class TaskStatus
      * @param severity
      * @param code
      */
-    public TaskStatus(final TaskStatusSeverity severity, int code)
-    {
+    public TaskStatus(final TaskStatusSeverity severity, int code) {
         this(severity, code, null, null);
     }
 
@@ -95,8 +92,7 @@ public class TaskStatus
      * @param severity
      * @param message
      */
-    public TaskStatus(final TaskStatusSeverity severity, final String message)
-    {
+    public TaskStatus(final TaskStatusSeverity severity, final String message) {
         this(severity, 0, message, null);
     }
 
@@ -107,8 +103,7 @@ public class TaskStatus
      * @param code
      * @param message
      */
-    public TaskStatus(final TaskStatusSeverity severity, int code, final String message)
-    {
+    public TaskStatus(final TaskStatusSeverity severity, int code, final String message) {
         this(severity, code, message, null);
     }
 
@@ -118,8 +113,7 @@ public class TaskStatus
      * @param severity
      * @param exception
      */
-    public TaskStatus(final TaskStatusSeverity severity, final Exception exception)
-    {
+    public TaskStatus(final TaskStatusSeverity severity, final Exception exception) {
         this(severity, 0, null, exception);
     }
 
@@ -130,8 +124,7 @@ public class TaskStatus
      * @param code
      * @param exception
      */
-    public TaskStatus(final TaskStatusSeverity severity, int code, final Exception exception)
-    {
+    public TaskStatus(final TaskStatusSeverity severity, int code, final Exception exception) {
         this(severity, code, null, exception);
     }
 
@@ -143,8 +136,11 @@ public class TaskStatus
      * @param message
      * @param exception
      */
-    public TaskStatus(final TaskStatusSeverity severity, final int code, final String message, final Exception exception)
-    {
+    public TaskStatus(
+        final TaskStatusSeverity severity,
+        final int code,
+        final String message,
+        final Exception exception) {
         Check.notNull(severity, "severity"); //$NON-NLS-1$
 
         this.severity = severity;
@@ -158,8 +154,7 @@ public class TaskStatus
      * 
      * @return
      */
-    public TaskStatusSeverity getSeverity()
-    {
+    public TaskStatusSeverity getSeverity() {
         return severity;
     }
 
@@ -168,8 +163,7 @@ public class TaskStatus
      * 
      * @return
      */
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 
@@ -178,8 +172,7 @@ public class TaskStatus
      * 
      * @return
      */
-    public String getMessage()
-    {
+    public String getMessage() {
         return message;
     }
 
@@ -188,8 +181,7 @@ public class TaskStatus
      * 
      * @return
      */
-    public Exception getException()
-    {
+    public Exception getException() {
         return exception;
     }
 
@@ -198,8 +190,7 @@ public class TaskStatus
      * 
      * @return
      */
-    public boolean isOK()
-    {
+    public boolean isOK() {
         return TaskStatus.OK.equals(severity);
     }
 
@@ -207,11 +198,8 @@ public class TaskStatus
      * The task severity enum
      * 
      */
-    public static class TaskStatusSeverity
-        extends TypesafeEnum
-    {
-        private TaskStatusSeverity(int value)
-        {
+    public static class TaskStatusSeverity extends TypesafeEnum {
+        private TaskStatusSeverity(int value) {
             super(value);
         }
     }

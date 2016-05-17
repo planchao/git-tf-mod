@@ -10,9 +10,7 @@ import com.microsoft.gittf.core.identity.UserMap;
 import com.microsoft.gittf.core.tasks.framework.TaskProgressMonitor;
 import com.microsoft.tfs.core.clients.webservices.IdentitySearchFactor;
 
-public class MockUserMap
-    extends UserMap
-{
+public class MockUserMap extends UserMap {
     private final String[] userMapFile;
     private final GitUser[] gitUsers;
     private final TfsUser[] tfsUsers;
@@ -22,8 +20,7 @@ public class MockUserMap
         final String userMapPath,
         final String[] userMapFile,
         final GitUser[] gitUsers,
-        final TfsUser[] tfsUsers)
-    {
+        final TfsUser[] tfsUsers) {
         super(userMapPath);
 
         this.userMapFile = userMapFile;
@@ -32,28 +29,23 @@ public class MockUserMap
     }
 
     @Override
-    protected List<String> readUserMapFile()
-    {
+    protected List<String> readUserMapFile() {
         return Arrays.asList(userMapFile);
     }
 
     @Override
-    protected void writeUserMapFile(List<String> fileLines)
-    {
+    protected void writeUserMapFile(List<String> fileLines) {
         newUserMapFile = fileLines.toArray(new String[fileLines.size()]);
     }
 
     @Override
-    public void addGitUsers()
-    {
-        for (final GitUser gitUser : gitUsers)
-        {
+    public void addGitUsers() {
+        for (final GitUser gitUser : gitUsers) {
             addGitUser(gitUser);
         }
     }
 
-    public String[] getNewUserMapFile()
-    {
+    public String[] getNewUserMapFile() {
         return newUserMapFile;
     }
 
@@ -61,8 +53,7 @@ public class MockUserMap
     protected Map<String, List<TfsUser>> findTfsUsers(
         TaskProgressMonitor progressMonitor,
         List<String> searchValues,
-        IdentitySearchFactor searchFactor)
-    {
+        IdentitySearchFactor searchFactor) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -34,25 +34,21 @@ import com.microsoft.tfs.util.Check;
  * Defines a console implementation that will be used by git-tf
  * 
  */
-public class Console
-{
+public class Console {
     /**
      * The verbosity that the console adheres to
      * 
      */
-    public enum Verbosity
-    {
+    public enum Verbosity {
         QUIET(-1), NORMAL(0), VERBOSE(1);
 
         private final int value;
 
-        private Verbosity(int value)
-        {
+        private Verbosity(int value) {
             this.value = value;
         }
 
-        public final int getValue()
-        {
+        public final int getValue() {
             return value;
         }
     };
@@ -66,49 +62,40 @@ public class Console
     /**
      * Constructor
      */
-    public Console()
-    {
+    public Console() {
     }
 
-    public void setVerbosity(Verbosity verbosity)
-    {
+    public void setVerbosity(Verbosity verbosity) {
         Check.notNull(verbosity, "verbosity"); //$NON-NLS-1$
 
         this.verbosity = verbosity;
     }
 
-    public Verbosity getVerbosity()
-    {
+    public Verbosity getVerbosity() {
         return verbosity;
     }
 
-    public PrintStream getOutputStream()
-    {
+    public PrintStream getOutputStream() {
         return outputStream;
     }
 
-    public PrintStream getErrorStream()
-    {
+    public PrintStream getErrorStream() {
         return errorStream;
     }
 
-    public PrintStream getOutputStream(Verbosity verbosity)
-    {
-        if (verbosity.getValue() <= this.verbosity.getValue())
-        {
+    public PrintStream getOutputStream(Verbosity verbosity) {
+        if (verbosity.getValue() <= this.verbosity.getValue()) {
             return outputStream;
         }
 
         return new NullPrintStream();
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return ConsoleUtils.getInstance().getConsoleColumns();
     }
 
-    public boolean supportsOverwrite()
-    {
+    public boolean supportsOverwrite() {
         /*
          * If we can't determine the console width, then that likely means we're
          * running in a console emulator that is incapable of displaying

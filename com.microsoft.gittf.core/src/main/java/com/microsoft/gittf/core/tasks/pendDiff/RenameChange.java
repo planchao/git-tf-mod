@@ -33,9 +33,7 @@ import com.microsoft.gittf.core.util.Check;
  * TFS
  * 
  */
-public class RenameChange
-    extends Change
-{
+public class RenameChange extends Change {
     private final String oldPath;
     private boolean isEdit;
 
@@ -51,8 +49,7 @@ public class RenameChange
      * @param isEdit
      *        is this a pure rename or is a rename edit
      */
-    public RenameChange(final String oldPath, final String newPath, final ObjectId objectID, boolean isEdit)
-    {
+    public RenameChange(final String oldPath, final String newPath, final ObjectId objectID, boolean isEdit) {
         super(newPath, objectID);
 
         Check.notNullOrEmpty(oldPath, "oldPath"); //$NON-NLS-1$
@@ -67,8 +64,7 @@ public class RenameChange
      * 
      * @return
      */
-    public String getOldPath()
-    {
+    public String getOldPath() {
         return oldPath;
     }
 
@@ -77,8 +73,7 @@ public class RenameChange
      * 
      * @return
      */
-    public String getNewPath()
-    {
+    public String getNewPath() {
         return getPath();
     }
 
@@ -87,8 +82,7 @@ public class RenameChange
      * 
      * @return
      */
-    public boolean isEdit()
-    {
+    public boolean isEdit() {
         return isEdit;
     }
 
@@ -98,8 +92,7 @@ public class RenameChange
      * @param objectID
      *        the new object Id
      */
-    public void updateEditInformation(ObjectId objectID)
-    {
+    public void updateEditInformation(ObjectId objectID) {
         isEdit = !ObjectId.zeroId().equals(objectID);
         this.objectID = objectID;
     }

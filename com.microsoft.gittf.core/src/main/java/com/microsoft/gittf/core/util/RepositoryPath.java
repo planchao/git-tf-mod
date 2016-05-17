@@ -28,13 +28,11 @@ package com.microsoft.gittf.core.util;
  * Repository path utility functions.
  * 
  */
-public final class RepositoryPath
-{
+public final class RepositoryPath {
     /**
      * Constructor
      */
-    private RepositoryPath()
-    {
+    private RepositoryPath() {
 
     }
 
@@ -48,9 +46,9 @@ public final class RepositoryPath
      * Allowed path separator characters in repository paths. All characters are
      * equivalent. Forward slash ('/') is the preferred character.
      */
-    public static final char[] SEPARATOR_CHARACTERS =
-    {
-        '/', '\\'
+    public static final char[] SEPARATOR_CHARACTERS = {
+        '/',
+        '\\'
     };
 
     /**
@@ -65,18 +63,15 @@ public final class RepositoryPath
      * @return a repository path with only the folder part of the given path,
      *         ending in a separator character.
      */
-    public static String getParent(String repositoryPath)
-    {
+    public static String getParent(String repositoryPath) {
         Check.notNull(repositoryPath, "repositoryPath"); //$NON-NLS-1$
 
         int largestIndex = -1;
-        for (int i = 0; i < RepositoryPath.SEPARATOR_CHARACTERS.length; i++)
-        {
+        for (int i = 0; i < RepositoryPath.SEPARATOR_CHARACTERS.length; i++) {
             largestIndex = Math.max(largestIndex, repositoryPath.lastIndexOf(RepositoryPath.SEPARATOR_CHARACTERS[i]));
         }
 
-        if (largestIndex != -1)
-        {
+        if (largestIndex != -1) {
             return repositoryPath.substring(0, largestIndex);
 
         }
@@ -91,18 +86,14 @@ public final class RepositoryPath
      * @param ancestor
      * @return true if child is a decendant of parent
      */
-    public static boolean isAncestor(String child, String ancestor)
-    {
-        if (child.length() <= ancestor.length())
-        {
+    public static boolean isAncestor(String child, String ancestor) {
+        if (child.length() <= ancestor.length()) {
             return false;
         }
 
         String currentParent = getParent(child);
-        while (currentParent != null && currentParent.length() > 0)
-        {
-            if (currentParent.equals(ancestor))
-            {
+        while (currentParent != null && currentParent.length() > 0) {
+            if (currentParent.equals(ancestor)) {
                 return true;
             }
 
@@ -114,9 +105,9 @@ public final class RepositoryPath
 
     /**
      * Gets just the file part of the given server path, which is all of the
-     * string after the last path part. If there are no separators, the
-     * entire string is returned. If the string ends in a separator, an empty
-     * string is returned.
+     * string after the last path part. If there are no separators, the entire
+     * string is returned. If the string ends in a separator, an empty string is
+     * returned.
      * 
      * @param repositoryPath
      *        the repository path from which to parse the file part (must not be
@@ -125,18 +116,15 @@ public final class RepositoryPath
      *         given path if no separator characters were found, or an empty
      *         string if the given path ends with a separator.
      */
-    public static String getFileName(final String repositoryPath)
-    {
+    public static String getFileName(final String repositoryPath) {
         Check.notNull(repositoryPath, "repositoryPath"); //$NON-NLS-1$
 
         int largestIndex = -1;
-        for (int i = 0; i < RepositoryPath.SEPARATOR_CHARACTERS.length; i++)
-        {
+        for (int i = 0; i < RepositoryPath.SEPARATOR_CHARACTERS.length; i++) {
             largestIndex = Math.max(largestIndex, repositoryPath.lastIndexOf(RepositoryPath.SEPARATOR_CHARACTERS[i]));
         }
 
-        if (largestIndex == -1)
-        {
+        if (largestIndex == -1) {
             return repositoryPath;
         }
 
@@ -144,12 +132,9 @@ public final class RepositoryPath
          * Add 1 to return the part after the sep, unless that would be longer
          * than the string ("$/Project/folder/" would be that case).
          */
-        if (largestIndex + 1 < repositoryPath.length())
-        {
+        if (largestIndex + 1 < repositoryPath.length()) {
             return repositoryPath.substring(largestIndex + 1);
-        }
-        else
-        {
+        } else {
             return ""; //$NON-NLS-1$
         }
     }
@@ -162,8 +147,7 @@ public final class RepositoryPath
      *        the repository path to test (must not be <code>null</code>)
      * @return the depth from root, where root is 0, team projects are 1, etc.
      */
-    public static int getFolderDepth(final String repositoryPath)
-    {
+    public static int getFolderDepth(final String repositoryPath) {
         return RepositoryPath.getFolderDepth(repositoryPath, Integer.MAX_VALUE);
     }
 
@@ -177,15 +161,13 @@ public final class RepositoryPath
      *        the maximum depth to search.
      * @return the depth from root, where root is 0, team projects are 1, etc.
      */
-    public static int getFolderDepth(final String repositoryPath, final int maxDepth)
-    {
+    public static int getFolderDepth(final String repositoryPath, final int maxDepth) {
         Check.notNull(repositoryPath, "repositoryPath"); //$NON-NLS-1$
 
         int depth = 0;
 
         for (int i = repositoryPath.indexOf(PREFERRED_SEPARATOR_STRING); i != -1 && maxDepth > depth; i =
-            repositoryPath.indexOf(PREFERRED_SEPARATOR_STRING, i + 1))
-        {
+            repositoryPath.indexOf(PREFERRED_SEPARATOR_STRING, i + 1)) {
             depth++;
         }
 

@@ -30,11 +30,8 @@ import java.util.Comparator;
  * Compares two Rename Objects using their old path
  * 
  */
-public class RenameChangeOldPathCompartor
-    implements Comparator<RenameChange>
-{
-    public int compare(RenameChange arg0, RenameChange arg1)
-    {
+public class RenameChangeOldPathCompartor implements Comparator<RenameChange> {
+    public int compare(RenameChange arg0, RenameChange arg1) {
         return arg0.getOldPath().compareTo(arg1.getOldPath());
     }
 }

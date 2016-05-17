@@ -48,8 +48,7 @@ import com.microsoft.tfs.util.Check;
  * against the TFS server
  * 
  */
-public class CheckinAnalysisChangeCollection
-{
+public class CheckinAnalysisChangeCollection {
     private final Repository repository;
     private final RevObject targetTree;
     private final RevObject sourceTree;
@@ -67,8 +66,7 @@ public class CheckinAnalysisChangeCollection
     /**
      * Constructor
      */
-    public CheckinAnalysisChangeCollection()
-    {
+    public CheckinAnalysisChangeCollection() {
         this.repository = null;
         this.sourceTree = null;
         this.targetTree = null;
@@ -88,8 +86,7 @@ public class CheckinAnalysisChangeCollection
     public CheckinAnalysisChangeCollection(
         final Repository repository,
         final RevObject sourceTree,
-        final RevObject targetTree)
-    {
+        final RevObject targetTree) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(sourceTree, "sourceTree"); //$NON-NLS-1$
         Check.notNull(targetTree, "targetTree"); //$NON-NLS-1$
@@ -105,8 +102,7 @@ public class CheckinAnalysisChangeCollection
      * @param processDeletedFolders
      *        - whether or not deleted folders should be detected
      */
-    public void setProcessDeletedFolders(boolean processDeletedFolders)
-    {
+    public void setProcessDeletedFolders(boolean processDeletedFolders) {
         this.processDeletedFolders = processDeletedFolders;
     }
 
@@ -115,8 +111,7 @@ public class CheckinAnalysisChangeCollection
      * 
      * @return
      */
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return adds.isEmpty() && edits.isEmpty() && deletes.isEmpty() && renames.isEmpty() && properties.isEmpty();
     }
 
@@ -125,8 +120,7 @@ public class CheckinAnalysisChangeCollection
      * 
      * @return
      */
-    public final List<AddChange> getAdds()
-    {
+    public final List<AddChange> getAdds() {
         return Collections.unmodifiableList(adds);
     }
 
@@ -135,8 +129,7 @@ public class CheckinAnalysisChangeCollection
      * 
      * @return
      */
-    public final List<EditChange> getEdits()
-    {
+    public final List<EditChange> getEdits() {
         return Collections.unmodifiableList(edits);
     }
 
@@ -153,8 +146,7 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
+            IOException {
         return Collections.unmodifiableList(deletes);
     }
 
@@ -171,8 +163,7 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
+            IOException {
         return Collections.unmodifiableList(renames);
     }
 
@@ -181,8 +172,7 @@ public class CheckinAnalysisChangeCollection
      * 
      * @return
      */
-    public final List<PropertyChange> getProperties()
-    {
+    public final List<PropertyChange> getProperties() {
         return Collections.unmodifiableList(properties);
     }
 
@@ -192,9 +182,7 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendAdd(AddChange change)
-        throws Exception
-    {
+    public final void pendAdd(AddChange change) throws Exception {
         adds.add(change);
     }
 
@@ -204,9 +192,7 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendEdit(EditChange change)
-        throws Exception
-    {
+    public final void pendEdit(EditChange change) throws Exception {
         edits.add(change);
     }
 
@@ -216,15 +202,14 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendDelete(DeleteChange change)
-        throws Exception
-    {
+    public final void pendDelete(DeleteChange change) throws Exception {
         /* if the structure should identify deleted folders */
-        if (processDeletedFolders)
-        {
-            /* check whether a delete needs to be pended for the folder or not */
-            pendFolderDeleteIfNeeded(change.getType() == FileMode.TREE ? change.getPath()
-                : RepositoryPath.getParent(change.getPath()));
+        if (processDeletedFolders) {
+            /*
+             * check whether a delete needs to be pended for the folder or not
+             */
+            pendFolderDeleteIfNeeded(
+                change.getType() == FileMode.TREE ? change.getPath() : RepositoryPath.getParent(change.getPath()));
         }
 
         deletes.add(change);
@@ -236,9 +221,7 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendRename(RenameChange change)
-        throws Exception
-    {
+    public final void pendRename(RenameChange change) throws Exception {
         renames.add(change);
     }
 
@@ -248,9 +231,7 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendProperty(PropertyChange change)
-        throws Exception
-    {
+    public final void pendProperty(PropertyChange change) throws Exception {
         properties.add(change);
     }
 
@@ -260,11 +241,8 @@ public class CheckinAnalysisChangeCollection
      * @param change
      * @throws Exception
      */
-    public final void pendPropertyIfChanged(PropertyChange change)
-        throws Exception
-    {
-        if (change.isPropertyChanged())
-        {
+    public final void pendPropertyIfChanged(PropertyChange change) throws Exception {
+        if (change.isPropertyChanged()) {
             properties.add(change);
         }
     }
@@ -278,12 +256,7 @@ public class CheckinAnalysisChangeCollection
      * @throws CorruptObjectException
      * @throws IOException
      */
-    public int size()
-        throws MissingObjectException,
-            IncorrectObjectTypeException,
-            CorruptObjectException,
-            IOException
-    {
+    public int size() throws MissingObjectException, IncorrectObjectTypeException, CorruptObjectException, IOException {
         return adds.size() + deletes.size() + edits.size() + renames.size() + properties.size();
     }
 
@@ -301,10 +274,8 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
-        if (repository == null || sourceTree == null || targetTree == null)
-        {
+            IOException {
+        if (repository == null || sourceTree == null || targetTree == null) {
             return new TfsFolderRenameDetector();
         }
 
@@ -325,20 +296,17 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
+            IOException {
         /*
          * if the repository or the target tree are null the calculation cannot
          * be performed
          */
-        if (repository == null || targetTree == null)
-        {
+        if (repository == null || targetTree == null) {
             return;
         }
 
         ObjectReader objectReader = repository.newObjectReader();
-        try
-        {
+        try {
             /*
              * if this folder is deleted we need to walk its parents recursively
              * until we find the upper most folder that was deleted
@@ -346,24 +314,19 @@ public class CheckinAnalysisChangeCollection
             String folderToDelete = getUpperMostFolderToDelete(folderPath, null, objectReader, targetTree);
 
             /* if this folder was deleted already there is nothing else to do */
-            if (processedDeletedFolders.contains(folderToDelete))
-            {
+            if (processedDeletedFolders.contains(folderToDelete)) {
                 return;
             }
 
             /* pend a delete for the folder */
             processedDeletedFolders.add(folderToDelete);
 
-            if (folderToDelete != null && folderToDelete.length() != 0)
-            {
+            if (folderToDelete != null && folderToDelete.length() != 0) {
                 deletes.add(new DeleteChange(folderToDelete, FileMode.TREE));
             }
-        }
-        finally
-        {
-            if (objectReader != null)
-            {
-                objectReader.release();
+        } finally {
+            if (objectReader != null) {
+                objectReader.close();
             }
         }
     }
@@ -376,14 +339,12 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
+            IOException {
         /*
          * if the file path is empty then we reached the end of the recursive
          * walk
          */
-        if (filePath == null || filePath.length() == 0)
-        {
+        if (filePath == null || filePath.length() == 0) {
             return previousFilePath;
         }
 
@@ -391,9 +352,12 @@ public class CheckinAnalysisChangeCollection
          * if this folder does not exist in the tree then we need to check its
          * parent
          */
-        if (!folderExistsInTree(filePath, objectReader, commitRevTree))
-        {
-            return getUpperMostFolderToDelete(RepositoryPath.getParent(filePath), filePath, objectReader, commitRevTree);
+        if (!folderExistsInTree(filePath, objectReader, commitRevTree)) {
+            return getUpperMostFolderToDelete(
+                RepositoryPath.getParent(filePath),
+                filePath,
+                objectReader,
+                commitRevTree);
         }
 
         /* otherwise the previous file path was the one deleted */
@@ -419,22 +383,17 @@ public class CheckinAnalysisChangeCollection
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
+            IOException {
         TreeWalk folder = null;
-        try
-        {
+        try {
             /* Check the tree walk object for the folder */
             folder = TreeWalk.forPath(objectReader, filePath, commitRevTree);
 
             /* if the folder exists the treewalk object will not be null */
             return folder != null;
-        }
-        finally
-        {
-            if (folder != null)
-            {
-                folder.release();
+        } finally {
+            if (folder != null) {
+                folder.close();
             }
         }
     }

@@ -31,20 +31,16 @@ import java.util.Comparator;
  * commit tree
  * 
  */
-public class CommitTreePathComparator
-    implements Comparator<CommitTreePath>
-{
+public class CommitTreePathComparator implements Comparator<CommitTreePath> {
     /**
      * Compares two CommitTreePath objects
      */
-    public int compare(CommitTreePath x, CommitTreePath y)
-    {
+    public int compare(CommitTreePath x, CommitTreePath y) {
         int xDepth = x.getDepth();
         int yDepth = y.getDepth();
 
         // compare the items only if the depth is the same
-        if (xDepth == yDepth)
-        {
+        if (xDepth == yDepth) {
             return x.getFullName().toLowerCase().compareTo(y.getFullName().toLowerCase());
         }
 

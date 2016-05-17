@@ -33,13 +33,10 @@ import java.text.MessageFormat;
  * @author jpresto
  * 
  */
-public class InvalidConfigurationException
-    extends Exception
-{
+public class InvalidConfigurationException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public InvalidConfigurationException(String message)
-    {
+    public InvalidConfigurationException(String message) {
         super(MessageFormat.format("{0}\n{1}\n{2}\n", message, HELP, SAMPLETESTFILE)); //$NON-NLS-1$
     }
 
@@ -61,9 +58,8 @@ public class InvalidConfigurationException
         + "  </TestVariables>\n" //$NON-NLS-1$
         + "</TestEnvironment>  \n"; //$NON-NLS-1$
 
-    private static final String HELP =
-        "Be sure to have a valid TestEnviornment.xml file and have it either " //$NON-NLS-1$
-            + "in c:\\ or an environment variable named 'TestConfiguraitonFile' pointing to where the test configuration file " //$NON-NLS-1$
-            + "is located.  Below is a sample configuration file; be sure the collection and the team project " //$NON-NLS-1$
-            + "already exists (these tests do not create TFS collections or team projects"; //$NON-NLS-1$
+    private static final String HELP = "Be sure to have a valid TestEnviornment.xml file and have it either " //$NON-NLS-1$
+        + "in c:\\ or an environment variable named 'TestConfiguraitonFile' pointing to where the test configuration file " //$NON-NLS-1$
+        + "is located.  Below is a sample configuration file; be sure the collection and the team project " //$NON-NLS-1$
+        + "already exists (these tests do not create TFS collections or team projects"; //$NON-NLS-1$
 }

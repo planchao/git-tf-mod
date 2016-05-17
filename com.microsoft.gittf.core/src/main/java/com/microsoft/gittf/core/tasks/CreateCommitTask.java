@@ -55,9 +55,7 @@ import com.microsoft.gittf.core.util.tree.CommitTreeEntry;
 import com.microsoft.gittf.core.util.tree.CommitTreePath;
 import com.microsoft.tfs.core.clients.versioncontrol.path.ServerPath;
 
-public abstract class CreateCommitTask
-    extends Task
-{
+public abstract class CreateCommitTask extends Task {
     protected final Repository repository;
     protected final VersionControlService versionControlService;
     protected final ObjectId parentCommitID;
@@ -70,8 +68,7 @@ public abstract class CreateCommitTask
     public CreateCommitTask(
         final Repository repository,
         final VersionControlService versionControlClient,
-        ObjectId parentCommitID)
-    {
+        ObjectId parentCommitID) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(versionControlClient, "versionControlClient"); //$NON-NLS-1$
 
@@ -91,27 +88,23 @@ public abstract class CreateCommitTask
 
     }
 
-    public ObjectId getCommitID()
-    {
+    public ObjectId getCommitID() {
         return commitId;
     }
 
-    protected void validateTempDirectory()
-        throws Exception
-    {
+    protected void validateTempDirectory() throws Exception {
         /* Sanity-check the temporary directory */
-        if (!tempDir.exists())
-        {
-            if (!tempDir.mkdirs())
-            {
-                throw new Exception(Messages.formatString("CreateCommitTask.ErrorCreatingTempDirectoryMessageFormat", //$NON-NLS-1$
+        if (!tempDir.exists()) {
+            if (!tempDir.mkdirs()) {
+                throw new Exception(Messages.formatString(
+                    "CreateCommitTask.ErrorCreatingTempDirectoryMessageFormat", //$NON-NLS-1$
                     tempDir.getAbsolutePath()));
             }
         }
 
-        if (!tempDir.isDirectory())
-        {
-            throw new Exception(Messages.formatString("CreateCommitTask.ErrorCreatingTempDirectoryMessageFormat", //$NON-NLS-1$
+        if (!tempDir.isDirectory()) {
+            throw new Exception(Messages.formatString(
+                "CreateCommitTask.ErrorCreatingTempDirectoryMessageFormat", //$NON-NLS-1$
                 tempDir.getAbsolutePath()));
         }
     }
@@ -122,9 +115,7 @@ public abstract class CreateCommitTask
         final String serverItemPath,
         final ObjectId blobID,
         final FileMode fileMode,
-        final TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+        final TaskProgressMonitor progressMonitor) throws Exception {
         Check.notNull(repositoryInserter, "repositoryInserter"); //$NON-NLS-1$
         Check.notNull(treeHierarchy, "treeHierarchy"); //$NON-NLS-1$
         Check.notNull(serverItemPath, "serverItemPath"); //$NON-NLS-1$
@@ -140,9 +131,9 @@ public abstract class CreateCommitTask
 
         Map<CommitTreePath, CommitTreeEntry> parentTree = treeHierarchy.get(new CommitTreePath(folderName, OBJ_TREE));
 
-        if (parentTree == null)
-        {
-            throw new RuntimeException(Messages.formatString("CreateCommitTask.CouldNotLocateParentTreeFormat", //$NON-NLS-1$
+        if (parentTree == null) {
+            throw new RuntimeException(Messages.formatString(
+                "CreateCommitTask.CouldNotLocateParentTreeFormat", //$NON-NLS-1$
                 folderName));
         }
 
@@ -151,20 +142,16 @@ public abstract class CreateCommitTask
 
     protected void addToTreeHierarchy(
         final Map<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeHierarchy,
-        final String folderPath)
-        throws Exception
-    {
+        final String folderPath) throws Exception {
         final CommitTreePath folderKey = new CommitTreePath(folderPath, OBJ_TREE);
 
-        if (treeHierarchy.containsKey(folderKey))
-        {
+        if (treeHierarchy.containsKey(folderKey)) {
             return;
         }
 
         treeHierarchy.put(folderKey, new TreeMap<CommitTreePath, CommitTreeEntry>());
 
-        if (folderPath.length() == 0)
-        {
+        if (folderPath.length() == 0) {
             return;
         }
 
@@ -176,9 +163,7 @@ public abstract class CreateCommitTask
 
     protected ObjectId createTrees(
         final ObjectInserter repositoryInserter,
-        final Map<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeHierarchy)
-        throws IOException
-    {
+        final Map<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeHierarchy) throws IOException {
         Check.notNull(repositoryInserter, "repositoryInserter"); //$NON-NLS-1$
         Check.notNull(treeHierarchy, "treeHierarchy"); //$NON-NLS-1$
 
@@ -187,73 +172,63 @@ public abstract class CreateCommitTask
          * hierarchies together - otherwise this is an empty folder thus we need
          * to create an empty tree
          */
-        if (treeHierarchy.size() > 0)
-        {
+        if (treeHierarchy.size() > 0) {
             /* Link up trees with their parents */
-            for (Entry<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeEntry : treeHierarchy.entrySet())
-            {
+            for (Entry<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeEntry : treeHierarchy.entrySet()) {
                 String repoRelativeName = treeEntry.getKey().getName();
                 Map<CommitTreePath, CommitTreeEntry> thisTree = treeEntry.getValue();
 
                 /* Ignore the repository root directory */
-                if (repoRelativeName.length() == 0)
-                {
+                if (repoRelativeName.length() == 0) {
                     continue;
                 }
 
-                String folderName =
-                    repoRelativeName.indexOf(RepositoryPath.PREFERRED_SEPARATOR_CHARACTER) >= 0
-                        ? RepositoryPath.getParent(repoRelativeName) : ""; //$NON-NLS-1$
+                String folderName = repoRelativeName.indexOf(RepositoryPath.PREFERRED_SEPARATOR_CHARACTER) >= 0
+                    ? RepositoryPath.getParent(repoRelativeName) : ""; //$NON-NLS-1$
 
                 String fileName = RepositoryPath.getFileName(repoRelativeName);
 
                 Map<CommitTreePath, CommitTreeEntry> parentTree =
                     treeHierarchy.get(new CommitTreePath(folderName, OBJ_TREE));
 
-                if (parentTree == null)
-                {
-                    throw new RuntimeException(Messages.formatString("CreateCommitTask.CouldNotLocateParentTreeFormat", //$NON-NLS-1$
+                if (parentTree == null) {
+                    throw new RuntimeException(Messages.formatString(
+                        "CreateCommitTask.CouldNotLocateParentTreeFormat", //$NON-NLS-1$
                         folderName));
                 }
 
                 ObjectId thisTreeID = createTree(repositoryInserter, thisTree);
 
-                if (!ObjectId.zeroId().equals(thisTreeID))
-                {
-                    parentTree.put(new CommitTreePath(fileName, OBJ_TREE), new CommitTreeEntry(
-                        FileMode.TREE,
-                        thisTreeID));
+                if (!ObjectId.zeroId().equals(thisTreeID)) {
+                    parentTree.put(
+                        new CommitTreePath(fileName, OBJ_TREE),
+                        new CommitTreeEntry(FileMode.TREE, thisTreeID));
                 }
             }
 
             /* Add the root tree */
             Map<CommitTreePath, CommitTreeEntry> rootTree = treeHierarchy.get(new CommitTreePath("", OBJ_TREE)); //$NON-NLS-1$
 
-            if (rootTree == null)
-            {
+            if (rootTree == null) {
                 throw new RuntimeException(Messages.getString("CreateCommitTask.CouldNotLocateRootTree")); //$NON-NLS-1$
             }
 
             return createTree(repositoryInserter, rootTree);
-        }
-        else
-        {
+        } else {
             return createEmptyTree(repositoryInserter);
         }
     }
 
-    private ObjectId createTree(final ObjectInserter repositoryInserter, final Map<CommitTreePath, CommitTreeEntry> tree)
-        throws IOException
-    {
-        if (tree.isEmpty())
-        {
+    private ObjectId createTree(
+        final ObjectInserter repositoryInserter,
+        final Map<CommitTreePath, CommitTreeEntry> tree) throws IOException {
+        if (tree.isEmpty()) {
             return createEmptyTree(repositoryInserter);
         }
 
         TreeFormatter treeFormatter = new TreeFormatter();
 
-        for (Entry<CommitTreePath, CommitTreeEntry> entry : tree.entrySet())
-        {
+        for (Entry<CommitTreePath, CommitTreeEntry> entry : tree.entrySet()) {
             String name = entry.getKey().getName();
             FileMode mode = entry.getValue().getFileMode();
             ObjectId objectId = entry.getValue().getObjectID();
@@ -264,9 +239,7 @@ public abstract class CreateCommitTask
         return treeFormatter.insertTo(repositoryInserter);
     }
 
-    protected ObjectId createEmptyTree(ObjectInserter repositoryInserter)
-        throws IOException
-    {
+    protected ObjectId createEmptyTree(ObjectInserter repositoryInserter) throws IOException {
         TreeFormatter treeFormatter = new TreeFormatter();
         return treeFormatter.insertTo(repositoryInserter);
     }
@@ -280,24 +253,18 @@ public abstract class CreateCommitTask
         String committerName,
         String committerEmail,
         Calendar changesetDate,
-        String commitMessage)
-        throws IOException
-    {
+        String commitMessage) throws IOException {
         Check.notNull(repositoryInserter, "repositoryInserter"); //$NON-NLS-1$
         Check.notNull(rootTree, "rootTree"); //$NON-NLS-1$
 
         CommitBuilder commit = new CommitBuilder();
         commit.setAuthor(new PersonIdent(authorName, authorEmail, changesetDate.getTime(), TimeZone.getDefault()));
-        commit.setCommitter(new PersonIdent(
-            committerName,
-            committerEmail,
-            changesetDate.getTime(),
-            TimeZone.getDefault()));
+        commit.setCommitter(
+            new PersonIdent(committerName, committerEmail, changesetDate.getTime(), TimeZone.getDefault()));
         commit.setMessage(commitMessage);
         commit.setTreeId(rootTree);
 
-        if (parentId != null)
-        {
+        if (parentId != null) {
             commit.setParentId(parentId);
         }
 

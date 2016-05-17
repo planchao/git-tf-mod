@@ -50,9 +50,7 @@ import com.microsoft.tfs.core.util.FileEncoding;
  * Workspace object used to display the pending changes pended only
  * 
  */
-public class PreviewOnlyWorkspace
-    implements WorkspaceService
-{
+public class PreviewOnlyWorkspace implements WorkspaceService {
     private final TaskProgressMonitor progressMonitor;
 
     /**
@@ -64,24 +62,24 @@ public class PreviewOnlyWorkspace
      * @param progressMonitor
      *        the progress monitor used to display the pending change
      */
-    public PreviewOnlyWorkspace(TaskProgressMonitor progressMonitor)
-    {
+    public PreviewOnlyWorkspace(TaskProgressMonitor progressMonitor) {
         Check.notNull(progressMonitor, "progressMonitor"); //$NON-NLS-1$
 
         this.progressMonitor = progressMonitor;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return "PreviewOnlyWorkspace"; //$NON-NLS-1$
     }
 
-    public void deleteWorkspace()
-    {
+    public void deleteWorkspace() {
     }
 
-    public int setLock(ItemSpec[] itemSpecs, LockLevel loclLevel, GetOptions getOptions, PendChangesOptions pendOptions)
-    {
+    public int setLock(
+        ItemSpec[] itemSpecs,
+        LockLevel loclLevel,
+        GetOptions getOptions,
+        PendChangesOptions pendOptions) {
         return itemSpecs.length;
     }
 
@@ -91,10 +89,8 @@ public class PreviewOnlyWorkspace
         FileEncoding fileEncoding,
         LockLevel lockLevel,
         GetOptions getOptions,
-        PendChangesOptions pendOptions)
-    {
-        for (String item : items)
-        {
+        PendChangesOptions pendOptions) {
+        for (String item : items) {
             progressMonitor.displayMessage(Messages.formatString("PreviewOnlyWorkspace.AddFormat", item)); //$NON-NLS-1$
         }
 
@@ -105,10 +101,8 @@ public class PreviewOnlyWorkspace
         ItemSpec[] itemSpecs,
         LockLevel lockLevel,
         GetOptions getOptions,
-        PendChangesOptions pendOptions)
-    {
-        for (ItemSpec item : itemSpecs)
-        {
+        PendChangesOptions pendOptions) {
+        for (ItemSpec item : itemSpecs) {
             progressMonitor.displayMessage(Messages.formatString("PreviewOnlyWorkspace.DeleteFormat", item.getItem())); //$NON-NLS-1$
         }
 
@@ -122,13 +116,11 @@ public class PreviewOnlyWorkspace
         GetOptions getOptions,
         PendChangesOptions pendOptions,
         String[] arg5,
-        boolean display)
-    {
-        if (display)
-        {
-            for (ItemSpec item : itemSpecs)
-            {
-                progressMonitor.displayMessage(Messages.formatString("PreviewOnlyWorkspace.EditFormat", item.getItem())); //$NON-NLS-1$
+        boolean display) {
+        if (display) {
+            for (ItemSpec item : itemSpecs) {
+                progressMonitor.displayMessage(
+                    Messages.formatString("PreviewOnlyWorkspace.EditFormat", item.getItem())); //$NON-NLS-1$
             }
         }
 
@@ -142,19 +134,14 @@ public class PreviewOnlyWorkspace
         LockLevel lockLevel,
         GetOptions getOptions,
         boolean detectTargetItemType,
-        PendChangesOptions pendOptions)
-    {
-        for (int count = 0; count < oldPaths.length; count++)
-        {
-            if (editFlag != null && editFlag[count])
-            {
-                progressMonitor.displayMessage(Messages.formatString(
-                    "PreviewOnlyWorkspace.RenameEditFormat", newPaths[count])); //$NON-NLS-1$
-            }
-            else
-            {
-                progressMonitor.displayMessage(Messages.formatString(
-                    "PreviewOnlyWorkspace.RenameFormat", newPaths[count])); //$NON-NLS-1$
+        PendChangesOptions pendOptions) {
+        for (int count = 0; count < oldPaths.length; count++) {
+            if (editFlag != null && editFlag[count]) {
+                progressMonitor.displayMessage(
+                    Messages.formatString("PreviewOnlyWorkspace.RenameEditFormat", newPaths[count])); //$NON-NLS-1$
+            } else {
+                progressMonitor.displayMessage(
+                    Messages.formatString("PreviewOnlyWorkspace.RenameFormat", newPaths[count])); //$NON-NLS-1$
             }
         }
 
@@ -165,28 +152,26 @@ public class PreviewOnlyWorkspace
         final String path,
         final PropertyValue[] properties,
         final RecursionType recursion,
-        final LockLevel lockLevel)
-    {
+        final LockLevel lockLevel) {
         return 1;
     }
 
-    public void undo(ItemSpec[] itemSpecs)
-    {
+    public void undo(ItemSpec[] itemSpecs) {
 
     }
 
-    public void undo(ItemSpec[] itemSpecs, GetOptions getOptions)
-    {
+    public void undo(ItemSpec[] itemSpecs, GetOptions getOptions) {
 
     }
 
-    public PendingSet getPendingChanges(String[] serverPaths, RecursionType recursionType, boolean includeDownloadInfo)
-    {
+    public PendingSet getPendingChanges(
+        String[] serverPaths,
+        RecursionType recursionType,
+        boolean includeDownloadInfo) {
         return null;
     }
 
-    public boolean canCheckIn()
-    {
+    public boolean canCheckIn() {
         return false;
     }
 
@@ -198,8 +183,7 @@ public class PreviewOnlyWorkspace
         CheckinNote checkinNote,
         WorkItemCheckinInfo[] associatedWorkItems,
         PolicyOverrideInfo policyOverrideInfo,
-        CheckinFlags flags)
-    {
+        CheckinFlags flags) {
         return 0;
     }
 
@@ -213,28 +197,23 @@ public class PreviewOnlyWorkspace
         CheckinNote checkinNote,
         WorkItemCheckinInfo[] associatedWorkItems,
         PolicyOverrideInfo policyOverrideInfo,
-        CheckinFlags flags)
-    {
+        CheckinFlags flags) {
         return 0;
     }
 
-    public void shelve(Shelveset shelveset, PendingChange[] changes, boolean replace, boolean move)
-    {
+    public void shelve(Shelveset shelveset, PendingChange[] changes, boolean replace, boolean move) {
 
     }
 
-    public WorkspaceOperationErrorListener getErrorListener()
-    {
+    public WorkspaceOperationErrorListener getErrorListener() {
         return WorkspaceOperationErrorListener.EMPTY;
     }
 
-    public IBuildServer getBuildServer()
-    {
+    public IBuildServer getBuildServer() {
         return null;
     }
 
-    public WebServiceLevel getServiceLevel()
-    {
+    public WebServiceLevel getServiceLevel() {
         return WebServiceLevel.TFS_2012_QU1;
     }
 }

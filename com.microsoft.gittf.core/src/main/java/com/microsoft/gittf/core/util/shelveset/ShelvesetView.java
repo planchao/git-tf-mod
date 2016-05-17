@@ -31,8 +31,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
  * Defines the interface to display shelvesets
  * 
  */
-public interface ShelvesetView
-{
+public interface ShelvesetView {
     /**
      * Display a list of shelvesets
      * 

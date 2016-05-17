@@ -26,10 +26,8 @@ package com.microsoft.gittf.core.util;
 
 import com.microsoft.gittf.core.Messages;
 
-public final class Check
-{
-    private Check()
-    {
+public final class Check {
+    private Check() {
     }
 
     /**
@@ -40,10 +38,8 @@ public final class Check
      * @param variableName
      *        the name of the variable being checked (may be null).
      */
-    public static void notNull(final Object o, final String variableName)
-    {
-        if (o == null)
-        {
+    public static void notNull(final Object o, final String variableName) {
+        if (o == null) {
             throwForNull(variableName);
         }
     }
@@ -57,10 +53,8 @@ public final class Check
      * @param variableName
      *        the name of the variable being checked (may be null).
      */
-    public static void notEmpty(final String string, final String variableName)
-    {
-        if (string != null && string.length() == 0)
-        {
+    public static void notEmpty(final String string, final String variableName) {
+        if (string != null && string.length() == 0) {
             throwForEmpty(variableName);
         }
     }
@@ -74,14 +68,11 @@ public final class Check
      * @param variableName
      *        the name of the variable being checked (may be null).
      */
-    public static void notNullOrEmpty(final String string, final String variableName)
-    {
-        if (string == null)
-        {
+    public static void notNullOrEmpty(final String string, final String variableName) {
+        if (string == null) {
             throwForNull(variableName);
         }
-        if (string.length() == 0)
-        {
+        if (string.length() == 0) {
             throwForEmpty(variableName);
         }
     }
@@ -95,14 +86,11 @@ public final class Check
      * @param variableName
      *        the name of the variable being checked (may be null).
      */
-    public static void notNullOrEmpty(final Object[] array, final String variableName)
-    {
-        if (array == null)
-        {
+    public static void notNullOrEmpty(final Object[] array, final String variableName) {
+        if (array == null) {
             throwForNull(variableName);
         }
-        if (array.length == 0)
-        {
+        if (array.length == 0) {
             throwForEmpty(variableName);
         }
     }
@@ -116,10 +104,8 @@ public final class Check
      *        the message to put in the exception (may be null for a generic
      *        message).
      */
-    public static void isTrue(final boolean condition, final String message)
-    {
-        if (condition == false)
-        {
+    public static void isTrue(final boolean condition, final String message) {
+        if (condition == false) {
             throwForFalse(message);
         }
     }
@@ -132,11 +118,9 @@ public final class Check
      *        the name of the variable being checked (may be null for a generic
      *        message).
      */
-    private static void throwForNull(String variableName)
-    {
+    private static void throwForNull(String variableName) {
         // This is the best we can do.
-        if (variableName == null)
-        {
+        if (variableName == null) {
             variableName = Messages.getString("Check.Argument"); //$NON-NLS-1$
         }
 
@@ -151,11 +135,9 @@ public final class Check
      *        the name of the variable being checked (may be null for a generic
      *        message).
      */
-    private static void throwForEmpty(String variableName)
-    {
+    private static void throwForEmpty(String variableName) {
         // This is the best we can do.
-        if (variableName == null)
-        {
+        if (variableName == null) {
             variableName = Messages.getString("Check.Argument"); //$NON-NLS-1$
         }
 
@@ -170,11 +152,9 @@ public final class Check
      *        the message to be included in the exception (may be null for a
      *        generic message).
      */
-    private static void throwForFalse(String message)
-    {
+    private static void throwForFalse(String message) {
         // This is the best we can do.
-        if (message == null)
-        {
+        if (message == null) {
             message = Messages.getString("Check.ConditionMustNotBeFalse"); //$NON-NLS-1$
         }
 

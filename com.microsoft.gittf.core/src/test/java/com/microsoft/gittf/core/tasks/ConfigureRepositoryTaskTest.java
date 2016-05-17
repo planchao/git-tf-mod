@@ -37,28 +37,20 @@ import com.microsoft.gittf.core.tasks.framework.NullTaskProgressMonitor;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.test.Util;
 
-public class ConfigureRepositoryTaskTest
-    extends TestCase
-{
+public class ConfigureRepositoryTaskTest extends TestCase {
     private Repository repository;
 
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         Util.setUp(getName());
         repository = Util.initializeGitRepo(getName());
     }
 
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         Util.tearDown(getName());
     }
 
     @Test
-    public void testSimpleConfigure()
-        throws Exception
-    {
+    public void testSimpleConfigure() throws Exception {
         assertNotNull(repository);
 
         URI projectCollectionURI = new URI("http://fakeCollection:8080/tfs/DefaultCollection"); //$NON-NLS-1$
@@ -80,13 +72,10 @@ public class ConfigureRepositoryTaskTest
     }
 
     @Test
-    public void testComplexConfigure()
-        throws Exception
-    {
+    public void testComplexConfigure() throws Exception {
         assertNotNull(repository);
 
-        String[] uriCombinations = new String[]
-        {
+        String[] uriCombinations = new String[] {
             "http://fakeCollection:8080/tfs/DefaultCollection", //$NON-NLS-1$
             "http://fakeCollection:8080/tfs", //$NON-NLS-1$
             "http://fakeCollection/tfs", //$NON-NLS-1$
@@ -95,18 +84,20 @@ public class ConfigureRepositoryTaskTest
             "http://fakeCollection/tfs/vdir", //$NON-NLS-1$
         };
 
-        String[] serverValidPathCombinations = new String[]
-        {
-            "$/", "$/Folder", "$/Folder/Folder2/Folder" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        String[] serverValidPathCombinations = new String[] {
+            "$/", //$NON-NLS-1$
+            "$/Folder", //$NON-NLS-1$
+            "$/Folder/Folder2/Folder" //$NON-NLS-1$
         };
 
-        String[] serverInvalidPathCombinations = new String[]
-        {
-            " ", "Folder", "Folder/Folder2/Folder", "*" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        String[] serverInvalidPathCombinations = new String[] {
+            " ", //$NON-NLS-1$
+            "Folder", //$NON-NLS-1$
+            "Folder/Folder2/Folder", //$NON-NLS-1$
+            "*" //$NON-NLS-1$
         };
 
-        for (String uri : uriCombinations)
-        {
+        for (String uri : uriCombinations) {
             URI projectCollectionURI = new URI(uri);
 
             verifyServerPaths(projectCollectionURI, serverValidPathCombinations, true);
@@ -115,17 +106,14 @@ public class ConfigureRepositoryTaskTest
         }
     }
 
-    private void verifyServerPaths(URI projectCollectionURI, String[] serverPaths, boolean shouldPass)
-    {
-        for (String tfsPath : serverPaths)
-        {
+    private void verifyServerPaths(URI projectCollectionURI, String[] serverPaths, boolean shouldPass) {
+        for (String tfsPath : serverPaths) {
             ConfigureRepositoryTask configTask = new ConfigureRepositoryTask(repository, projectCollectionURI, tfsPath);
             TaskStatus configTaskStatus = configTask.run(new NullTaskProgressMonitor());
 
             assertTrue(configTaskStatus.isOK() == shouldPass);
 
-            if (shouldPass)
-            {
+            if (shouldPass) {
                 GitTFConfiguration gitRepoServerConfig = GitTFConfiguration.loadFrom(repository);
 
                 assertEquals(gitRepoServerConfig.getServerURI(), projectCollectionURI);

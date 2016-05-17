@@ -36,10 +36,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 
 import com.microsoft.gittf.core.Messages;
 
-public final class CommitWalker
-{
-    private CommitWalker()
-    {
+public final class CommitWalker {
+    private CommitWalker() {
     }
 
     /**
@@ -63,9 +61,7 @@ public final class CommitWalker
         final Repository repository,
         final ObjectId sourceCommitID,
         final ObjectId targetCommitID,
-        final AbbreviatedObjectId[] ignoreCommitIDs)
-        throws Exception
-    {
+        final AbbreviatedObjectId[] ignoreCommitIDs) throws Exception {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(targetCommitID, "targetCommitID"); //$NON-NLS-1$
 
@@ -73,8 +69,7 @@ public final class CommitWalker
 
         RevWalk walker = new RevWalk(repository);
 
-        try
-        {
+        try {
             final RevCommit headCommit = walker.lookupCommit(targetCommitID);
             walker.parseHeaders(headCommit);
 
@@ -84,45 +79,38 @@ public final class CommitWalker
              * Walk backwards from the destination commit searching for the
              * starting commit.
              */
-            while (currentCommit != null && !currentCommit.getId().equals(sourceCommitID))
-            {
+            while (currentCommit != null && !currentCommit.getId().equals(sourceCommitID)) {
                 final RevCommit[] parents = currentCommit.getParents();
                 RevCommit fromCommit = null;
                 final RevCommit toCommit = currentCommit;
 
                 /* The repository's initial commit. */
-                if (parents == null || parents.length == 0)
-                {
+                if (parents == null || parents.length == 0) {
                     /*
                      * Sanity check: make sure we are in an unbridged
                      * repository.
                      */
-                    if (sourceCommitID != null)
-                    {
-                        throw new Exception(Messages.formatString("CheckinHeadCommitTask.LatestNotInTreeFormat", //$NON-NLS-1$
+                    if (sourceCommitID != null) {
+                        throw new Exception(Messages.formatString(
+                            "CheckinHeadCommitTask.LatestNotInTreeFormat", //$NON-NLS-1$
                             ObjectIdUtil.abbreviate(repository, sourceCommitID)));
                     }
 
                     fromCommit = null;
-                }
-                else if (parents.length == 1)
-                {
-                    for (AbbreviatedObjectId ignore : ignoreCommitIDs)
-                    {
-                        if (ignore.prefixCompare(parents[0].getId()) == 0)
-                        {
-                            throw new Exception(Messages.formatString(
-                                "CheckinHeadCommitTask.CommitHasOneParentThatIsSquashedFormat", //$NON-NLS-1$
-                                ObjectIdUtil.abbreviate(repository, currentCommit),
-                                ObjectIdUtil.abbreviate(repository, parents[0].getId())));
+                } else if (parents.length == 1) {
+                    for (AbbreviatedObjectId ignore : ignoreCommitIDs) {
+                        if (ignore.prefixCompare(parents[0].getId()) == 0) {
+                            throw new Exception(
+                                Messages.formatString(
+                                    "CheckinHeadCommitTask.CommitHasOneParentThatIsSquashedFormat", //$NON-NLS-1$
+                                    ObjectIdUtil.abbreviate(repository, currentCommit),
+                                    ObjectIdUtil.abbreviate(repository, parents[0].getId())));
                         }
                     }
 
                     fromCommit = parents[0];
                     walker.parseHeaders(fromCommit);
-                }
-                else
-                {
+                } else {
                     RevCommit possibleFrom = null;
 
                     /*
@@ -131,38 +119,31 @@ public final class CommitWalker
                      * merge with the latest changeset on the TFS server. We
                      * won't preserve history before the merge.)
                      */
-                    for (RevCommit parent : currentCommit.getParents())
-                    {
-                        if (parent.getId().equals(sourceCommitID))
-                        {
+                    for (RevCommit parent : currentCommit.getParents()) {
+                        if (parent.getId().equals(sourceCommitID)) {
                             possibleFrom = parent;
                             break;
                         }
                     }
 
-                    if (possibleFrom == null)
-                    {
+                    if (possibleFrom == null) {
                         /*
                          * See if all the parents but one have been squashed -
                          * if so, we can follow the non-squashed parent for its
                          * history.
                          */
-                        for (RevCommit parent : currentCommit.getParents())
-                        {
+                        for (RevCommit parent : currentCommit.getParents()) {
                             boolean parentIgnored = false;
 
-                            for (AbbreviatedObjectId ignore : ignoreCommitIDs)
-                            {
-                                if (ignore.prefixCompare(parent.getId()) == 0)
-                                {
+                            for (AbbreviatedObjectId ignore : ignoreCommitIDs) {
+                                if (ignore.prefixCompare(parent.getId()) == 0) {
                                     parentIgnored = true;
                                     break;
                                 }
                             }
 
                             /* This parent is squashed, continue */
-                            if (parentIgnored)
-                            {
+                            if (parentIgnored) {
                                 continue;
                             }
 
@@ -171,8 +152,7 @@ public final class CommitWalker
                              * follow, mark it as such and investigate other
                              * parents.
                              */
-                            else if (possibleFrom == null)
-                            {
+                            else if (possibleFrom == null) {
                                 possibleFrom = parent;
                             }
 
@@ -180,25 +160,23 @@ public final class CommitWalker
                              * We have two non-squashed parents. We cannot
                              * reconcile history.
                              */
-                            else
-                            {
-                                throw new Exception(Messages.formatString(
-                                    "CheckinHeadCommitTask.NonLinearHistoryFormat", //$NON-NLS-1$
-                                    ObjectIdUtil.abbreviate(repository, currentCommit.getId())));
+                            else {
+                                throw new Exception(
+                                    Messages.formatString(
+                                        "CheckinHeadCommitTask.NonLinearHistoryFormat", //$NON-NLS-1$
+                                        ObjectIdUtil.abbreviate(repository, currentCommit.getId())));
                             }
                         }
                     }
 
                     /* All our parents were squashed! */
-                    if (possibleFrom == null)
-                    {
-                        throw new Exception(
-                            Messages.formatString(
-                                "CheckinHeadCommitTask.AllParentsSquashedFormat", ObjectIdUtil.abbreviate(repository, currentCommit.getId()))); //$NON-NLS-1$
+                    if (possibleFrom == null) {
+                        throw new Exception(Messages.formatString(
+                            "CheckinHeadCommitTask.AllParentsSquashedFormat", //$NON-NLS-1$
+                            ObjectIdUtil.abbreviate(repository, currentCommit.getId())));
                     }
                     /* We only had one non-squashed parent */
-                    else
-                    {
+                    else {
                         fromCommit = possibleFrom;
                         walker.parseHeaders(possibleFrom);
                     }
@@ -208,11 +186,9 @@ public final class CommitWalker
 
                 currentCommit = fromCommit;
             }
-        }
-        finally
-        {
-            if (walker != null)
-            {
+        } finally {
+            if (walker != null) {
+                walker.close();
                 walker.dispose();
             }
         }
@@ -239,15 +215,12 @@ public final class CommitWalker
     public static List<CommitDelta> getAutoSquashedCommitList(
         final Repository repository,
         final ObjectId sourceCommitID,
-        final ObjectId targetCommitID)
-        throws Exception
-    {
+        final ObjectId targetCommitID) throws Exception {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(targetCommitID, "targetCommitID"); //$NON-NLS-1$
 
         RevWalk walker = null;
-        try
-        {
+        try {
             walker = new RevWalk(repository);
 
             RevCommit start = walker.lookupCommit(targetCommitID);
@@ -260,33 +233,28 @@ public final class CommitWalker
 
             List<RevCommit> commitPath = detectAutoSquashedPath(walker, start, end);
 
-            if (commitPath == null || commitPath.size() < 2)
-            {
-                throw new Exception(Messages.formatString("CheckinHeadCommitTask.LatestNotInTreeFormat", //$NON-NLS-1$
+            if (commitPath == null || commitPath.size() < 2) {
+                throw new Exception(Messages.formatString(
+                    "CheckinHeadCommitTask.LatestNotInTreeFormat", //$NON-NLS-1$
                     ObjectIdUtil.abbreviate(repository, end.getId())));
             }
 
             List<CommitDelta> deltas = new ArrayList<CommitDelta>();
 
-            for (int i = 0; i < commitPath.size() - 1; i++)
-            {
+            for (int i = 0; i < commitPath.size() - 1; i++) {
                 deltas.add(new CommitDelta(commitPath.get(i), commitPath.get(i + 1)));
             }
 
             return deltas;
-        }
-        finally
-        {
-            if (walker != null)
-            {
+        } finally {
+            if (walker != null) {
                 walker.dispose();
             }
         }
     }
 
     private static List<RevCommit> detectAutoSquashedPath(RevWalk walker, RevCommit start, RevCommit end)
-        throws Exception
-    {
+        throws Exception {
         Check.notNull(walker, "walker"); //$NON-NLS-1$
         Check.notNull(start, "start"); //$NON-NLS-1$
 
@@ -307,34 +275,26 @@ public final class CommitWalker
          * this path. Likewise, if there are no parents and end == null, then we
          * are simply looking for the initial commit and we've found that also.
          */
-        if (end == null && parents.length == 0)
-        {
+        if (end == null && parents.length == 0) {
             path = new ArrayList<RevCommit>();
             path.add(null);
-        }
-        else if (end != null && start.getId().equals(end.getId()))
-        {
+        } else if (end != null && start.getId().equals(end.getId())) {
             path = new ArrayList<RevCommit>();
-        }
-        else
-        {
+        } else {
             /* Recurse last parent first */
-            for (int parentIdx = parents.length - 1; parentIdx >= 0; parentIdx--)
-            {
+            for (int parentIdx = parents.length - 1; parentIdx >= 0; parentIdx--) {
                 RevCommit parentCommit = parents[parentIdx];
 
                 path = detectAutoSquashedPath(walker, parentCommit, end);
 
-                if (path != null)
-                {
+                if (path != null) {
                     break;
                 }
             }
         }
 
         /* If we found a path, add the start to the end of the path. */
-        if (path != null)
-        {
+        if (path != null) {
             path.add(start);
         }
 
@@ -345,8 +305,7 @@ public final class CommitWalker
      * Represents the link between two commits
      * 
      */
-    public static class CommitDelta
-    {
+    public static class CommitDelta {
         private final RevCommit fromCommit;
         private final RevCommit toCommit;
 
@@ -358,8 +317,7 @@ public final class CommitWalker
          * @param toCommit
          *        destination commit
          */
-        public CommitDelta(final RevCommit fromCommit, final RevCommit toCommit)
-        {
+        public CommitDelta(final RevCommit fromCommit, final RevCommit toCommit) {
             Check.notNull(toCommit, "toCommit"); //$NON-NLS-1$
 
             this.fromCommit = fromCommit;
@@ -371,8 +329,7 @@ public final class CommitWalker
          * 
          * @return
          */
-        public RevCommit getFromCommit()
-        {
+        public RevCommit getFromCommit() {
             return fromCommit;
         }
 
@@ -381,8 +338,7 @@ public final class CommitWalker
          * 
          * @return
          */
-        public RevCommit getToCommit()
-        {
+        public RevCommit getToCommit() {
             return toCommit;
         }
     }

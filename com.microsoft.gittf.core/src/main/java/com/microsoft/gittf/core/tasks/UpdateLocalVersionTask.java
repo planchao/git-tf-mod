@@ -50,9 +50,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Workspace;
  * Sub classes need to implement the methods required to build the GetOps needed
  * to update the server local version information
  */
-public abstract class UpdateLocalVersionTask
-    extends Task
-{
+public abstract class UpdateLocalVersionTask extends Task {
     private static final Log log = LogFactory.getLog(UpdateLocalVersionTask.class);
 
     protected final Workspace workspace;
@@ -63,8 +61,7 @@ public abstract class UpdateLocalVersionTask
      * @param workspace
      *        workspace to update
      */
-    public UpdateLocalVersionTask(final Workspace workspace)
-    {
+    public UpdateLocalVersionTask(final Workspace workspace) {
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
 
         this.workspace = workspace;
@@ -73,16 +70,15 @@ public abstract class UpdateLocalVersionTask
     protected abstract GetOperation[][] getGetOperations();
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
-        progressMonitor.beginTask(Messages.getString("UpdateLocalVersionTask.UpdatingLocalVersions"), //$NON-NLS-1$
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
+        progressMonitor.beginTask(
+            Messages.getString("UpdateLocalVersionTask.UpdatingLocalVersions"), //$NON-NLS-1$
             TaskProgressMonitor.INDETERMINATE);
 
         /* Retrieves the GetOps */
         GetOperation[][] tfsGetOperations = getGetOperations();
 
-        if (tfsGetOperations == null)
-        {
+        if (tfsGetOperations == null) {
             /* There is nothing to update */
 
             return TaskStatus.OK_STATUS;
@@ -94,47 +90,39 @@ public abstract class UpdateLocalVersionTask
          */
         ArrayList<ClientLocalVersionUpdate> localVersionUpdates = new ArrayList<ClientLocalVersionUpdate>();
 
-        for (int i = 0; i < tfsGetOperations.length; i++)
-        {
-            for (int j = 0; j < tfsGetOperations[i].length; j++)
-            {
+        for (int i = 0; i < tfsGetOperations.length; i++) {
+            for (int j = 0; j < tfsGetOperations[i].length; j++) {
                 GetOperation getOp = tfsGetOperations[i][j];
 
-                localVersionUpdates.add(new ClientLocalVersionUpdate(
-                    getOp.getSourceServerItem(),
-                    getOp.getItemID(),
-                    getOp.getTargetLocalItem(),
-                    getOp.getVersionServer(),
-                    getOp.getPropertyValues()));
+                localVersionUpdates.add(
+                    new ClientLocalVersionUpdate(
+                        getOp.getSourceServerItem(),
+                        getOp.getItemID(),
+                        getOp.getTargetLocalItem(),
+                        getOp.getVersionServer(),
+                        getOp.getPropertyValues()));
             }
         }
 
         /* Update the local version information using the Update queue */
         UpdateLocalVersionQueue queue = null;
 
-        try
-        {
+        try {
             log.info("Calling server to update local versions"); //$NON-NLS-1$
 
             queue = new UpdateLocalVersionQueue(workspace, UpdateLocalVersionQueueOptions.UPDATE_SERVER);
 
-            for (int count = 0; count < localVersionUpdates.size(); count++)
-            {
+            for (int count = 0; count < localVersionUpdates.size(); count++) {
                 queue.queueUpdate(localVersionUpdates.get(count));
             }
 
             queue.flush();
 
             progressMonitor.endTask();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return new TaskStatus(TaskStatus.ERROR, e);
-        }
-        finally
-        {
-            if (queue != null)
-            {
+        } finally {
+            if (queue != null) {
                 queue.close();
             }
         }

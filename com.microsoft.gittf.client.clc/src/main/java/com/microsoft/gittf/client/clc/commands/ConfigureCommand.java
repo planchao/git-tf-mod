@@ -43,133 +43,152 @@ import com.microsoft.gittf.client.clc.commands.framework.CommandTaskExecutor;
 import com.microsoft.gittf.core.config.GitTFConfiguration;
 import com.microsoft.gittf.core.tasks.ConfigureRepositoryTask;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
-import com.microsoft.gittf.core.util.StringUtil;
 import com.microsoft.gittf.core.util.URIUtil;
 import com.microsoft.tfs.core.clients.versioncontrol.path.ServerPath;
+import com.microsoft.tfs.util.StringUtil;
 
 /**
  * Configures a git repository to be mapped to tfs.
  * 
  */
-public class ConfigureCommand
-    extends Command
-{
+public class ConfigureCommand extends Command {
     public static final String COMMAND_NAME = "configure"; //$NON-NLS-1$
 
-    private static Argument[] ARGUMENTS = new Argument[]
-    {
+    private static Argument[] ARGUMENTS = new Argument[] {
         new SwitchArgument("help", Messages.getString("Command.Argument.Help.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
 
-        new ChoiceArgument(Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
-            new SwitchArgument("quiet", //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
+            new SwitchArgument(
+                "quiet", //$NON-NLS-1$
                 'q',
                 Messages.getString("Command.Argument.Quiet.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("verbose", //$NON-NLS-1$
+            new SwitchArgument(
+                "verbose", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Verbose.HelpText")) //$NON-NLS-1$
         ),
 
         new SwitchArgument("list", 'l', Messages.getString("ConfigureCommand.Argument.List.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
 
-        new SwitchArgument("force", //$NON-NLS-1$
+        new SwitchArgument(
+            "force", //$NON-NLS-1$
             'f',
             Messages.getString("ConfigureCommand.Argument.Force.HelpText")), //$NON-NLS-1$
 
-        new ChoiceArgument(Messages.getString("Command.Argument.DepthChoice.HelpText"), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.DepthChoice.HelpText"), //$NON-NLS-1$
 
             /* Users can specify one of --deep, --depth or --shallow. */
-            new SwitchArgument("deep", //$NON-NLS-1$
+            new SwitchArgument(
+                "deep", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Deep.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("shallow", //$NON-NLS-1$
+            new SwitchArgument(
+                "shallow", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Shallow.HelpText")) //$NON-NLS-1$
         ),
 
-        new ValueArgument("gated", //$NON-NLS-1$
+        new ValueArgument(
+            "gated", //$NON-NLS-1$
             'g',
             Messages.getString("ConfigureCommand.Argument.Gated.ValueDescription"), //$NON-NLS-1$
             Messages.getString("ConfigureCommand.Argument.Gated.HelpText"), //$NON-NLS-1$
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ChoiceArgument(Messages.getString("Command.Argument.TagChoice.HelpText"), //$NON-NLS-1$
-            /* Users can specify one of --tag or --no-tag (Default: tag). */
-            new SwitchArgument("tag", //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.TagChoice.HelpText"), //$NON-NLS-1$
+            /*
+             * Users can specify one of --tag or --no-tag (Default: tag).
+             */
+            new SwitchArgument(
+                "tag", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Tag.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("no-tag", //$NON-NLS-1$
+            new SwitchArgument(
+                "no-tag", //$NON-NLS-1$
                 Messages.getString("Command.Argument.NoTag.HelpText")) //$NON-NLS-1$
         ),
 
-        new ChoiceArgument(Messages.getString("Command.Argument.MetaDataChoice.HelpText"), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.MetaDataChoice.HelpText"), //$NON-NLS-1$
             /*
              * Users can specify one of --metadata or --no-metadata (Default:
              * no-metadata).
              */
-            new SwitchArgument("metadata", //$NON-NLS-1$
+            new SwitchArgument(
+                "metadata", //$NON-NLS-1$
                 Messages.getString("Command.Argument.MetaData.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("no-metadata", //$NON-NLS-1$
+            new SwitchArgument(
+                "no-metadata", //$NON-NLS-1$
                 Messages.getString("Command.Argument.NoMetaData.HelpText")) //$NON-NLS-1$
         ),
 
-        new ValueArgument("git-dir", //$NON-NLS-1$
+        new ValueArgument(
+            "git-dir", //$NON-NLS-1$
             Messages.getString("CloneCommand.Argument.GitDir.ValueDescription"), //$NON-NLS-1$
-            Messages.getString("CloneCommand.Argument.GitDir.HelpText"), //$NON-NLS-1$)
+            Messages.getString("CloneCommand.Argument.GitDir.HelpText"), //$NON-NLS-1$ )
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ChoiceArgument(Messages.getString("ConfigureCommand.Argument.KeepAuthorChoice.HelpText"), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("ConfigureCommand.Argument.KeepAuthorChoice.HelpText"), //$NON-NLS-1$
             /*
              * Users can specify one of --keep-author or --ignore-author
              * (Default: ignore-author).
              */
-            new SwitchArgument("keep-author", Messages.getString("CheckinCommand.Argument.KeepAuthor.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
-            new SwitchArgument("ignore-author", Messages.getString("CheckinCommand.Argument.IgnoreAuthor.HelpText")) //$NON-NLS-1$ //$NON-NLS-2$
+            new SwitchArgument(
+                "keep-author", //$NON-NLS-1$
+                Messages.getString("CheckinCommand.Argument.KeepAuthor.HelpText")), //$NON-NLS-1$
+            new SwitchArgument(
+                "ignore-author", //$NON-NLS-1$
+                Messages.getString("CheckinCommand.Argument.IgnoreAuthor.HelpText")) //$NON-NLS-1$
         ),
 
-        new ValueArgument("user-map", //$NON-NLS-1$
+        new ValueArgument(
+            "user-map", //$NON-NLS-1$
             Messages.getString("CheckinCommand.Argument.UserMap.ValueDescription"), //$NON-NLS-1$
-            Messages.getString("CheckinCommand.Argument.UserMap.HelpText"), //$NON-NLS-1$)
+            Messages.getString("CheckinCommand.Argument.UserMap.HelpText"), //$NON-NLS-1$ )
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ValueArgument("username", //$NON-NLS-1$
+        new ValueArgument(
+            "username", //$NON-NLS-1$
             Messages.getString("CloneCommand.Argument.UserName.ValueDescription"), //$NON-NLS-1$
-            Messages.getString("CloneCommand.Argument.UserName.HelpText"), //$NON-NLS-1$)
+            Messages.getString("CloneCommand.Argument.UserName.HelpText"), //$NON-NLS-1$ )
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ValueArgument("password", //$NON-NLS-1$
+        new ValueArgument(
+            "password", //$NON-NLS-1$
             Messages.getString("CloneCommand.Argument.Password.ValueDescription"), //$NON-NLS-1$
-            Messages.getString("CloneCommand.Argument.Password.HelpText"), //$NON-NLS-1$)
+            Messages.getString("CloneCommand.Argument.Password.HelpText"), //$NON-NLS-1$ )
             ArgumentOptions.VALUE_REQUIRED),
 
-        new FreeArgument("projectcollection", //$NON-NLS-1$
+        new FreeArgument(
+            "projectcollection", //$NON-NLS-1$
             Messages.getString("Command.Argument.ProjectCollection.HelpText")), //$NON-NLS-1$
 
-        new FreeArgument("serverpath", //$NON-NLS-1$
+        new FreeArgument(
+            "serverpath", //$NON-NLS-1$
             Messages.getString("Command.Argument.ServerPath.HelpText")), //$NON-NLS-1$
     };
 
     @Override
-    protected String getCommandName()
-    {
+    protected String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override
-    public Argument[] getPossibleArguments()
-    {
+    public Argument[] getPossibleArguments() {
         return ARGUMENTS;
     }
 
     @Override
-    public String getHelpDescription()
-    {
+    public String getHelpDescription() {
         return Messages.getString("ConfigureCommand.HelpDescription"); //$NON-NLS-1$
     }
 
     @Override
-    public int run()
-        throws Exception
-    {
+    public int run() throws Exception {
         // Determine if there is current configuration that we need to update
         final Repository repository = getRepository();
         final GitTFConfiguration currentConfiguration = GitTFConfiguration.loadFrom(repository);
@@ -180,13 +199,10 @@ public class ConfigureCommand
          */
         if (getArguments().contains("list") || getArguments().getArguments().size() <= 0) //$NON-NLS-1$
         {
-            if (currentConfiguration == null)
-            {
+            if (currentConfiguration == null) {
                 // Not configured
                 throw new Exception(Messages.getString("ConfigureCommand.GitRepoNotConfigured")); //$NON-NLS-1$
-            }
-            else
-            {
+            } else {
                 // Display configuration
                 getConsole().getOutputStream().println(currentConfiguration.toString());
             }
@@ -207,23 +223,20 @@ public class ConfigureCommand
                 ((FreeArgument) getArguments().getArgument("serverpath")).getValue() : null; //$NON-NLS-1$
 
             // Validate arguments
-            if (StringUtil.isNullOrEmpty(collection) || StringUtil.isNullOrEmpty(tfsPath))
-            {
+            if (StringUtil.isNullOrEmpty(collection) || StringUtil.isNullOrEmpty(tfsPath)) {
                 throw new Exception(Messages.getString("ConfigureCommand.CollectionAndServerPathRequired")); //$NON-NLS-1$
             }
 
             serverURI = URIUtil.getServerURI(collection);
 
-            if (serverURI == null)
-            {
-                throw new Exception(Messages.formatString("ConfigureCommand.InvalidCollectionFormat", //$NON-NLS-1$
+            if (serverURI == null) {
+                throw new Exception(Messages.formatString(
+                    "ConfigureCommand.InvalidCollectionFormat", //$NON-NLS-1$
                     collection));
             }
 
             tfsPath = ServerPath.canonicalize(tfsPath);
-        }
-        else
-        {
+        } else {
             serverURI = currentConfiguration.getServerURI();
             tfsPath = currentConfiguration.getServerPath();
 
@@ -238,7 +251,7 @@ public class ConfigureCommand
                 !getArguments().contains("ignore-author") && //$NON-NLS-1$
                 !getArguments().contains("username") && //$NON-NLS-1$
                 !getArguments().contains("password") && //$NON-NLS-1$
-                !getArguments().contains("user-map")) //$NON-NLS-1$ 
+                !getArguments().contains("user-map")) //$NON-NLS-1$
             {
                 throw new Exception(Messages.getString("ConfigureCommand.InvalidOptionsSpecified")); //$NON-NLS-1$
             }
@@ -249,8 +262,7 @@ public class ConfigureCommand
         if (getArguments().contains("deep")) //$NON-NLS-1$
         {
             configureTask.setDeep(true);
-        }
-        else if (getArguments().contains("shallow")) //$NON-NLS-1$
+        } else if (getArguments().contains("shallow")) //$NON-NLS-1$
         {
             configureTask.setDeep(false);
         }
@@ -258,8 +270,7 @@ public class ConfigureCommand
         if (getArguments().contains("tag")) //$NON-NLS-1$
         {
             configureTask.setTag(true);
-        }
-        else if (getArguments().contains("no-tag")) //$NON-NLS-1$
+        } else if (getArguments().contains("no-tag")) //$NON-NLS-1$
         {
             configureTask.setTag(false);
         }
@@ -267,8 +278,7 @@ public class ConfigureCommand
         if (getArguments().contains("metadata")) //$NON-NLS-1$
         {
             configureTask.setIncludeMetaData(true);
-        }
-        else if (getArguments().contains("no-metadata")) //$NON-NLS-1$
+        } else if (getArguments().contains("no-metadata")) //$NON-NLS-1$
         {
             configureTask.setIncludeMetaData(false);
         }
@@ -282,8 +292,7 @@ public class ConfigureCommand
         if (getArguments().contains("keep-author")) //$NON-NLS-1$
         {
             configureTask.setKeepAuthor(true);
-        }
-        else if (getArguments().contains("ignore-author")) //$NON-NLS-1$
+        } else if (getArguments().contains("ignore-author")) //$NON-NLS-1$
         {
             configureTask.setKeepAuthor(false);
         }
@@ -291,8 +300,7 @@ public class ConfigureCommand
         if (getArguments().contains("user-map")) //$NON-NLS-1$
         {
             final String userMap = ((ValueArgument) getArguments().getArgument("user-map")).getValue(); //$NON-NLS-1$
-            if (isValidPath(userMap))
-            {
+            if (isValidPath(userMap)) {
                 configureTask.setUserMap(userMap);
             }
         }
@@ -313,29 +321,22 @@ public class ConfigureCommand
 
         TaskStatus configureStatus = new CommandTaskExecutor(getProgressMonitor()).execute(configureTask);
 
-        if (!configureStatus.isOK())
-        {
+        if (!configureStatus.isOK()) {
             return ExitCode.FAILURE;
         }
 
         return ExitCode.SUCCESS;
     }
 
-    private boolean isValidPath(final String path)
-        throws Exception
-    {
-        if (StringUtil.isNullOrEmpty(path))
-        {
+    private boolean isValidPath(final String path) throws Exception {
+        if (StringUtil.isNullOrEmpty(path)) {
             return true;
         }
 
-        try
-        {
+        try {
             (new File(path)).getCanonicalFile();
             return true;
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             final String errorMessageFormat = Messages.getString("ConfigureCommand.IncorrectPathFormat"); //$NON-NLS-1$
             throw new Exception(MessageFormat.format(errorMessageFormat, path));
         }

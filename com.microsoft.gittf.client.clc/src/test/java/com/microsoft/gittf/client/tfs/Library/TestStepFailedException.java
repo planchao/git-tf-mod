@@ -31,13 +31,10 @@ package com.microsoft.gittf.client.tfs.Library;
  * @author jpresto
  * 
  */
-public class TestStepFailedException
-    extends Exception
-{
+public class TestStepFailedException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public TestStepFailedException(String message)
-    {
+    public TestStepFailedException(String message) {
         super(message);
     }
 }

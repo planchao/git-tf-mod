@@ -41,14 +41,11 @@ import com.microsoft.tfs.logging.config.ResetConfigurationPolicy;
  * This class implements git-tfs-specific logging configuration.
  * 
  */
-public class LoggingConfiguration
-{
+public class LoggingConfiguration {
     private static boolean configured = false;
 
-    public synchronized static void configure()
-    {
-        if (configured)
-        {
+    public synchronized static void configure() {
+        if (configured) {
             return;
         }
 
@@ -63,36 +60,33 @@ public class LoggingConfiguration
         /*
          * The MultiConfigurationProvider holds multiple configuration methods
          * for the logging system. Each method is tried in sequence until one
-         * successfully produces a logging configuration file.
-         * 
-         * This allows us to look for a logging configuration file in the file
-         * system, and then fall back to a built-in configuration if no custom
-         * file is present.
+         * successfully produces a logging configuration file. This allows us to
+         * look for a logging configuration file in the file system, and then
+         * fall back to a built-in configuration if no custom file is present.
          */
         MultiConfigurationProvider mcp = new MultiConfigurationProvider();
 
         /* Set up the names of the log properties files */
-        final String propertiesConfigFile =
-            MessageFormat.format("log4j-{0}.properties", ProductInformation.getProductName()); //$NON-NLS-1$
+        final String propertiesConfigFile = MessageFormat.format(
+            "log4j-{0}.properties", //$NON-NLS-1$
+            ProductInformation.getProductName());
         final String xmlConfigFile = MessageFormat.format("log4j-{0}.xml", ProductInformation.getProductName()); //$NON-NLS-1$
 
         /*
          * Look for log4j-git-tfs.properties and log4j-git-tfs.xml in the
          * "common" directory.
          */
-        mcp.addConfigurationProvider(new FromFileConfigurationProvider(new File[]
-        {
-            logConfLocation.getItemFile(propertiesConfigFile), logConfLocation.getItemFile(xmlConfigFile),
+        mcp.addConfigurationProvider(new FromFileConfigurationProvider(new File[] {
+            logConfLocation.getItemFile(propertiesConfigFile),
+            logConfLocation.getItemFile(xmlConfigFile),
         }));
 
         /*
          * Load log4j-git-tfs.properties from the classloader that loaded
          * LoggingConfiguration (the classloader for Core)
          */
-        mcp.addConfigurationProvider(new ClassloaderConfigurationProvider(
-            LoggingConfiguration.class.getClassLoader(),
-            new String[]
-            {
+        mcp.addConfigurationProvider(
+            new ClassloaderConfigurationProvider(LoggingConfiguration.class.getClassLoader(), new String[] {
                 propertiesConfigFile
             }));
 
@@ -101,8 +95,7 @@ public class LoggingConfiguration
          * re-set it temporarily
          */
         ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
-        try
-        {
+        try {
             /*
              * Setting the thread context classloader to the class loader who
              * loaded TELoggingConfiguration allows Log4J to load custom
@@ -117,9 +110,7 @@ public class LoggingConfiguration
                 mcp,
                 EnableReconfigurationPolicy.DISABLE_WHEN_EXTERNALLY_CONFIGURED,
                 ResetConfigurationPolicy.RESET_EXISTING);
-        }
-        finally
-        {
+        } finally {
             /*
              * Always reset the thread context classloader
              */

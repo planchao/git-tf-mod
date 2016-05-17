@@ -28,25 +28,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public final class NullPrintStream
-    extends PrintStream
-{
-    public NullPrintStream()
-    {
+public final class NullPrintStream extends PrintStream {
+    public NullPrintStream() {
         super(new NullOutputStream());
     }
 
-    private static class NullOutputStream
-        extends OutputStream
-    {
-        public NullOutputStream()
-        {
+    private static class NullOutputStream extends OutputStream {
+        public NullOutputStream() {
         }
 
         @Override
-        public void write(int b)
-            throws IOException
-        {
+        public void write(int b) throws IOException {
         }
     }
 }

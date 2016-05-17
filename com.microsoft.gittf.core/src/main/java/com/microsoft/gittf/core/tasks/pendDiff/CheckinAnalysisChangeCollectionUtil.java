@@ -35,10 +35,8 @@ import org.eclipse.jgit.errors.MissingObjectException;
  * Utilities to work with the CheckinAnalysisChangeCollection class *
  * 
  */
-public final class CheckinAnalysisChangeCollectionUtil
-{
-    private CheckinAnalysisChangeCollectionUtil()
-    {
+public final class CheckinAnalysisChangeCollectionUtil {
+    private CheckinAnalysisChangeCollectionUtil() {
 
     }
 
@@ -59,42 +57,33 @@ public final class CheckinAnalysisChangeCollectionUtil
         throws MissingObjectException,
             IncorrectObjectTypeException,
             CorruptObjectException,
-            IOException
-    {
-        if (contains(analysis.getAdds(), path))
-        {
+            IOException {
+        if (contains(analysis.getAdds(), path)) {
             return true;
         }
 
-        if (contains(analysis.getDeletes(), path))
-        {
+        if (contains(analysis.getDeletes(), path)) {
             return true;
         }
 
-        if (contains(analysis.getEdits(), path))
-        {
+        if (contains(analysis.getEdits(), path)) {
             return true;
         }
 
-        if (contains(analysis.getRenames(), path))
-        {
+        if (contains(analysis.getRenames(), path)) {
             return true;
         }
 
-        if (contains(analysis.getProperties(), path))
-        {
+        if (contains(analysis.getProperties(), path)) {
             return true;
         }
 
         return false;
     }
 
-    public static boolean contains(List<? extends Change> changes, String path)
-    {
-        for (Change change : changes)
-        {
-            if (change.getPath().equals(path))
-            {
+    public static boolean contains(List<? extends Change> changes, String path) {
+        for (Change change : changes) {
+            if (change.getPath().equals(path)) {
                 return true;
             }
         }
@@ -102,12 +91,9 @@ public final class CheckinAnalysisChangeCollectionUtil
         return false;
     }
 
-    public static Change getChange(List<? extends Change> changes, String path)
-    {
-        for (Change change : changes)
-        {
-            if (change.getPath().equals(path))
-            {
+    public static Change getChange(List<? extends Change> changes, String path) {
+        for (Change change : changes) {
+            if (change.getPath().equals(path)) {
                 return change;
             }
         }

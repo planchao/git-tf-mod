@@ -7,33 +7,30 @@ import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.tfs.core.clients.webservices.IdentitySearchFactor;
 import com.microsoft.tfs.core.clients.webservices.TeamFoundationIdentity;
 
-public class SearchIdentitesTask
-    extends Task
-{
+public class SearchIdentitesTask extends Task {
     final IdentityManagementService IMS;
     final IdentitySearchFactor searchFactor;
     final String[] searchValues;
 
     private TeamFoundationIdentity[][] identities;
 
-    public SearchIdentitesTask(IdentityManagementService IMS, IdentitySearchFactor searchFactor, String[] searchValues)
-    {
+    public SearchIdentitesTask(
+        IdentityManagementService IMS,
+        IdentitySearchFactor searchFactor,
+        String[] searchValues) {
         this.IMS = IMS;
         this.searchFactor = searchFactor;
         this.searchValues = searchValues;
     }
 
     @Override
-    public TaskStatus run(TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+    public TaskStatus run(TaskProgressMonitor progressMonitor) throws Exception {
         identities = IMS.readIdentities(searchFactor, searchValues);
 
         return TaskStatus.OK_STATUS;
     }
 
-    public TeamFoundationIdentity[][] getIdentities()
-    {
+    public TeamFoundationIdentity[][] getIdentities() {
         return identities;
     }
 }

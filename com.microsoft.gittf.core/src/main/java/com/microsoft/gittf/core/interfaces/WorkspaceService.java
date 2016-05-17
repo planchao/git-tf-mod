@@ -42,8 +42,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.WorkItemChec
 import com.microsoft.tfs.core.clients.versioncontrol.specs.ItemSpec;
 import com.microsoft.tfs.core.util.FileEncoding;
 
-public interface WorkspaceService
-{
+public interface WorkspaceService {
     String getName();
 
     void deleteWorkspace();

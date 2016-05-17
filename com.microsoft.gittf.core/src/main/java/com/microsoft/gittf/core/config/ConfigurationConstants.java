@@ -30,8 +30,7 @@ import com.microsoft.gittf.core.GitTFConstants;
  * Constants used by the configuration classes
  * 
  */
-public class ConfigurationConstants
-{
+public class ConfigurationConstants {
     public static final String CONFIGURATION_SECTION = GitTFConstants.GIT_TF_NAME;
 
     public static final String GENERAL_SUBSECTION = null;
@@ -56,7 +55,6 @@ public class ConfigurationConstants
     public static final String CHANGESET_COMMIT_FORMAT = "commit-{0}"; //$NON-NLS-1$
     public static final String CHANGESET_HIGHWATER = "hwm"; //$NON-NLS-1$
 
-    private ConfigurationConstants()
-    {
+    private ConfigurationConstants() {
     }
 }

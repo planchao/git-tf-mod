@@ -35,14 +35,11 @@ import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.util.Check;
 import com.microsoft.tfs.util.FileHelpers;
 
-public class DeleteWorkspaceTask
-    extends Task
-{
+public class DeleteWorkspaceTask extends Task {
     private final WorkspaceService workspace;
     private final File workingFolder;
 
-    public DeleteWorkspaceTask(WorkspaceService workspace, File workingFolder)
-    {
+    public DeleteWorkspaceTask(WorkspaceService workspace, File workingFolder) {
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
         Check.notNull(workingFolder, "workingFolder"); //$NON-NLS-1$
 
@@ -51,31 +48,25 @@ public class DeleteWorkspaceTask
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         Exception exception = null;
 
         progressMonitor.beginTask(
-            Messages.getString("DeleteWorkspaceTask.DeletingWorkspace"), TaskProgressMonitor.INDETERMINATE, TaskProgressDisplay.DISPLAY_PROGRESS); //$NON-NLS-1$
+            Messages.getString("DeleteWorkspaceTask.DeletingWorkspace"), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE,
+            TaskProgressDisplay.DISPLAY_PROGRESS);
 
-        try
-        {
+        try {
             workspace.deleteWorkspace();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             exception = e;
         }
 
-        try
-        {
-            if (workingFolder.exists())
-            {
+        try {
+            if (workingFolder.exists()) {
                 FileHelpers.deleteDirectory(workingFolder);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             exception = e;
         }
 

@@ -51,9 +51,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
  * @author jpresto
  * 
  */
-public class TfsEndToEndTests
-    extends GitTfTestBase
-{
+public class TfsEndToEndTests extends GitTfTestBase {
     /**
      * Here, we keep a mapping for the content and the file we have; this will
      * allow us to verify the content in different locations when needed.
@@ -70,15 +68,12 @@ public class TfsEndToEndTests
      * of the working folder 11. Kick off a pull request 12. Verify that the
      * branch is pulled down
      */
-    public void testGitTfEndToEnd()
-    {
-        if (!configured)
-        {
+    public void testGitTfEndToEnd() {
+        if (!configured) {
             return;
         }
 
-        try
-        {
+        try {
             // scenarioBranchFromTfs();
 
             // 1. Clone root of the tfs repository
@@ -129,27 +124,22 @@ public class TfsEndToEndTests
 
             // Step: Verify branch is pulled down
             stepVerifyFilesInNewRepo();
-        }
-        catch (Throwable e2)
-        {
+        } catch (Throwable e2) {
             Logger.log("Unexpected exception during test"); //$NON-NLS-1$
             Logger.logException(e2);
-            super.fail("Clone of TFS failed"); //$NON-NLS-1$  
+            super.fail("Clone of TFS failed"); //$NON-NLS-1$
         }
     }
 
     /**
      * Clone a TFS repository.
      */
-    private void stepGitTfEndToEndClone()
-        throws InvalidConfigurationException
-    {
+    private void stepGitTfEndToEndClone() throws InvalidConfigurationException {
         String scenarioDescription = "Cloning TFS repository"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
             GitTfCommand cmd =
                 new GitTfCommand(MessageFormat.format("clone {0} $/", TestEnvironment.getCollectionUrl())); //$NON-NLS-1$
@@ -159,57 +149,49 @@ public class TfsEndToEndTests
             cmd.logResults();
 
             assertEquals(0, cmd.getExitCode());
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'testGitTfEndToEndClone' (RUN)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
         }
 
         // VERIFY: verify we have the correct folder (team project) retrieved
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Verifying: {0}", scenarioDescription)); //$NON-NLS-1$
             Logger.log("Iterating through the folder looking for the team project"); //$NON-NLS-1$
             File folder = new File(getWorkspaceFolder());
 
             File[] folderChildren = folder.listFiles();
 
-            if (folderChildren == null)
-            {
+            if (folderChildren == null) {
                 throw new InvalidConfigurationException(
                     "There are not folders (Team Projects) at the root of the collection"); //$NON-NLS-1$
             }
 
             // check for the team project name
             Boolean teamProjectFound = false;
-            for (int i = 0; i < folderChildren.length; i++)
-            {
-                if (folderChildren[i].isFile())
-                {
+            for (int i = 0; i < folderChildren.length; i++) {
+                if (folderChildren[i].isFile()) {
                     continue;
                 }
 
-                if (folderChildren[i].getName().equals(TestEnvironment.getTfsTeamProjectName()))
-                {
+                if (folderChildren[i].getName().equals(TestEnvironment.getTfsTeamProjectName())) {
                     Logger.log(MessageFormat.format(
-                        "Found folder/team project named: {0}", TestEnvironment.getTfsTeamProjectName())); //$NON-NLS-1$
+                        "Found folder/team project named: {0}", //$NON-NLS-1$
+                        TestEnvironment.getTfsTeamProjectName()));
                     teamProjectFound = true;
                     teamProjectLocalFile = folderChildren[i];
                     break;
                 }
             }
 
-            if (!teamProjectFound)
-            {
+            if (!teamProjectFound) {
                 throw new InvalidConfigurationException(
                     MessageFormat.format(
-                        "Team Project '{0}' was not found after the clone; be sure that team project already is created and the current user has perission to that collection and team project", TestEnvironment.getTfsTeamProjectName())); //$NON-NLS-1$
+                        "Team Project '{0}' was not found after the clone; be sure that team project already is created and the current user has perission to that collection and team project", //$NON-NLS-1$
+                        TestEnvironment.getTfsTeamProjectName()));
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'testGitTfEndToEndClone' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -219,21 +201,18 @@ public class TfsEndToEndTests
     /**
      * Kick off the command to add a file to git.
      */
-    private void stepAddFileToGitRepo()
-    {
+    private void stepAddFileToGitRepo() {
         GitCommand gitCommand = null;
 
         String scenarioDescription = "Adding file to Git repo"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             // create file
-            if (currentWorkingFolder == null || currentWorkingFolder.length() == 0)
-            {
+            if (currentWorkingFolder == null || currentWorkingFolder.length() == 0) {
                 currentWorkingFolder = createFolderInWorkspace();
             }
             File newFile = createTimeStampedFile(new File(currentWorkingFolder));
@@ -252,17 +231,14 @@ public class TfsEndToEndTests
             gitCommand.runCommand();
 
             gitCommand.logResults();
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioAddFileToGitRepo' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
         }
 
         // VERIFY: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Verifying: {0}", scenarioDescription)); //$NON-NLS-1$
 
             assertNotNull(gitCommand);
@@ -275,9 +251,7 @@ public class TfsEndToEndTests
             gitCommand.runCommand();
 
             gitCommand.logResults();
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioAddFileToGitRepo' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -287,16 +261,14 @@ public class TfsEndToEndTests
     /**
      * Kick off commit command for git.
      */
-    private void stepCommitChangesToGit()
-    {
+    private void stepCommitChangesToGit() {
         GitCommand gitCommand = null;
 
         String scenarioDescription = "Commit file to git [git commit]"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             // create file
@@ -314,25 +286,20 @@ public class TfsEndToEndTests
             gitCommand.runCommand();
 
             gitCommand.logResults();
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioCommitChangesToGit' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
         }
 
         // VERIFY: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Verifying: {0}", scenarioDescription)); //$NON-NLS-1$
 
             assertNotNull(gitCommand);
 
             assertEquals(0, gitCommand.getExitCode());
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioCommitChangesToGit' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -342,15 +309,13 @@ public class TfsEndToEndTests
     /**
      * Kick of the checkin to tfs.
      */
-    private void stepSyncChangesToTfs()
-    {
+    private void stepSyncChangesToTfs() {
         String scenarioDescription = "Sync to TFS [git tf checkin]"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
-            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$ 
+        try {
+            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             // do a pull first
             Logger.log("Kicking off a pull --rebase before the checkin"); //$NON-NLS-1$
@@ -365,27 +330,21 @@ public class TfsEndToEndTests
 
             cmd.logResults();
 
-            if (cmd.getExitCode() != 0)
-            {
+            if (cmd.getExitCode() != 0) {
                 cmd.logDetails();
             }
 
             assertEquals(0, cmd.getExitCode());
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'testGitTfEndToEndClone' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
         }
 
         // VERIFY: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Verifying {0}", scenarioDescription)); //$NON-NLS-1$
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'testGitTfEndToEndClone' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -395,22 +354,19 @@ public class TfsEndToEndTests
     /**
      * Kick off the edit file and add to git.
      */
-    private void stepEditFileAddToGit()
-    {
+    private void stepEditFileAddToGit() {
         GitCommand gitCommand = null;
 
         String scenarioDescription = "Edit the same file [git add]"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
+        try {
             Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             // edit file all files
             Enumeration<File> iterator = m_fileContent.keys();
-            while (iterator.hasMoreElements())
-            {
+            while (iterator.hasMoreElements()) {
                 // get the file object
                 File file = iterator.nextElement();
 
@@ -428,9 +384,7 @@ public class TfsEndToEndTests
 
                 m_fileContent.put(file, content);
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioEditFileAddToGit' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -440,20 +394,17 @@ public class TfsEndToEndTests
     /**
      * Verify the content and names of the files in the replicated workspace.
      */
-    private void stepVerifyFilesInNewRepo()
-    {
+    private void stepVerifyFilesInNewRepo() {
         BufferedReader reader = null;
 
-        try
-        {
+        try {
             // iterate through each file and verify the content in the new
             // location
             gitRepositoryRootFolder2 = getWorkspaceFolder();
 
             // edit file all files
             Enumeration<File> iterator = m_fileContent.keys();
-            while (iterator.hasMoreElements())
-            {
+            while (iterator.hasMoreElements()) {
                 // get the file object
                 File file = iterator.nextElement();
 
@@ -470,8 +421,7 @@ public class TfsEndToEndTests
                 String actualContent = ""; //$NON-NLS-1$
                 String newLineOfActualContent = null;
                 reader = new BufferedReader(new FileReader(newFile));
-                while ((newLineOfActualContent = reader.readLine()) != null)
-                {
+                while ((newLineOfActualContent = reader.readLine()) != null) {
                     actualContent = actualContent + newLineOfActualContent + TestEnvironmentConstants.GetNewLine();
                 }
 
@@ -481,23 +431,15 @@ public class TfsEndToEndTests
                 Logger.log("Expected Content", MessageFormat.format("{0}", expectedContent.toString())); //$NON-NLS-1$ //$NON-NLS-2$
                 assertEquals(expectedContent.toString(), actualContent.toString());
             }
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioVerifyFilesInNewRepo' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
-            super.fail("Clone of TFS failed"); //$NON-NLS-1$           
-        }
-        finally
-        {
-            if (reader != null)
-            {
-                try
-                {
+            super.fail("Clone of TFS failed"); //$NON-NLS-1$
+        } finally {
+            if (reader != null) {
+                try {
                     reader.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     // best attempt
                 }
             }
@@ -507,15 +449,13 @@ public class TfsEndToEndTests
     /**
      * Rename file in git.
      */
-    private void stepRenameFileInGit()
-    {
+    private void stepRenameFileInGit() {
         String scenarioDescription = "Rename file [git mv]"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
         // RUN: kick off the command
-        try
-        {
-            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$ 
+        try {
+            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             // get the file to update
             File file = m_fileContent.keys().nextElement();
@@ -535,9 +475,7 @@ public class TfsEndToEndTests
 
             // save the new object
             gitCommand.logResults();
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioEditFileAddToGit' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -548,16 +486,14 @@ public class TfsEndToEndTests
      * Branch the working folder from the TFS object model (action not triggered
      * from git.
      */
-    private void stepBranchFromTfs()
-    {
+    private void stepBranchFromTfs() {
         String scenarioDescription = "Branch using TFS OM"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
         String newBranchName = null;
         File file = null;
 
-        try
-        {
-            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$ 
+        try {
+            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             TFSTeamProjectCollection tfs = connectToTFS();
 
@@ -568,10 +504,12 @@ public class TfsEndToEndTests
             file = new File(currentWorkingFolder);
             newBranchName = MessageFormat.format("{0}-branch", file.getName()); //$NON-NLS-1$
             String currentServerpath =
-                ServerPath.combine(ServerPath.combine("$/", TestEnvironment.getTfsTeamProjectName()), //$NON-NLS-1$
+                ServerPath.combine(
+                    ServerPath.combine("$/", TestEnvironment.getTfsTeamProjectName()), //$NON-NLS-1$
                     file.getName());
             String newBranchServerPath =
-                ServerPath.combine(ServerPath.combine("$/", TestEnvironment.getTfsTeamProjectName()), //$NON-NLS-1$
+                ServerPath.combine(
+                    ServerPath.combine("$/", TestEnvironment.getTfsTeamProjectName()), //$NON-NLS-1$
                     newBranchName);
 
             int returnCode = vcClient.createBranch(currentServerpath, newBranchServerPath, version);
@@ -580,14 +518,12 @@ public class TfsEndToEndTests
 
             // update the list of files with the new file
             Enumeration<File> iterator = m_fileContent.keys();
-            while (iterator.hasMoreElements())
-            {
+            while (iterator.hasMoreElements()) {
                 // get the file object
                 File existingFile = iterator.nextElement();
-                String escapedPath =
-                    existingFile.getPath().replace(
-                        existingFile.getParent(),
-                        MessageFormat.format("{0}-branch", file.getPath())); //$NON-NLS-1$
+                String escapedPath = existingFile.getPath().replace(
+                    existingFile.getParent(),
+                    MessageFormat.format("{0}-branch", file.getPath())); //$NON-NLS-1$
 
                 File newFile = new File(escapedPath);
 
@@ -596,9 +532,7 @@ public class TfsEndToEndTests
 
             // wait a few seconds due to time stamp issues
             Thread.sleep(5 * 1000);
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioBranchFromTfs' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$
@@ -608,14 +542,12 @@ public class TfsEndToEndTests
     /**
      * Pull from TFS (this will be the branch in this tests case).
      */
-    private void stepPullFromTfs()
-    {
+    private void stepPullFromTfs() {
         String scenarioDescription = "Pull fro TFS"; //$NON-NLS-1$
         Logger.logHeader(MessageFormat.format("Step: {0}", scenarioDescription)); //$NON-NLS-1$
 
-        try
-        {
-            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$ 
+        try {
+            Logger.log(MessageFormat.format("Running: {0}", scenarioDescription)); //$NON-NLS-1$
 
             GitTfCommand cmd = new GitTfCommand("pull --rebase"); //$NON-NLS-1$
             cmd.getWorkingFolder(getWorkspaceFolder());
@@ -623,9 +555,7 @@ public class TfsEndToEndTests
 
             // save the new object
             cmd.logResults();
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             Logger.log("Unexpected exception during 'scenarioPullFromTfs' (VERIFY)"); //$NON-NLS-1$
             Logger.logException(e);
             super.fail("Clone of TFS failed"); //$NON-NLS-1$

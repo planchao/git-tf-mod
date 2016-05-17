@@ -40,11 +40,8 @@ import com.microsoft.gittf.client.clc.arguments.ValueArgument;
  * 
  */
 @SuppressWarnings("nls")
-public class ArgumentParserTest
-    extends TestCase
-{
-    private static Argument[] TEST_ARGUMENTS = new Argument[]
-    {
+public class ArgumentParserTest extends TestCase {
+    private static Argument[] TEST_ARGUMENTS = new Argument[] {
         new SwitchArgument("switch-a", 'a', "switch a"), //$NON-NLS-1$ //$NON-NLS-2$
         new SwitchArgument("switch-b", 'b', "switch b"), //$NON-NLS-1$ //$NON-NLS-2$
         new SwitchArgument("switch-c", 'c', "switch c"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -56,12 +53,14 @@ public class ArgumentParserTest
         new ValueArgument("value-five", '5', "value five", "value five", ArgumentOptions.VALUE_REQUIRED), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         new ValueArgument("value-six", '6', "value six", "value six", ArgumentOptions.VALUE_REQUIRED), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        new ValueArgument("multiple", //$NON-NLS-1$
+        new ValueArgument(
+            "multiple", //$NON-NLS-1$
             "multiple args", //$NON-NLS-1$
             "multiple args", //$NON-NLS-1$
             ArgumentOptions.VALUE_REQUIRED.combine(ArgumentOptions.MULTIPLE)),
 
-        new ChoiceArgument(Messages.getString("choice"), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("choice"), //$NON-NLS-1$
 
             new SwitchArgument("choice-1", "choice 1"), //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -74,11 +73,8 @@ public class ArgumentParserTest
         new FreeArgument("free-2", "free two"), //$NON-NLS-1$ //$NON-NLS-2$
     };
 
-    public void testAliasValue()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
+    public void testAliasValue() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
             "-1", //$NON-NLS-1$
             "Argument Value is test Alias Value 1", //$NON-NLS-1$
             "-2=Argument Value is test Alias Value 2", //$NON-NLS-1$
@@ -114,78 +110,56 @@ public class ArgumentParserTest
         assertEquals(v6, "Argument Value in test Alias Value 6"); //$NON-NLS-1$
     }
 
-    public void testCaseSensitive()
-        throws Exception
-    {
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
+    public void testCaseSensitive() throws Exception {
+        try {
+            ArgumentParser.parse(new String[] {
                 "--SWITCH-A" //$NON-NLS-1$
-            },
-                TEST_ARGUMENTS);
+            }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("expected case sensitive parsing"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
     }
 
-    public void testSwitchAbbreviation()
-        throws Exception
-    {
-        ArgumentCollection abbrev = ArgumentParser.parse(new String[]
-        {
-            "-a", "-b" //$NON-NLS-1$ //$NON-NLS-2$
+    public void testSwitchAbbreviation() throws Exception {
+        ArgumentCollection abbrev = ArgumentParser.parse(new String[] {
+            "-a", //$NON-NLS-1$
+            "-b" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
-        ArgumentCollection full = ArgumentParser.parse(new String[]
-        {
-            "--switch-a", "--switch-b" //$NON-NLS-1$ //$NON-NLS-2$
+        ArgumentCollection full = ArgumentParser.parse(new String[] {
+            "--switch-a", //$NON-NLS-1$
+            "--switch-b" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertEquals(abbrev, full);
     }
 
-    public void testSwitchCombination()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
+    public void testSwitchCombination() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
             "-abc" //$NON-NLS-1$
-        },
-            TEST_ARGUMENTS);
+        }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("switch-a")); //$NON-NLS-1$
         assertTrue(args.contains("switch-b")); //$NON-NLS-1$
         assertTrue(args.contains("switch-c")); //$NON-NLS-1$
     }
 
-    public void testSwitchWithValue()
-        throws Exception
-    {
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
+    public void testSwitchWithValue() throws Exception {
+        try {
+            ArgumentParser.parse(new String[] {
                 "--switch-a=foo" //$NON-NLS-1$
-            },
-                TEST_ARGUMENTS);
+            }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("switches cannot have values"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
     }
 
-    public void testMultipleArguments()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
-            "--multiple=one", "--multiple=two" //$NON-NLS-1$ //$NON-NLS-2$
+    public void testMultipleArguments() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
+            "--multiple=one", //$NON-NLS-1$
+            "--multiple=two" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("multiple")); //$NON-NLS-1$
@@ -193,178 +167,154 @@ public class ArgumentParserTest
         assertTrue(((ValueArgument) args.getArguments("multiple")[0]).getValue().equals("one")); //$NON-NLS-1$ //$NON-NLS-2$
         assertTrue(((ValueArgument) args.getArguments("multiple")[1]).getValue().equals("two")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
+        args = ArgumentParser.parse(new String[] {
             "--multiple=one,two" //$NON-NLS-1$
-        },
-            TEST_ARGUMENTS);
+        }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("multiple")); //$NON-NLS-1$
         assertTrue(args.getArguments("multiple").length == 2); //$NON-NLS-1$
         assertTrue(((ValueArgument) args.getArguments("multiple")[0]).getValue().equals("one")); //$NON-NLS-1$ //$NON-NLS-2$
         assertTrue(((ValueArgument) args.getArguments("multiple")[1]).getValue().equals("two")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
+        args = ArgumentParser.parse(new String[] {
             "--multiple=one;two" //$NON-NLS-1$
-        },
-            TEST_ARGUMENTS);
+        }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("multiple")); //$NON-NLS-1$
         assertTrue(args.getArguments("multiple").length == 2); //$NON-NLS-1$
         assertTrue(((ValueArgument) args.getArguments("multiple")[0]).getValue().equals("one")); //$NON-NLS-1$ //$NON-NLS-2$
         assertTrue(((ValueArgument) args.getArguments("multiple")[1]).getValue().equals("two")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
-            "--value-one=one", "--value-one=two" //$NON-NLS-1$ //$NON-NLS-2$
+        args = ArgumentParser.parse(new String[] {
+            "--value-one=one", //$NON-NLS-1$
+            "--value-one=two" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertTrue(args.getArguments("value-one").length == 1); //$NON-NLS-1$
         assertTrue(((ValueArgument) args.getArgument("value-one")).getValue().equals("two")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
+        args = ArgumentParser.parse(new String[] {
             "--value-one=one,two" //$NON-NLS-1$
-        },
-            TEST_ARGUMENTS);
+        }, TEST_ARGUMENTS);
 
         assertTrue(args.getArguments("value-one").length == 1); //$NON-NLS-1$
         assertTrue(((ValueArgument) args.getArgument("value-one")).getValue().equals("one,two")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public void testChoiceLimitation()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
+    public void testChoiceLimitation() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
             "--choice-1" //$NON-NLS-1$
-        },
-            TEST_ARGUMENTS);
+        }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("choice-1")); //$NON-NLS-1$
 
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
-                "--choice-1", "--choice-2" //$NON-NLS-1$ //$NON-NLS-2$
+        try {
+            ArgumentParser.parse(new String[] {
+                "--choice-1", //$NON-NLS-1$
+                "--choice-2" //$NON-NLS-1$
             }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("multiple choice arguments"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
 
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
-                "--choice-1", "--choice-3" //$NON-NLS-1$ //$NON-NLS-2$
+        try {
+            ArgumentParser.parse(new String[] {
+                "--choice-1", //$NON-NLS-1$
+                "--choice-3" //$NON-NLS-1$
             }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("multiple choice arguments"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
 
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
-                "--choice-1", "--choice-2", "--choice-3" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        try {
+            ArgumentParser.parse(new String[] {
+                "--choice-1", //$NON-NLS-1$
+                "--choice-2", //$NON-NLS-1$
+                "--choice-3" //$NON-NLS-1$
             }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("multiple choice arguments"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
     }
 
-    public void testValueRequired()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
-            "--value-one", "value-one-data" //$NON-NLS-1$ //$NON-NLS-2$
+    public void testValueRequired() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
+            "--value-one", //$NON-NLS-1$
+            "value-one-data" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertEquals(((ValueArgument) args.getArgument("value-one")).getValue(), "value-one-data"); //$NON-NLS-1$ //$NON-NLS-2$
 
         // Ensure that --value-one requires an argument
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
-                "--choice-1", "--value-one" //$NON-NLS-1$ //$NON-NLS-2$
+        try {
+            ArgumentParser.parse(new String[] {
+                "--choice-1", //$NON-NLS-1$
+                "--value-one" //$NON-NLS-1$
             }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("no value"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
 
         // Ensure that --value-three isn't used as an value to --value-one
-        try
-        {
-            ArgumentParser.parse(new String[]
-            {
-                "--value-one", "--value-three" //$NON-NLS-1$ //$NON-NLS-2$
+        try {
+            ArgumentParser.parse(new String[] {
+                "--value-one", //$NON-NLS-1$
+                "--value-three" //$NON-NLS-1$
             }, TEST_ARGUMENTS);
 
             throw new AssertionFailedError("no value"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
     }
 
-    public void testValueNotRequired()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
-            "--value-one", "value-one-data", "--value-three", "value-three-data" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    public void testValueNotRequired() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
+            "--value-one", //$NON-NLS-1$
+            "value-one-data", //$NON-NLS-1$
+            "--value-three", //$NON-NLS-1$
+            "value-three-data" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertEquals(((ValueArgument) args.getArgument("value-one")).getValue(), "value-one-data"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((ValueArgument) args.getArgument("value-three")).getValue(), "value-three-data"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
-            "--value-one", "value-one-data", "--value-three" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        args = ArgumentParser.parse(new String[] {
+            "--value-one", //$NON-NLS-1$
+            "value-one-data", //$NON-NLS-1$
+            "--value-three" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertEquals(((ValueArgument) args.getArgument("value-one")).getValue(), "value-one-data"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((ValueArgument) args.getArgument("value-three")).getValue(), ""); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
-            "--value-one", "value-one-data", "--value-three", "" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        args = ArgumentParser.parse(new String[] {
+            "--value-one", //$NON-NLS-1$
+            "value-one-data", //$NON-NLS-1$
+            "--value-three", //$NON-NLS-1$
+            "" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertEquals(((ValueArgument) args.getArgument("value-one")).getValue(), "value-one-data"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((ValueArgument) args.getArgument("value-three")).getValue(), ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public void testFreeArgument()
-        throws Exception
-    {
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
-            "--choice-1", "free-value" //$NON-NLS-1$ //$NON-NLS-2$
+    public void testFreeArgument() throws Exception {
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
+            "--choice-1", //$NON-NLS-1$
+            "free-value" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("choice-1")); //$NON-NLS-1$
         assertEquals(((FreeArgument) args.getArgument("free-1")).getValue(), "free-value"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
-            "--choice-1", "free-value", "second-free-value" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        args = ArgumentParser.parse(new String[] {
+            "--choice-1", //$NON-NLS-1$
+            "free-value", //$NON-NLS-1$
+            "second-free-value" //$NON-NLS-1$
         }, TEST_ARGUMENTS);
 
         assertTrue(args.contains("choice-1")); //$NON-NLS-1$
@@ -372,58 +322,52 @@ public class ArgumentParserTest
         assertEquals(((FreeArgument) args.getArgument("free-2")).getValue(), "second-free-value"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public void testRequiredFreeArgument()
-        throws Exception
-    {
-        Argument[] requiredFreeArgument = new Argument[]
-        {
+    public void testRequiredFreeArgument() throws Exception {
+        Argument[] requiredFreeArgument = new Argument[] {
             new FreeArgument("required-one", "required one", ArgumentOptions.REQUIRED), //$NON-NLS-1$ //$NON-NLS-2$
             new FreeArgument("required-two", "required two", ArgumentOptions.REQUIRED), //$NON-NLS-1$ //$NON-NLS-2$
             new FreeArgument("not-required-three", "not required three"), //$NON-NLS-1$ //$NON-NLS-2$
         };
 
-        ArgumentCollection args = ArgumentParser.parse(new String[]
-        {
-            "required-value-one", "required-value-two", "value-three" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        ArgumentCollection args = ArgumentParser.parse(new String[] {
+            "required-value-one", //$NON-NLS-1$
+            "required-value-two", //$NON-NLS-1$
+            "value-three" //$NON-NLS-1$
         }, requiredFreeArgument);
 
         assertEquals(((FreeArgument) args.getArgument("required-one")).getValue(), "required-value-one"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((FreeArgument) args.getArgument("required-two")).getValue(), "required-value-two"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((FreeArgument) args.getArgument("not-required-three")).getValue(), "value-three"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        args = ArgumentParser.parse(new String[]
-        {
-            "required-value-one", "required-value-two" //$NON-NLS-1$ //$NON-NLS-2$
+        args = ArgumentParser.parse(new String[] {
+            "required-value-one", //$NON-NLS-1$
+            "required-value-two" //$NON-NLS-1$
         }, requiredFreeArgument);
 
         assertEquals(((FreeArgument) args.getArgument("required-one")).getValue(), "required-value-one"); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(((FreeArgument) args.getArgument("required-two")).getValue(), "required-value-two"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        try
-        {
-            args = ArgumentParser.parse(new String[]
-            {
-                "required-value-one", "" //$NON-NLS-1$ //$NON-NLS-2$
+        try {
+            args = ArgumentParser.parse(new String[] {
+                "required-value-one", //$NON-NLS-1$
+                "" //$NON-NLS-1$
             }, requiredFreeArgument);
 
             throw new AssertionFailedError("no value"); //$NON-NLS-1$
-        }
-        catch (ArgumentParserException e)
-        {
+        } catch (ArgumentParserException e) {
         }
     }
 
-    public void testTwoStageParsing()
-        throws Exception
-    {
-        Argument[] stageOne = new Argument[]
-        {
-            new SwitchArgument("stage-one", "stage one"), new FreeArgument("command", "command"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    public void testTwoStageParsing() throws Exception {
+        Argument[] stageOne = new Argument[] {
+            new SwitchArgument("stage-one", "stage one"), //$NON-NLS-1$ //$NON-NLS-2$
+            new FreeArgument("command", "command"), //$NON-NLS-1$ //$NON-NLS-2$
         };
 
-        ArgumentCollection stageOneArgs = ArgumentParser.parse(new String[]
-        {
-            "--stage-one", "test-command", "--other-argument" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        ArgumentCollection stageOneArgs = ArgumentParser.parse(new String[] {
+            "--stage-one", //$NON-NLS-1$
+            "test-command", //$NON-NLS-1$
+            "--other-argument" //$NON-NLS-1$
         }, stageOne, ArgumentParserOptions.ALLOW_UNKNOWN_ARGUMENTS);
 
         assertTrue(stageOneArgs.contains("stage-one")); //$NON-NLS-1$

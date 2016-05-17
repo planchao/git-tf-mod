@@ -31,9 +31,7 @@ import com.microsoft.tfs.util.BitField;
  * arguments.
  * 
  */
-public class ArgumentOptions
-    extends BitField
-{
+public class ArgumentOptions extends BitField {
     private static final long serialVersionUID = -8592319567263147472L;
 
     /**
@@ -86,23 +84,19 @@ public class ArgumentOptions
      * 
      * @param value
      */
-    private ArgumentOptions(int value)
-    {
+    private ArgumentOptions(int value) {
         super(value);
     }
 
-    public static ArgumentOptions combine(ArgumentOptions... options)
-    {
+    public static ArgumentOptions combine(ArgumentOptions... options) {
         return new ArgumentOptions(BitField.combine(options));
     }
 
-    public ArgumentOptions combine(ArgumentOptions other)
-    {
+    public ArgumentOptions combine(ArgumentOptions other) {
         return new ArgumentOptions(super.combineInternal(other));
     }
 
-    public boolean contains(ArgumentOptions other)
-    {
+    public boolean contains(ArgumentOptions other) {
         return super.containsInternal(other);
     }
 }

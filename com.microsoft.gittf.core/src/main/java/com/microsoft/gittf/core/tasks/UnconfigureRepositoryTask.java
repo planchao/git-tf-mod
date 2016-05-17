@@ -38,9 +38,7 @@ import com.microsoft.gittf.core.util.Check;
  * 
  * 
  */
-public class UnconfigureRepositoryTask
-    extends Task
-{
+public class UnconfigureRepositoryTask extends Task {
     private final Repository repository;
 
     /**
@@ -48,17 +46,16 @@ public class UnconfigureRepositoryTask
      * 
      * @param repository
      */
-    public UnconfigureRepositoryTask(final Repository repository)
-    {
+    public UnconfigureRepositoryTask(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
         this.repository = repository;
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
-        progressMonitor.beginTask(Messages.getString("UnconfigureRepositoryTask.UnconfiguringRepository"), //$NON-NLS-1$
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
+        progressMonitor.beginTask(
+            Messages.getString("UnconfigureRepositoryTask.UnconfiguringRepository"), //$NON-NLS-1$
             TaskProgressMonitor.INDETERMINATE);
 
         GitTFConfiguration.removeFrom(repository);

@@ -46,9 +46,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
  * shelveset owner
  * 
  */
-public class ShelvesetsDisplayTask
-    extends Task
-{
+public class ShelvesetsDisplayTask extends Task {
     private final VersionControlService versionControlService;
     private final ShelvesetView view;
     private final String shelvesetName;
@@ -73,8 +71,7 @@ public class ShelvesetsDisplayTask
         final VersionControlService versionControlService,
         final ShelvesetView view,
         final String shelvesetName,
-        final String shelvesetOwnerName)
-    {
+        final String shelvesetOwnerName) {
         Check.notNull(versionControlService, "versionControlService"); //$NON-NLS-1$
         Check.notNull(view, "view"); //$NON-NLS-1$
 
@@ -89,8 +86,7 @@ public class ShelvesetsDisplayTask
      * 
      * @param displayDetails
      */
-    public void setDisplayDetails(final boolean displayDetails)
-    {
+    public void setDisplayDetails(final boolean displayDetails) {
         this.displayDetails = displayDetails;
     }
 
@@ -99,16 +95,14 @@ public class ShelvesetsDisplayTask
      * 
      * @param sortOption
      */
-    public void setSortOption(final ShelvesetSortOption sortOption)
-    {
+    public void setSortOption(final ShelvesetSortOption sortOption) {
         this.sortOption = sortOption;
     }
 
     @Override
-    public TaskStatus run(TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
-        progressMonitor.beginTask(Messages.getString("ShelvesetsDisplayTask.DownloadingShelvesets"), //$NON-NLS-1$
+    public TaskStatus run(TaskProgressMonitor progressMonitor) throws Exception {
+        progressMonitor.beginTask(
+            Messages.getString("ShelvesetsDisplayTask.DownloadingShelvesets"), //$NON-NLS-1$
             1,
             TaskProgressDisplay.DISPLAY_PROGRESS.combine(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL));
 
@@ -116,8 +110,7 @@ public class ShelvesetsDisplayTask
         Shelveset[] results = versionControlService.queryShelvesets(shelvesetName, shelvesetOwnerName);
 
         /* If there are no shelvesets that match the criteria show an error */
-        if (results.length == 0)
-        {
+        if (results.length == 0) {
             progressMonitor.endTask();
             return new TaskStatus(TaskStatus.ERROR, Messages.getString("ShelvesetsDisplayTask.NoShelvesetsFound")); //$NON-NLS-1$
         }
@@ -126,22 +119,18 @@ public class ShelvesetsDisplayTask
          * If there is one shelveset matching and details is specified show the
          * super detailed view which displays the pending changes as well
          */
-        if (displayDetails && results.length == 1)
-        {
+        if (displayDetails && results.length == 1) {
             // display shelveset details
             PendingSet[] shelvesetDetails = versionControlService.queryShelvesetChanges(results[0], false);
             progressMonitor.endTask();
 
             view.displayShelvesetDetails(results[0], shelvesetDetails);
-        }
-        else
-        {
+        } else {
             progressMonitor.endTask();
 
             // Sort shelvesets
             List<Shelveset> shelvesets = new ArrayList<Shelveset>(results.length);
-            for (Shelveset shelveset : results)
-            {
+            for (Shelveset shelveset : results) {
                 shelvesets.add(shelveset);
             }
 

@@ -32,9 +32,7 @@ import org.eclipse.jgit.lib.ObjectId;
  * TFS
  * 
  */
-public class DeleteChange
-    extends Change
-{
+public class DeleteChange extends Change {
     private final FileMode type;
 
     /**
@@ -45,8 +43,7 @@ public class DeleteChange
      * @param type
      *        the file mode (FileMode.TREE or not)
      */
-    public DeleteChange(final String path, final FileMode type)
-    {
+    public DeleteChange(final String path, final FileMode type) {
         super(path, ObjectId.zeroId());
 
         this.type = type;
@@ -57,8 +54,7 @@ public class DeleteChange
      * 
      * @return
      */
-    public FileMode getType()
-    {
+    public FileMode getType() {
         return type;
     }
 }

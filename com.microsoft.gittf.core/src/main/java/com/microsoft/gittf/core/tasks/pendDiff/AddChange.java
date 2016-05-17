@@ -30,9 +30,7 @@ import org.eclipse.jgit.lib.ObjectId;
  * Represents an ADD change in the git repository that can be pended against TFS
  * 
  */
-public class AddChange
-    extends Change
-{
+public class AddChange extends Change {
     /**
      * Constructor
      * 
@@ -41,8 +39,7 @@ public class AddChange
      * @param objectID
      *        item object id
      */
-    public AddChange(String path, ObjectId objectID)
-    {
+    public AddChange(String path, ObjectId objectID) {
         super(path, objectID);
     }
 }

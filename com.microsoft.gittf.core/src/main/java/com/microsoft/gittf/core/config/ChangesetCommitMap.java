@@ -50,8 +50,7 @@ import com.microsoft.gittf.core.util.TagUtil;
  * repository. This file uses the same format used by the config files.
  * 
  */
-public class ChangesetCommitMap
-{
+public class ChangesetCommitMap {
     private final Repository repository;
     private final FileBasedConfig configFile;
 
@@ -61,8 +60,7 @@ public class ChangesetCommitMap
      * @param repository
      *        the git repository
      */
-    public ChangesetCommitMap(final Repository repository)
-    {
+    public ChangesetCommitMap(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
         this.repository = repository;
@@ -79,15 +77,11 @@ public class ChangesetCommitMap
      *        the commit id
      * @throws IOException
      */
-    public void setChangesetCommit(int changesetID, ObjectId commitID)
-        throws IOException
-    {
+    public void setChangesetCommit(int changesetID, ObjectId commitID) throws IOException {
         setChangesetCommit(changesetID, commitID, false);
     }
 
-    public void setChangesetCommit(int changesetID, ObjectId commitID, boolean forceHWMUpdate)
-        throws IOException
-    {
+    public void setChangesetCommit(int changesetID, ObjectId commitID, boolean forceHWMUpdate) throws IOException {
         Check.isTrue(changesetID >= 0, "changesetID >= 0"); //$NON-NLS-1$
         Check.notNull(commitID, "commitID"); //$NON-NLS-1$
 
@@ -108,8 +102,7 @@ public class ChangesetCommitMap
             changesetID);
 
         /* Update the high water mark automatically */
-        if ((changesetID > getLastBridgedChangesetID(false)) || forceHWMUpdate)
-        {
+        if ((changesetID > getLastBridgedChangesetID(false)) || forceHWMUpdate) {
             configFile.setInt(
                 ConfigurationConstants.CONFIGURATION_SECTION,
                 ConfigurationConstants.CHANGESET_SUBSECTION,
@@ -129,8 +122,7 @@ public class ChangesetCommitMap
      *        the commit id
      * @return
      */
-    public int getChangesetID(ObjectId commitID)
-    {
+    public int getChangesetID(ObjectId commitID) {
         Check.notNull(commitID, "commitID"); //$NON-NLS-1$
 
         ensureConfigUptoDate();
@@ -153,56 +145,43 @@ public class ChangesetCommitMap
      *        whether or not to validate the object id found
      * @return
      */
-    public ObjectId getCommitID(int changesetID, boolean validate)
-    {
+    public ObjectId getCommitID(int changesetID, boolean validate) {
         Check.isTrue(changesetID >= 0, "changesetID >= 0"); //$NON-NLS-1$
 
         ensureConfigUptoDate();
 
-        String commitHash =
-            configFile.getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.COMMIT_SUBSECTION,
-                MessageFormat.format(ConfigurationConstants.COMMIT_CHANGESET_FORMAT, Integer.toString(changesetID)));
+        String commitHash = configFile.getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.COMMIT_SUBSECTION,
+            MessageFormat.format(ConfigurationConstants.COMMIT_CHANGESET_FORMAT, Integer.toString(changesetID)));
 
-        if (commitHash == null)
-        {
+        if (commitHash == null) {
             return null;
         }
 
         ObjectId changesetCommitId = ObjectId.fromString(commitHash);
 
-        if (!validate)
-        {
+        if (!validate) {
             return changesetCommitId;
         }
 
         ObjectReader objectReader = null;
-        try
-        {
+        try {
             objectReader = repository.newObjectReader();
-            if (changesetCommitId != null && !ObjectId.zeroId().equals(changesetCommitId))
-            {
-                try
-                {
-                    if (objectReader.has(changesetCommitId))
-                    {
+            if (changesetCommitId != null && !ObjectId.zeroId().equals(changesetCommitId)) {
+                try {
+                    if (objectReader.has(changesetCommitId)) {
                         return changesetCommitId;
                     }
-                }
-                catch (IOException exception)
-                {
+                } catch (IOException exception) {
                     return null;
                 }
             }
 
             return null;
-        }
-        finally
-        {
-            if (objectReader != null)
-            {
-                objectReader.release();
+        } finally {
+            if (objectReader != null) {
+                objectReader.close();
             }
         }
     }
@@ -218,38 +197,31 @@ public class ChangesetCommitMap
      *        whether or not to validate the HWM value
      * @return
      */
-    public int getLastBridgedChangesetID(boolean validate)
-    {
+    public int getLastBridgedChangesetID(boolean validate) {
         ensureConfigUptoDate();
 
-        int changeset =
-            configFile.getInt(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.CHANGESET_SUBSECTION,
-                ConfigurationConstants.CHANGESET_HIGHWATER,
-                -1);
+        int changeset = configFile.getInt(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.CHANGESET_SUBSECTION,
+            ConfigurationConstants.CHANGESET_HIGHWATER,
+            -1);
 
-        if (changeset < 0)
-        {
+        if (changeset < 0) {
             return changeset;
         }
 
-        if (!validate)
-        {
+        if (!validate) {
             return changeset;
         }
 
-        while (true)
-        {
-            if (changeset < 0)
-            {
+        while (true) {
+            if (changeset < 0) {
                 return changeset;
             }
 
             ObjectId changesetCommitId = getCommitID(changeset, true);
 
-            if (changesetCommitId != null && !ObjectId.zeroId().equals(changesetCommitId))
-            {
+            if (changesetCommitId != null && !ObjectId.zeroId().equals(changesetCommitId)) {
                 return changeset;
             }
 
@@ -264,8 +236,7 @@ public class ChangesetCommitMap
      * @param validate
      * @return
      */
-    public int getPreviousBridgedChangeset(int changesetID, boolean validate)
-    {
+    public int getPreviousBridgedChangeset(int changesetID, boolean validate) {
         ensureConfigUptoDate();
 
         Set<String> downloadedChangesetEntries =
@@ -273,12 +244,9 @@ public class ChangesetCommitMap
 
         Set<Integer> sortedDownloadedChangesetEntries = new TreeSet<Integer>(Collections.reverseOrder());
 
-        for (String downloadedChangesetEntry : downloadedChangesetEntries)
-        {
-            String changesetNumberString =
-                downloadedChangesetEntry.substring(MessageFormat.format(
-                    ConfigurationConstants.COMMIT_CHANGESET_FORMAT,
-                    "").length()); //$NON-NLS-1$
+        for (String downloadedChangesetEntry : downloadedChangesetEntries) {
+            String changesetNumberString = downloadedChangesetEntry.substring(
+                MessageFormat.format(ConfigurationConstants.COMMIT_CHANGESET_FORMAT, "").length()); //$NON-NLS-1$
 
             int changesetIDEntry = Integer.parseInt(changesetNumberString);
 
@@ -286,24 +254,18 @@ public class ChangesetCommitMap
         }
 
         Iterator<Integer> changesetIterator = sortedDownloadedChangesetEntries.iterator();
-        while (changesetIterator.hasNext())
-        {
+        while (changesetIterator.hasNext()) {
             int currentChangeset = changesetIterator.next();
 
-            if (currentChangeset >= changesetID)
-            {
+            if (currentChangeset >= changesetID) {
                 continue;
             }
 
-            if (!validate)
-            {
+            if (!validate) {
                 return currentChangeset;
-            }
-            else
-            {
+            } else {
                 ObjectId commitId = getCommitID(currentChangeset, true);
-                if (commitId != null && !ObjectId.zeroId().equals(commitId))
-                {
+                if (commitId != null && !ObjectId.zeroId().equals(commitId)) {
                     return currentChangeset;
                 }
             }
@@ -317,16 +279,13 @@ public class ChangesetCommitMap
      * 
      * @param changesetID
      */
-    private void cleanupPreviousEntries(int changesetID)
-    {
-        String commitHash =
-            configFile.getString(
-                ConfigurationConstants.CONFIGURATION_SECTION,
-                ConfigurationConstants.COMMIT_SUBSECTION,
-                MessageFormat.format(ConfigurationConstants.COMMIT_CHANGESET_FORMAT, Integer.toString(changesetID)));
+    private void cleanupPreviousEntries(int changesetID) {
+        String commitHash = configFile.getString(
+            ConfigurationConstants.CONFIGURATION_SECTION,
+            ConfigurationConstants.COMMIT_SUBSECTION,
+            MessageFormat.format(ConfigurationConstants.COMMIT_CHANGESET_FORMAT, Integer.toString(changesetID)));
 
-        if (commitHash == null || commitHash.length() == 0)
-        {
+        if (commitHash == null || commitHash.length() == 0) {
             return;
         }
 
@@ -344,17 +303,12 @@ public class ChangesetCommitMap
     /**
      * Ensures that the config cache is up to date before reading it
      */
-    private void ensureConfigUptoDate()
-    {
-        try
-        {
-            if (configFile != null && configFile.isOutdated())
-            {
+    private void ensureConfigUptoDate() {
+        try {
+            if (configFile != null && configFile.isOutdated()) {
                 configFile.load();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -368,32 +322,26 @@ public class ChangesetCommitMap
      */
     public static void copyConfigurationEntriesFromRepositoryConfigToNewConfig(
         Repository repository,
-        File newConfigLocation)
-    {
-        if (!newConfigLocation.exists())
-        {
+        File newConfigLocation) {
+        if (!newConfigLocation.exists()) {
             FileBasedConfig configFile = new FileBasedConfig(newConfigLocation, FS.DETECTED);
 
             GitTFConfiguration repositoryConfiguration = GitTFConfiguration.loadFrom(repository);
-            if (repositoryConfiguration != null)
-            {
+            if (repositoryConfiguration != null) {
                 copyConfigurationEntries(repository.getConfig(), configFile);
             }
         }
     }
 
-    private static void copyConfigurationEntries(StoredConfig source, FileBasedConfig target)
-    {
+    private static void copyConfigurationEntries(StoredConfig source, FileBasedConfig target) {
         Set<String> downloadedChangesetEntries =
             source.getNames(ConfigurationConstants.CONFIGURATION_SECTION, ConfigurationConstants.COMMIT_SUBSECTION);
 
-        for (String changesetEntry : downloadedChangesetEntries)
-        {
-            String commitHash =
-                source.getString(
-                    ConfigurationConstants.CONFIGURATION_SECTION,
-                    ConfigurationConstants.COMMIT_SUBSECTION,
-                    changesetEntry);
+        for (String changesetEntry : downloadedChangesetEntries) {
+            String commitHash = source.getString(
+                ConfigurationConstants.CONFIGURATION_SECTION,
+                ConfigurationConstants.COMMIT_SUBSECTION,
+                changesetEntry);
 
             target.setString(
                 ConfigurationConstants.CONFIGURATION_SECTION,
@@ -405,14 +353,12 @@ public class ChangesetCommitMap
         Set<String> createdCommitEntries =
             source.getNames(ConfigurationConstants.CONFIGURATION_SECTION, ConfigurationConstants.CHANGESET_SUBSECTION);
 
-        for (String commitEntry : createdCommitEntries)
-        {
-            int changesetId =
-                source.getInt(
-                    ConfigurationConstants.CONFIGURATION_SECTION,
-                    ConfigurationConstants.CHANGESET_SUBSECTION,
-                    commitEntry,
-                    -1);
+        for (String commitEntry : createdCommitEntries) {
+            int changesetId = source.getInt(
+                ConfigurationConstants.CONFIGURATION_SECTION,
+                ConfigurationConstants.CHANGESET_SUBSECTION,
+                commitEntry,
+                -1);
 
             target.setInt(
                 ConfigurationConstants.CONFIGURATION_SECTION,
@@ -424,13 +370,10 @@ public class ChangesetCommitMap
         source.unsetSection(ConfigurationConstants.CONFIGURATION_SECTION, ConfigurationConstants.CHANGESET_SUBSECTION);
         source.unsetSection(ConfigurationConstants.CONFIGURATION_SECTION, ConfigurationConstants.COMMIT_SUBSECTION);
 
-        try
-        {
+        try {
             target.save();
             source.save();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

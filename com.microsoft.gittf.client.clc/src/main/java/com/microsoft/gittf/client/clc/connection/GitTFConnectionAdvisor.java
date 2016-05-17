@@ -33,23 +33,19 @@ import com.microsoft.tfs.core.config.httpclient.HTTPClientFactory;
 import com.microsoft.tfs.core.credentials.CredentialsManager;
 import com.microsoft.tfs.core.credentials.CredentialsManagerFactory;
 
-public class GitTFConnectionAdvisor
-    extends DefaultConnectionAdvisor
-{
+public class GitTFConnectionAdvisor extends DefaultConnectionAdvisor {
     /**
      * Creates a {@link GitTFConnectionAdvisor} that uses the current default
      * {@link Locale} and {@link TimeZone} for all
      * {@link ConnectionInstanceData}s.
      * 
      */
-    public GitTFConnectionAdvisor()
-    {
+    public GitTFConnectionAdvisor() {
         super(Locale.getDefault(), TimeZone.getDefault());
     }
 
     @Override
-    public HTTPClientFactory getHTTPClientFactory(final ConnectionInstanceData instanceData)
-    {
+    public HTTPClientFactory getHTTPClientFactory(final ConnectionInstanceData instanceData) {
         /*
          * The Git-TF client factory uses environment variables to configure the
          * global proxy URL, and we can reuse the Team Explorer Everywhere

@@ -30,8 +30,7 @@ package com.microsoft.gittf.client.tfs;
  * @author jpresto
  * 
  */
-public class TestEnvironmentConstants
-{
+public class TestEnvironmentConstants {
     public static final String TESTVARIABLES = "TestVariables"; //$NON-NLS-1$
 
     public static final String VARIABLEGITEXEPATH = "GitExePath"; //$NON-NLS-1$
@@ -52,8 +51,7 @@ public class TestEnvironmentConstants
 
     public static final String PATH = "PATH"; //$NON-NLS-1$
 
-    public static final String GetNewLine()
-    {
+    public static final String GetNewLine() {
         return System.getProperty("line.separator"); //$NON-NLS-1$
     }
 }

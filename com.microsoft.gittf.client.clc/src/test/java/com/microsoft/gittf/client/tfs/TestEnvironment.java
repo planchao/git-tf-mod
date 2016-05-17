@@ -49,8 +49,7 @@ import com.microsoft.gittf.client.tfs.Library.Logger;
  * @author jpresto
  * 
  */
-public class TestEnvironment
-{
+public class TestEnvironment {
     // Define the constants we need.
     private final static String DEFAULTTESTENVIRONMENTFILE = "C:\\TestEnvironment.xml"; //$NON-NLS-1$
     private final static String TESTCONFIGURATIONENVIRONMENTVARIABLENAME = "TestConfiguraitonFile"; //$NON-NLS-1$
@@ -67,8 +66,7 @@ public class TestEnvironment
     /**
      * Perform any initialization we need.
      */
-    public static void initialize()
-    {
+    public static void initialize() {
         // read in the xml file and parse it
         readConfiguration();
     }
@@ -79,29 +77,29 @@ public class TestEnvironment
      * @return the file location for the test environment settings.
      * @throws FileNotFoundException
      */
-    private static String getConfigurationFile()
-        throws FileNotFoundException
-    {
+    private static String getConfigurationFile() throws FileNotFoundException {
         String configurationFileName = System.getenv(TESTCONFIGURATIONENVIRONMENTVARIABLENAME);
 
-        if (configurationFileName == null || configurationFileName.length() == 0)
-        {
+        if (configurationFileName == null || configurationFileName.length() == 0) {
             Logger.log(MessageFormat.format(
-                "Did not find environment variable '{0}'; using default value of '{2}'", TESTCONFIGURATIONENVIRONMENTVARIABLENAME, DEFAULTTESTENVIRONMENTFILE)); //$NON-NLS-1$
+                "Did not find environment variable '{0}'; using default value of '{2}'", //$NON-NLS-1$
+                TESTCONFIGURATIONENVIRONMENTVARIABLENAME,
+                DEFAULTTESTENVIRONMENTFILE));
             configurationFileName = DEFAULTTESTENVIRONMENTFILE;
-        }
-        else
-        {
+        } else {
             Logger.log(MessageFormat.format(
-                "Found environment variable '{0}' = '{1}'", TESTCONFIGURATIONENVIRONMENTVARIABLENAME, configurationFileName)); //$NON-NLS-1$
+                "Found environment variable '{0}' = '{1}'", //$NON-NLS-1$
+                TESTCONFIGURATIONENVIRONMENTVARIABLENAME,
+                configurationFileName));
         }
 
         File file = new File(configurationFileName);
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             Logger.log(MessageFormat.format("Did not find a configuration file here: '{0}'", configurationFileName)); //$NON-NLS-1$
-            Logger.log(MessageFormat.format(
-                "Please create a TestEnvironment.xml file and place it in c:\\ or set the environment variable '{0}' equal to the file full path", TESTCONFIGURATIONENVIRONMENTVARIABLENAME)); //$NON-NLS-1$
+            Logger.log(
+                MessageFormat.format(
+                    "Please create a TestEnvironment.xml file and place it in c:\\ or set the environment variable '{0}' equal to the file full path", //$NON-NLS-1$
+                    TESTCONFIGURATIONENVIRONMENTVARIABLENAME));
 
             throw new FileNotFoundException();
         }
@@ -115,10 +113,8 @@ public class TestEnvironment
      * 
      * @return true if reading was successful
      */
-    protected static Boolean readConfiguration()
-    {
-        try
-        {
+    protected static Boolean readConfiguration() {
+        try {
             // read in the xml file
             File file = new File(getConfigurationFile());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -135,10 +131,8 @@ public class TestEnvironment
             // get the collection name
             NodeList childNodes = list.item(0).getChildNodes();
             Node collectionNode = null;
-            for (int i = 0; i < childNodes.getLength(); i++)
-            {
-                if (childNodes.item(i).getNodeName() == TestEnvironmentConstants.PROJECTCOLLECTIONINPUT)
-                {
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                if (childNodes.item(i).getNodeName() == TestEnvironmentConstants.PROJECTCOLLECTIONINPUT) {
                     collectionNode = childNodes.item(i);
                     defaultCollectionName =
                         childNodes.item(i).getAttributes().getNamedItem(TestEnvironmentConstants.NAME).getNodeValue();
@@ -148,20 +142,17 @@ public class TestEnvironment
 
             collectionUrl = deploymentUrl + "/" + defaultCollectionName; //$NON-NLS-1$
 
-            if (collectionNode == null)
-            {
+            if (collectionNode == null) {
                 Logger.log("Collection node missing from the test environment configuration file"); //$NON-NLS-1$
                 return false;
             }
 
             // get team project
             NodeList collectionChildren = collectionNode.getChildNodes();
-            for (int i = 0; i < collectionChildren.getLength(); i++)
-            {
-                if (collectionChildren.item(i).getNodeName() == TestEnvironmentConstants.TEAMPROJECTINPUT)
-                {
-                    teamProjectName =
-                        collectionChildren.item(i).getAttributes().getNamedItem(TestEnvironmentConstants.NAME).getNodeValue();
+            for (int i = 0; i < collectionChildren.getLength(); i++) {
+                if (collectionChildren.item(i).getNodeName() == TestEnvironmentConstants.TEAMPROJECTINPUT) {
+                    teamProjectName = collectionChildren.item(i).getAttributes().getNamedItem(
+                        TestEnvironmentConstants.NAME).getNodeValue();
                     break;
                 }
             }
@@ -177,11 +168,10 @@ public class TestEnvironment
             verifyConfigurationSettings();
 
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Logger.log(MessageFormat.format(
-                "Exception trying to parse the TestEnvironment.xml file: {0}", e.getMessage())); //$NON-NLS-1$
+                "Exception trying to parse the TestEnvironment.xml file: {0}", //$NON-NLS-1$
+                e.getMessage()));
             return false;
         }
     }
@@ -194,8 +184,7 @@ public class TestEnvironment
      *        key of the key/value pair we are looking for
      * @return value for that key
      */
-    public static String getTestVariableValue(String key)
-    {
+    public static String getTestVariableValue(String key) {
         return testVariables.get(key);
     }
 
@@ -204,28 +193,26 @@ public class TestEnvironment
      * 
      * @throws InvalidConfigurationException
      */
-    private static void verifyConfigurationSettings()
-        throws InvalidConfigurationException
-    {
-        if (!testVariables.containsKey(TestEnvironmentConstants.VARIABLEGITEXEPATH))
-        {
-            throw new InvalidConfigurationException(MessageFormat.format(
-                CONFIGURATIONPARAMETERMISSINGMESSAGE,
-                TestEnvironmentConstants.VARIABLEGITEXEPATH));
+    private static void verifyConfigurationSettings() throws InvalidConfigurationException {
+        if (!testVariables.containsKey(TestEnvironmentConstants.VARIABLEGITEXEPATH)) {
+            throw new InvalidConfigurationException(
+                MessageFormat.format(
+                    CONFIGURATIONPARAMETERMISSINGMESSAGE,
+                    TestEnvironmentConstants.VARIABLEGITEXEPATH));
         }
 
-        if (!testVariables.containsKey(TestEnvironmentConstants.VARIABLEGITTFEXEPATH))
-        {
-            throw new InvalidConfigurationException(MessageFormat.format(
-                CONFIGURATIONPARAMETERMISSINGMESSAGE,
-                TestEnvironmentConstants.VARIABLEGITTFEXEPATH));
+        if (!testVariables.containsKey(TestEnvironmentConstants.VARIABLEGITTFEXEPATH)) {
+            throw new InvalidConfigurationException(
+                MessageFormat.format(
+                    CONFIGURATIONPARAMETERMISSINGMESSAGE,
+                    TestEnvironmentConstants.VARIABLEGITTFEXEPATH));
         }
 
-        if (!testVariables.containsKey(TestEnvironmentConstants.VARIBLEGITREPOSITORYROOTPATH))
-        {
-            throw new InvalidConfigurationException(MessageFormat.format(
-                CONFIGURATIONPARAMETERMISSINGMESSAGE,
-                TestEnvironmentConstants.VARIBLEGITREPOSITORYROOTPATH));
+        if (!testVariables.containsKey(TestEnvironmentConstants.VARIBLEGITREPOSITORYROOTPATH)) {
+            throw new InvalidConfigurationException(
+                MessageFormat.format(
+                    CONFIGURATIONPARAMETERMISSINGMESSAGE,
+                    TestEnvironmentConstants.VARIBLEGITREPOSITORYROOTPATH));
         }
     }
 
@@ -234,22 +221,18 @@ public class TestEnvironment
      * 
      * @return collection url we are targeting
      */
-    protected static String getCollectionUrl()
-    {
+    protected static String getCollectionUrl() {
         return collectionUrl;
     }
 
     /**
      * Read the name/value pairs from the configuration file.
      */
-    private static void readTestVariables(Document doc)
-    {
+    private static void readTestVariables(Document doc) {
         NodeList list = doc.getElementsByTagName(TestEnvironmentConstants.TESTVARIABLES);
         NodeList childNodes = list.item(0).getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++)
-        {
-            if (childNodes.item(i).getNodeName() == TestEnvironmentConstants.VALUE)
-            {
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (childNodes.item(i).getNodeName() == TestEnvironmentConstants.VALUE) {
                 String key =
                     childNodes.item(i).getAttributes().getNamedItem(TestEnvironmentConstants.KEY).getNodeValue();
                 String value = childNodes.item(i).getTextContent();
@@ -261,8 +244,7 @@ public class TestEnvironment
     /**
      * Log the details of the configuration file we have read in.
      */
-    private static void logTestDetails()
-    {
+    private static void logTestDetails() {
         Logger.logBreak();
         Logger.log("Test Inputs:"); //$NON-NLS-1$
         Logger.logBreak();
@@ -273,8 +255,7 @@ public class TestEnvironment
 
         Logger.log("Test Variables:"); //$NON-NLS-1$
         Enumeration<String> variableKeys = testVariables.keys();
-        while (variableKeys.hasMoreElements())
-        {
+        while (variableKeys.hasMoreElements()) {
             String key = (String) variableKeys.nextElement();
             Logger.log(MessageFormat.format("    {0}:  {1}", key, testVariables.get(key))); //$NON-NLS-1$
         }
@@ -284,16 +265,14 @@ public class TestEnvironment
     /**
      * Return the git exe folder where git.exe is located.
      */
-    public static String getGitExeFolder()
-    {
+    public static String getGitExeFolder() {
         return testVariables.get(TestEnvironmentConstants.VARIABLEGITEXEPATH);
     }
 
     /**
      * Return the full path for git.exe.
      */
-    public static String getGitExeFullPath()
-    {
+    public static String getGitExeFullPath() {
         File folder = new File(getGitExeFolder());
         File fileAndFolder = new File(folder, TestEnvironmentConstants.GITEXE);
         return fileAndFolder.getPath();
@@ -302,16 +281,14 @@ public class TestEnvironment
     /**
      * Get the git-tf.cmd folder.
      */
-    public static String getGitTfExeFolder()
-    {
+    public static String getGitTfExeFolder() {
         return testVariables.get(TestEnvironmentConstants.VARIABLEGITTFEXEPATH);
     }
 
     /**
      * Get the full path for git-tf.cmd.
      */
-    public static String getGitTfExeFullPath()
-    {
+    public static String getGitTfExeFullPath() {
         File folder = new File(getGitTfExeFolder());
         File fileAndFolder = new File(folder, TestEnvironmentConstants.GITTFEXE);
         return fileAndFolder.getPath();
@@ -320,16 +297,14 @@ public class TestEnvironment
     /**
      * Get the repository path - or the test root for testing.
      */
-    public static String getGitRepositoryRootPath()
-    {
+    public static String getGitRepositoryRootPath() {
         return testVariables.get(TestEnvironmentConstants.VARIBLEGITREPOSITORYROOTPATH);
     }
 
     /**
      * Get the team project name.
      */
-    public static String getTfsTeamProjectName()
-    {
+    public static String getTfsTeamProjectName() {
         return teamProjectName;
     }
 }

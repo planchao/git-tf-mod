@@ -24,8 +24,7 @@
 
 package com.microsoft.gittf.core.tasks.pendDiff;
 
-public enum RenameMode
-{
+public enum RenameMode {
     /**
      * Do not pend renames
      */

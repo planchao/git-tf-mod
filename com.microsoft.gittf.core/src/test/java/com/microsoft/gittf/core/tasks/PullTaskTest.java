@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
 
-import junit.framework.TestCase;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -51,37 +49,32 @@ import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 import com.microsoft.gittf.core.test.Util;
 import com.microsoft.gittf.core.util.RepositoryUtil;
 
-public class PullTaskTest
-    extends TestCase
-{
+import junit.framework.TestCase;
+
+public class PullTaskTest extends TestCase {
     private MockVersionControlService mockVersionControlService;
     private Repository repository;
 
     private ObjectId gitChangeCommitId;
 
-    protected void setUp()
-        throws Exception
-    {
+    protected void setUp() throws Exception {
         Util.setUp(getName());
         prepareRepo();
     }
 
-    protected void tearDown()
-        throws Exception
-    {
+    protected void tearDown() throws Exception {
         Util.tearDown(getName());
     }
 
     @Test
-    public void testPullMergeResolve()
-        throws Exception
-    {
+    public void testPullMergeResolve() throws Exception {
         runPullTask(MergeStrategy.RESOLVE);
 
         String gitRepositoryPath = repository.getWorkTree().getAbsolutePath();
 
         // Verify Changeset 4 content merged into head
-        assertTrue(mockVersionControlService.verifyFileContent(new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
+        assertTrue(mockVersionControlService.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
             "$/project/folder/file1.txt", //$NON-NLS-1$
             4));
 
@@ -90,33 +83,35 @@ public class PullTaskTest
             "$/project/folder2/file1.txt", //$NON-NLS-1$
             4));
 
-        assertTrue(mockVersionControlService.verifyFileContent(new File(
-            gitRepositoryPath,
-            "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
-            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-            4));
+        assertTrue(
+            mockVersionControlService.verifyFileContent(
+                new File(gitRepositoryPath, "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
+                "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                4));
 
         // Verify git commit content is still in head
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder2/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/nestedFolder/file2.txt"))); //$NON-NLS-1$
     }
 
     @Test
-    public void testPullMergeOurs()
-        throws Exception
-    {
+    public void testPullMergeOurs() throws Exception {
         runPullTask(MergeStrategy.OURS);
 
         String gitRepositoryPath = repository.getWorkTree().getAbsolutePath();
 
         // Verify Changeset 4 content not merged into head
-        assertTrue(mockVersionControlService.verifyFileContent(new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
+        assertTrue(mockVersionControlService.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
             "$/project/folder/file1.txt", //$NON-NLS-1$
             2));
 
@@ -125,33 +120,35 @@ public class PullTaskTest
             "$/project/folder2/file1.txt", //$NON-NLS-1$
             2));
 
-        assertTrue(mockVersionControlService.verifyFileContent(new File(
-            gitRepositoryPath,
-            "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
-            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-            2));
+        assertTrue(
+            mockVersionControlService.verifyFileContent(
+                new File(gitRepositoryPath, "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
+                "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                2));
 
         // Verify git commit content is still in head
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder2/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/nestedFolder/file2.txt"))); //$NON-NLS-1$
     }
 
     @Test
-    public void testPullMergeThiers()
-        throws Exception
-    {
+    public void testPullMergeThiers() throws Exception {
         runPullTask(MergeStrategy.THEIRS);
 
         String gitRepositoryPath = repository.getWorkTree().getAbsolutePath();
 
         // Verify Changeset 4 content merged into head
-        assertTrue(mockVersionControlService.verifyFileContent(new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
+        assertTrue(mockVersionControlService.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
             "$/project/folder/file1.txt", //$NON-NLS-1$
             4));
 
@@ -160,14 +157,15 @@ public class PullTaskTest
             "$/project/folder2/file1.txt", //$NON-NLS-1$
             4));
 
-        assertTrue(mockVersionControlService.verifyFileContent(new File(
-            gitRepositoryPath,
-            "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
-            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-            4));
+        assertTrue(
+            mockVersionControlService.verifyFileContent(
+                new File(gitRepositoryPath, "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
+                "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                4));
 
         // Verify Changeset 3 content and not the git changes
-        assertTrue(mockVersionControlService.verifyFileContent(new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
+        assertTrue(mockVersionControlService.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
             "$/project/folder/file2.txt", //$NON-NLS-1$
             3));
 
@@ -176,23 +174,22 @@ public class PullTaskTest
             "$/project/folder2/file2.txt", //$NON-NLS-1$
             3));
 
-        assertTrue(mockVersionControlService.verifyFileContent(new File(
-            gitRepositoryPath,
-            "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
-            "$/project/folder/nestedFolder/file2.txt", //$NON-NLS-1$
-            3));
+        assertTrue(
+            mockVersionControlService.verifyFileContent(
+                new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
+                "$/project/folder/nestedFolder/file2.txt", //$NON-NLS-1$
+                3));
     }
 
     @Test
-    public void testPullRebase()
-        throws Exception
-    {
+    public void testPullRebase() throws Exception {
         runPullRebaseTask();
 
         String gitRepositoryPath = repository.getWorkTree().getAbsolutePath();
 
         // Verify Changeset 4 content merged into head
-        assertTrue(mockVersionControlService.verifyFileContent(new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
+        assertTrue(mockVersionControlService.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file1.txt"), //$NON-NLS-1$
             "$/project/folder/file1.txt", //$NON-NLS-1$
             4));
 
@@ -201,26 +198,27 @@ public class PullTaskTest
             "$/project/folder2/file1.txt", //$NON-NLS-1$
             4));
 
-        assertTrue(mockVersionControlService.verifyFileContent(new File(
-            gitRepositoryPath,
-            "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
-            "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
-            4));
+        assertTrue(
+            mockVersionControlService.verifyFileContent(
+                new File(gitRepositoryPath, "project/folder/nestedFolder/file1.txt"), //$NON-NLS-1$
+                "$/project/folder/nestedFolder/file1.txt", //$NON-NLS-1$
+                4));
 
         // Verify git commit content is still in head
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder2/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder2/file2.txt"))); //$NON-NLS-1$
 
-        assertTrue(Util.verifyFileContent(new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
+        assertTrue(Util.verifyFileContent(
+            new File(gitRepositoryPath, "project/folder/nestedFolder/file2.txt"), //$NON-NLS-1$
             Util.generateContentForFileInGit("project/folder/nestedFolder/file2.txt"))); //$NON-NLS-1$
     }
 
-    private void runPullRebaseTask()
-        throws IOException
-    {
+    private void runPullRebaseTask() throws IOException {
         // Run the pull task
         PullTask pullTask = new PullTask(repository, mockVersionControlService);
         pullTask.setRebase(true);
@@ -236,9 +234,11 @@ public class PullTaskTest
         // Verify rebase happened
         ObjectId fetchedCommitId = pullTask.getCommitId();
 
-        Ref head = repository.getRef(Constants.HEAD);
-        RevWalk revWalk = new RevWalk(repository);
-        RevCommit headCommit = revWalk.parseCommit(head.getObjectId());
+        Ref head = repository.findRef(Constants.HEAD);
+        RevCommit headCommit;
+        try (RevWalk revWalk = new RevWalk(repository)) {
+            headCommit = revWalk.parseCommit(head.getObjectId());
+        }
 
         assertEquals(headCommit.getParentCount(), 1);
 
@@ -247,9 +247,7 @@ public class PullTaskTest
         assertTrue(parent.getId().equals(fetchedCommitId));
     }
 
-    private void runPullTask(MergeStrategy strategy)
-        throws IOException
-    {
+    private void runPullTask(MergeStrategy strategy) throws IOException {
         // Run the pull task
         PullTask pullTask = new PullTask(repository, mockVersionControlService);
         pullTask.setStrategy(strategy);
@@ -262,22 +260,22 @@ public class PullTaskTest
         ObjectId fetchedCommitId = pullTask.getCommitId();
 
         // Verify the merge is completed successfully
-        Ref head = repository.getRef(Constants.HEAD);
+        Ref head = repository.findRef(Constants.HEAD);
 
         RevWalk revWalk = new RevWalk(repository);
         RevCommit headCommit = revWalk.parseCommit(head.getObjectId());
+        revWalk.close();
 
         assertEquals(headCommit.getParentCount(), 2);
 
         RevCommit[] parents = headCommit.getParents();
 
-        assertTrue((parents[0].getId().equals(fetchedCommitId) && parents[1].getId().equals(gitChangeCommitId))
-            || (parents[0].getId().equals(gitChangeCommitId) && parents[1].getId().equals(fetchedCommitId)));
+        assertTrue(
+            (parents[0].getId().equals(fetchedCommitId) && parents[1].getId().equals(gitChangeCommitId))
+                || (parents[0].getId().equals(gitChangeCommitId) && parents[1].getId().equals(fetchedCommitId)));
     }
 
-    private void prepareRepo()
-        throws Exception
-    {
+    private void prepareRepo() throws Exception {
         URI projectCollectionURI = new URI("http://fakeCollection:8080/tfs/DefaultCollection"); //$NON-NLS-1$
         String tfsPath = "$/"; //$NON-NLS-1$
         String gitRepositoryPath = Util.getRepositoryFile(getName()).getAbsolutePath();
@@ -299,7 +297,8 @@ public class PullTaskTest
         Calendar date = Calendar.getInstance();
         date.set(2012, 11, 12, 18, 15);
 
-        MockChangesetProperties changesetProperties = new MockChangesetProperties("ownerDisplayName", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties = new MockChangesetProperties(
+            "ownerDisplayName", //$NON-NLS-1$
             "ownerName", //$NON-NLS-1$
             "committerDisplayName", //$NON-NLS-1$
             "committerName", //$NON-NLS-1$
@@ -320,7 +319,8 @@ public class PullTaskTest
         mockVersionControlService.AddFile("$/project/folder2/file1.txt", 4); //$NON-NLS-1$
         mockVersionControlService.AddFile("$/project/folder/nestedFolder/file1.txt", 4); //$NON-NLS-1$
 
-        MockChangesetProperties changesetProperties2 = new MockChangesetProperties("ownerDisplayName4", //$NON-NLS-1$
+        MockChangesetProperties changesetProperties2 = new MockChangesetProperties(
+            "ownerDisplayName4", //$NON-NLS-1$
             "ownerName4", //$NON-NLS-1$
             "committerDisplayName4", //$NON-NLS-1$
             "committerName4", //$NON-NLS-1$
@@ -332,15 +332,16 @@ public class PullTaskTest
         writeFileContentInGit("project/folder2/file2.txt"); //$NON-NLS-1$
         writeFileContentInGit("project/folder/nestedFolder/file2.txt"); //$NON-NLS-1$
 
-        RevCommit revCommit = new Git(repository).commit().setAll(true).setMessage("git-tf pull test").call(); //$NON-NLS-1$
+        RevCommit revCommit;
+        try (Git git = new Git(repository)) {
+            revCommit = git.commit().setAll(true).setMessage("git-tf pull test").call(); //$NON-NLS-1$
+        }
         assertNotNull(revCommit);
 
         gitChangeCommitId = revCommit.toObjectId();
     }
 
-    private void writeFileContentInGit(String filePath)
-        throws IOException
-    {
+    private void writeFileContentInGit(String filePath) throws IOException {
         File file = new File(repository.getWorkTree(), filePath);
 
         FileWriter fw = new FileWriter(file);

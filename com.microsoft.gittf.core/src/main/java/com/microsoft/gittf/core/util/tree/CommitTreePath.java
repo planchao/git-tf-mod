@@ -30,9 +30,7 @@ import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
  * Represents a path for an object or another tree in a commit tree
  * 
  */
-public class CommitTreePath
-    implements Comparable<CommitTreePath>
-{
+public class CommitTreePath implements Comparable<CommitTreePath> {
     private final int type;
     private final String name;
 
@@ -49,18 +47,14 @@ public class CommitTreePath
      * @param type
      *        the object type this path points too can be OBJ_BLOB or OBJ_TREE
      */
-    public CommitTreePath(String name, int type)
-    {
+    public CommitTreePath(String name, int type) {
         this.name = name;
         this.type = type;
 
-        if (this.type == OBJ_BLOB)
-        {
+        if (this.type == OBJ_BLOB) {
             this.fullName = name;
             this.depth = 0;
-        }
-        else
-        {
+        } else {
             this.fullName = name + FOLDER_SUFFIX;
             this.depth = calculateDepth();
         }
@@ -71,8 +65,7 @@ public class CommitTreePath
      * 
      * @return String name of the path
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -81,8 +74,7 @@ public class CommitTreePath
      * 
      * @return
      */
-    public String getFullName()
-    {
+    public String getFullName() {
         return fullName;
     }
 
@@ -91,8 +83,7 @@ public class CommitTreePath
      * 
      * @return
      */
-    public int getType()
-    {
+    public int getType() {
         return type;
     }
 
@@ -101,8 +92,7 @@ public class CommitTreePath
      * 
      * @return OBJ_BLOB objects will return 0, otherwise the depth of the folder
      */
-    public int getDepth()
-    {
+    public int getDepth() {
         return depth;
     }
 
@@ -111,14 +101,11 @@ public class CommitTreePath
      * 
      * @return
      */
-    private int calculateDepth()
-    {
+    private int calculateDepth() {
         char[] characters = this.getName().toCharArray();
         int count = 0;
-        for (char character : characters)
-        {
-            if (character == FOLDER_SUFFIX)
-            {
+        for (char character : characters) {
+            if (character == FOLDER_SUFFIX) {
                 count++;
             }
         }
@@ -126,10 +113,8 @@ public class CommitTreePath
         return count;
     }
 
-    public boolean equals(Object obj)
-    {
-        if (!(obj instanceof CommitTreePath))
-        {
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CommitTreePath)) {
             return false;
         }
 
@@ -138,13 +123,11 @@ public class CommitTreePath
         return (this.name.equals(other.name) && (this.type == other.type));
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.name != null ? this.name.hashCode() * 37 + type : type;
     }
 
-    public int compareTo(CommitTreePath other)
-    {
+    public int compareTo(CommitTreePath other) {
         if (this == other)
             return 0;
 

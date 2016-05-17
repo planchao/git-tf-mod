@@ -60,9 +60,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
  * commit to TFS, then shelves the differences in a shelveset on the TFS server.
  * 
  */
-public class ShelveDifferenceTask
-    extends WorkspaceTask
-{
+public class ShelveDifferenceTask extends WorkspaceTask {
     private static final Log log = LogFactory.getLog(ShelveDifferenceTask.class);
 
     private final ObjectId shelveCommitID;
@@ -91,8 +89,7 @@ public class ShelveDifferenceTask
         final Repository repository,
         final ObjectId shelveCommitID,
         final VersionControlClient versionControlClient,
-        final String shelvesetName)
-    {
+        final String shelvesetName) {
         super(repository, versionControlClient, GitTFConfiguration.loadFrom(repository).getServerPath());
 
         Check.notNull(shelveCommitID, "shelveCommitID"); //$NON-NLS-1$
@@ -107,8 +104,7 @@ public class ShelveDifferenceTask
      * 
      * @param workItems
      */
-    public void setWorkItemCheckinInfo(WorkItemCheckinInfo[] workItems)
-    {
+    public void setWorkItemCheckinInfo(WorkItemCheckinInfo[] workItems) {
         this.workItems = workItems;
     }
 
@@ -118,8 +114,7 @@ public class ShelveDifferenceTask
      * 
      * @param replace
      */
-    public void setReplaceExistingShelveset(boolean replace)
-    {
+    public void setReplaceExistingShelveset(boolean replace) {
         this.replace = replace;
     }
 
@@ -128,8 +123,7 @@ public class ShelveDifferenceTask
      * 
      * @param renameMode
      */
-    public void setRenameMode(RenameMode renameMode)
-    {
+    public void setRenameMode(RenameMode renameMode) {
         this.renameMode = renameMode;
     }
 
@@ -138,23 +132,22 @@ public class ShelveDifferenceTask
      * 
      * @param message
      */
-    public void setMessage(String message)
-    {
+    public void setMessage(String message) {
         this.message = message;
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         progressMonitor.beginTask(
             Messages.formatString(
-                "ShelveDifferenceTask.ShelvingDifferencesFormat", GitTFConfiguration.loadFrom(repository).getServerPath()), 1, //$NON-NLS-1$ 
+                "ShelveDifferenceTask.ShelvingDifferencesFormat", //$NON-NLS-1$
+                GitTFConfiguration.loadFrom(repository).getServerPath()),
+            1,
             TaskProgressDisplay.DISPLAY_PROGRESS.combine(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL));
 
         WorkspaceInfo workspaceData = null;
 
-        try
-        {
+        try {
             progressMonitor.setDetail(Messages.getString("ShelveDifferenceTask.ExaminingRepository")); //$NON-NLS-1$
 
             /*
@@ -182,8 +175,7 @@ public class ShelveDifferenceTask
 
             final TaskStatus pendStatus = new TaskExecutor(progressMonitor.newSubTask(1)).execute(pendTask);
 
-            if (!pendStatus.isOK())
-            {
+            if (!pendStatus.isOK()) {
                 return pendStatus;
             }
 
@@ -194,19 +186,17 @@ public class ShelveDifferenceTask
              * to shelve.
              */
             PendingChange[] changes = pendTask.getPendingChanges();
-            if (changes == null || changes.length == 0)
-            {
+            if (changes == null || changes.length == 0) {
                 throw new Exception(Messages.getString("ShelveDifferenceTask.NoChangesToShelve")); //$NON-NLS-1$
             }
 
             /* Shelve the pended changes */
-            final ShelvePendingChangesTask shelveTask =
-                new ShelvePendingChangesTask(
-                    repository,
-                    message == null ? toCommit.getFullMessage() : message,
-                    workspace,
-                    changes,
-                    shelvesetName);
+            final ShelvePendingChangesTask shelveTask = new ShelvePendingChangesTask(
+                repository,
+                message == null ? toCommit.getFullMessage() : message,
+                workspace,
+                changes,
+                shelvesetName);
 
             shelveTask.setReplaceExistingShelveset(replace);
             shelveTask.setWorkItemCheckinInfo(workItems);
@@ -217,8 +207,7 @@ public class ShelveDifferenceTask
 
             progressMonitor.setDetail(null);
 
-            if (!shelveStatus.isOK())
-            {
+            if (!shelveStatus.isOK()) {
                 return shelveStatus;
             }
 
@@ -228,80 +217,60 @@ public class ShelveDifferenceTask
 
             progressMonitor.endTask();
 
-            if (RepositoryUtil.hasUncommittedChanges(repository))
-            {
+            if (RepositoryUtil.hasUncommittedChanges(repository)) {
                 progressMonitor.displayWarning(Messages.getString("ShelveDifferenceTask.UnCommittedChangesDetected")); //$NON-NLS-1$
             }
 
             return TaskStatus.OK_STATUS;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("Task exited with the following error", e); //$NON-NLS-1$
 
             return new TaskStatus(TaskStatus.ERROR, e);
-        }
-        finally
-        {
-            if (workspaceData != null)
-            {
+        } finally {
+            if (workspaceData != null) {
                 disposeWorkspace(new NullTaskProgressMonitor());
             }
         }
     }
 
-    private CommitDelta getOptimalCommitDelta()
-        throws Exception
-    {
+    private CommitDelta getOptimalCommitDelta() throws Exception {
         final ChangesetCommitMap commitMap = new ChangesetCommitMap(repository);
         final int shelvesetChangesetId = commitMap.getChangesetID(shelveCommitID);
 
-        if (shelvesetChangesetId > 0)
-        {
+        if (shelvesetChangesetId > 0) {
             // this already maps to an existing changeset;
-            throw new Exception(Messages.formatString("ShelveDifferenceTask.NoChangesToShelveFormat", //$NON-NLS-1$
+            throw new Exception(Messages.formatString(
+                "ShelveDifferenceTask.NoChangesToShelveFormat", //$NON-NLS-1$
                 Integer.toString(shelvesetChangesetId)));
         }
 
         List<CommitDelta> commitDeltas = null;
 
         int currentChangesetId = commitMap.getLastBridgedChangesetID(true);
-        while (currentChangesetId > 0)
-        {
+        while (currentChangesetId > 0) {
             ObjectId changesetCommitId = commitMap.getCommitID(currentChangesetId, true);
 
-            try
-            {
+            try {
                 commitDeltas = CommitWalker.getAutoSquashedCommitList(repository, changesetCommitId, shelveCommitID);
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 // eat exception here we do not care if the path does not exist
             }
 
-            if (commitDeltas == null)
-            {
+            if (commitDeltas == null) {
                 currentChangesetId = commitMap.getPreviousBridgedChangeset(currentChangesetId, true);
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
 
-        if (commitDeltas == null)
-        {
+        if (commitDeltas == null) {
             RevWalk walker = new RevWalk(repository);
-            try
-            {
+            try {
                 RevCommit toCommit = walker.parseCommit(shelveCommitID);
                 return new CommitDelta(null, toCommit);
-            }
-            finally
-            {
-                if (walker != null)
-                {
-                    walker.release();
+            } finally {
+                if (walker != null) {
+                    walker.close();
                 }
             }
         }

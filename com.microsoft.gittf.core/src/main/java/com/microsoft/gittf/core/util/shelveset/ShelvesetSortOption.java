@@ -24,8 +24,7 @@
 
 package com.microsoft.gittf.core.util.shelveset;
 
-public enum ShelvesetSortOption
-{
+public enum ShelvesetSortOption {
     /**
      * Shelveset name
      */

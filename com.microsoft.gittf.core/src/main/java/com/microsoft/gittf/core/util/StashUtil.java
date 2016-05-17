@@ -40,13 +40,11 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
-public final class StashUtil
-{
+public final class StashUtil {
     private static String STASH_INDEX_COMMENT = "index on {0}: {1} {2}"; //$NON-NLS-1$
     private static String STASH_COMMENT = "WIP on {0}: {1} {2}"; //$NON-NLS-1$
 
-    private StashUtil()
-    {
+    private StashUtil() {
     }
 
     /**
@@ -85,9 +83,7 @@ public final class StashUtil
         final String ownerDisplayName,
         final String ownerName,
         final String stashComment,
-        final String stashName)
-        throws IOException
-    {
+        final String stashName) throws IOException {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(repositoryInserter, "repositoryInserter"); //$NON-NLS-1$
         Check.notNull(rootBaseTree, "rootBaseTree"); //$NON-NLS-1$
@@ -95,8 +91,11 @@ public final class StashUtil
         Check.notNull(rootIndexTree, "rootIndexTree"); //$NON-NLS-1$
 
         /* identifies the head and the branch we are creating the stash for */
-        Ref headReference = repository.getRef(Constants.HEAD);
-        RevCommit headCommit = new RevWalk(repository).parseCommit(headReference.getObjectId());
+        Ref headReference = repository.findRef(Constants.HEAD);
+        RevCommit headCommit;
+        try (RevWalk walk = new RevWalk(repository)) {
+            headCommit = walk.parseCommit(headReference.getObjectId());
+        }
         String currentBranchName = Repository.shortenRefName(headReference.getTarget().getName());
 
         PersonIdent author = new PersonIdent(ownerDisplayName, ownerName);
@@ -104,8 +103,7 @@ public final class StashUtil
         /* create the base commit */
         CommitBuilder commitBuilder = new CommitBuilder();
         commitBuilder.setTreeId(rootBaseTree);
-        if (baseParentId != null)
-        {
+        if (baseParentId != null) {
             commitBuilder.setParentId(baseParentId);
         }
         commitBuilder.setMessage(stashComment);
@@ -117,11 +115,8 @@ public final class StashUtil
         /* create the index commit */
         commitBuilder.setTreeId(rootIndexTree);
         commitBuilder.setParentId(baseCommit);
-        commitBuilder.setMessage(MessageFormat.format(
-            STASH_INDEX_COMMENT,
-            currentBranchName,
-            headCommit.abbreviate(7).name(),
-            stashName));
+        commitBuilder.setMessage(
+            MessageFormat.format(STASH_INDEX_COMMENT, currentBranchName, headCommit.abbreviate(7).name(), stashName));
         commitBuilder.setAuthor(author);
         commitBuilder.setCommitter(author);
 
@@ -146,13 +141,10 @@ public final class StashUtil
         stashReferenceUpdate.setRefLogIdent(author);
         stashReferenceUpdate.setRefLogMessage(stashRefLogComment, false);
 
-        Ref currentStashRef = repository.getRef(Constants.R_STASH);
-        if (currentStashRef != null)
-        {
+        Ref currentStashRef = repository.findRef(Constants.R_STASH);
+        if (currentStashRef != null) {
             stashReferenceUpdate.setExpectedOldObjectId(currentStashRef.getObjectId());
-        }
-        else
-        {
+        } else {
             stashReferenceUpdate.setExpectedOldObjectId(ObjectId.zeroId());
         }
 
@@ -173,8 +165,7 @@ public final class StashUtil
      */
     public static final void apply(final Repository repository, final ObjectId stashCommitId)
         throws WrongRepositoryStateException,
-            GitAPIException
-    {
+            GitAPIException {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(stashCommitId, "stashCommitId"); //$NON-NLS-1$
 

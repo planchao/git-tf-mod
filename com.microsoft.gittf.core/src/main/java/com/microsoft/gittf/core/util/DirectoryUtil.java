@@ -38,12 +38,10 @@ import com.microsoft.gittf.core.config.GitTFConfiguration;
 import com.microsoft.tfs.util.FileHelpers;
 import com.microsoft.tfs.util.GUID;
 
-public final class DirectoryUtil
-{
+public final class DirectoryUtil {
     public static final String TEMP_DIR_NAME = "temp"; //$NON-NLS-1$
 
-    private DirectoryUtil()
-    {
+    private DirectoryUtil() {
     }
 
     /**
@@ -53,24 +51,19 @@ public final class DirectoryUtil
      *        the git repository
      * @return
      */
-    public static File getTempDirRoot(final Repository repository)
-    {
+    public static File getTempDirRoot(final Repository repository) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
         GitTFConfiguration config = GitTFConfiguration.loadFrom(repository);
-        if (config.getTempDirectory() != null)
-        {
+        if (config.getTempDirectory() != null) {
             return new File(config.getTempDirectory());
         }
 
         File rootDirectory = repository.getDirectory().getAbsoluteFile();
 
-        try
-        {
+        try {
             rootDirectory = rootDirectory.getCanonicalFile();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             /* suppress */
         }
 
@@ -84,23 +77,19 @@ public final class DirectoryUtil
      *        the git repository
      * @return
      */
-    public static File getTempDir(final Repository repository)
-    {
+    public static File getTempDir(final Repository repository) {
         return getTempDir(repository, GUID.newGUID());
     }
 
-    private static File getTempDir(final Repository repository, GUID id)
-    {
+    private static File getTempDir(final Repository repository, GUID id) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(id, "id"); //$NON-NLS-1$
 
         int count = 0;
-        while (count < 5)
-        {
+        while (count < 5) {
             File possibleTempFolder =
                 new File(getTempDirRoot(repository), getUniqueAbbreviatedFolderName(repository, GUID.newGUID()));
-            if (!possibleTempFolder.exists())
-            {
+            if (!possibleTempFolder.exists()) {
                 return possibleTempFolder;
             }
         }
@@ -108,24 +97,17 @@ public final class DirectoryUtil
         return new File(getTempDirRoot(repository), MessageFormat.format("{0}-{1}", TEMP_DIR_NAME, id.getGUIDString())); //$NON-NLS-1$
     }
 
-    private static String getUniqueAbbreviatedFolderName(final Repository repository, GUID guid)
-    {
+    private static String getUniqueAbbreviatedFolderName(final Repository repository, GUID guid) {
         ObjectInserter objIns = null;
-        try
-        {
+        try {
             objIns = repository.newObjectInserter();
 
             return ObjectIdUtil.abbreviate(repository, objIns.idFor(OBJ_BLOB, guid.getGUIDBytes()));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return guid.getGUIDString();
-        }
-        finally
-        {
-            if (objIns != null)
-            {
-                objIns.release();
+        } finally {
+            if (objIns != null) {
+                objIns.close();
             }
         }
 
@@ -138,29 +120,21 @@ public final class DirectoryUtil
      * @param location
      * @return
      */
-    public static File createDirectory(File location)
-    {
+    public static File createDirectory(File location) {
         boolean canCreateDirectory = true;
         File toReturn = null;
 
-        if (!location.getParentFile().exists())
-        {
+        if (!location.getParentFile().exists()) {
             toReturn = createDirectory(location.getParentFile());
             canCreateDirectory = toReturn != null;
-        }
-        else
-        {
+        } else {
             toReturn = location;
         }
 
-        if (canCreateDirectory)
-        {
-            if (!location.mkdir())
-            {
+        if (canCreateDirectory) {
+            if (!location.mkdir()) {
                 FileHelpers.deleteDirectory(toReturn);
-            }
-            else
-            {
+            } else {
                 return toReturn;
             }
         }

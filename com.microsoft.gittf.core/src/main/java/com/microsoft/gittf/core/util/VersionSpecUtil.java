@@ -34,16 +34,12 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.LatestVersion
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.WorkspaceVersionSpec;
 
-public final class VersionSpecUtil
-{
-    private VersionSpecUtil()
-    {
+public final class VersionSpecUtil {
+    private VersionSpecUtil() {
     }
 
-    public static VersionSpec parseVersionSpec(final String value)
-    {
-        if (value == null)
-        {
+    public static VersionSpec parseVersionSpec(final String value) {
+        if (value == null) {
             return LatestVersionSpec.INSTANCE;
         }
 
@@ -54,40 +50,32 @@ public final class VersionSpecUtil
 
         VersionSpec versionSpec = VersionSpec.parseSingleVersionFromSpec(value, null);
 
-        if (versionSpec == null)
-        {
+        if (versionSpec == null) {
             versionSpec = LatestVersionSpec.INSTANCE;
         }
 
         return versionSpec;
     }
 
-    public static String getDescription(final VersionSpec versionSpec)
-    {
+    public static String getDescription(final VersionSpec versionSpec) {
         Check.notNull(versionSpec, "versionSpec"); //$NON-NLS-1$
 
-        if (versionSpec instanceof LatestVersionSpec)
-        {
+        if (versionSpec instanceof LatestVersionSpec) {
             return Messages.getString("VersionSpecUtil.Latest"); //$NON-NLS-1$
-        }
-        else if (versionSpec instanceof ChangesetVersionSpec)
-        {
-            return Messages.formatString("VersionSpecUtil.ChangesetFormat", //$NON-NLS-1$
-                Integer.toString(((ChangesetVersionSpec) versionSpec).getChangeset()));
-        }
-        else if (versionSpec instanceof DateVersionSpec)
-        {
-            return Messages.formatString("VersionSpecUtil.DateFormat", //$NON-NLS-1$
-                SimpleDateFormat.getDateTimeInstance().format(((DateVersionSpec) versionSpec).getDate().getTime()));
-        }
-        else if (versionSpec instanceof LabelVersionSpec)
-        {
-            return Messages.formatString("VersionSpecUtil.LabelFormat", ((LabelVersionSpec) versionSpec).getLabel()); //$NON-NLS-1$
-        }
-        else if (versionSpec instanceof WorkspaceVersionSpec)
-        {
+        } else if (versionSpec instanceof ChangesetVersionSpec) {
             return Messages.formatString(
-                "VersionSpecUtil.WorkspaceFormat", ((WorkspaceVersionSpec) versionSpec).getName()); //$NON-NLS-1$
+                "VersionSpecUtil.ChangesetFormat", //$NON-NLS-1$
+                Integer.toString(((ChangesetVersionSpec) versionSpec).getChangeset()));
+        } else if (versionSpec instanceof DateVersionSpec) {
+            return Messages.formatString(
+                "VersionSpecUtil.DateFormat", //$NON-NLS-1$
+                SimpleDateFormat.getDateTimeInstance().format(((DateVersionSpec) versionSpec).getDate().getTime()));
+        } else if (versionSpec instanceof LabelVersionSpec) {
+            return Messages.formatString("VersionSpecUtil.LabelFormat", ((LabelVersionSpec) versionSpec).getLabel()); //$NON-NLS-1$
+        } else if (versionSpec instanceof WorkspaceVersionSpec) {
+            return Messages.formatString(
+                "VersionSpecUtil.WorkspaceFormat", //$NON-NLS-1$
+                ((WorkspaceVersionSpec) versionSpec).getName());
         }
 
         throw new RuntimeException("unknown versionspec type"); //$NON-NLS-1$

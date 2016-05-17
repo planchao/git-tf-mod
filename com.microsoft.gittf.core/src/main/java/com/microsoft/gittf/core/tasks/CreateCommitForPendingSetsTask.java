@@ -75,9 +75,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.PendingSet;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.LatestVersionSpec;
 import com.microsoft.tfs.util.FileHelpers;
 
-public abstract class CreateCommitForPendingSetsTask
-    extends CreateCommitTask
-{
+public abstract class CreateCommitForPendingSetsTask extends CreateCommitTask {
     private static final Log log = LogFactory.getLog(CreateCommitForPendingSetsTask.class);
 
     private boolean createStashCommit = false;
@@ -85,13 +83,11 @@ public abstract class CreateCommitForPendingSetsTask
     public CreateCommitForPendingSetsTask(
         final Repository repository,
         final VersionControlService versionControlClient,
-        ObjectId parentCommitID)
-    {
+        ObjectId parentCommitID) {
         super(repository, versionControlClient, parentCommitID);
     }
 
-    public void setCreateStashCommit(boolean createStashCommit)
-    {
+    public void setCreateStashCommit(boolean createStashCommit) {
         this.createStashCommit = createStashCommit;
     }
 
@@ -114,24 +110,21 @@ public abstract class CreateCommitForPendingSetsTask
     public abstract String getName();
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         progressMonitor.beginTask(getProgressMonitorMessage(), 1, TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL);
 
         ObjectInserter repositoryInserter = null;
         TreeWalk treeWalker = null;
         RevWalk walk = null;
 
-        try
-        {
+        try {
             validateTempDirectory();
 
-            Item rootServerItem =
-                versionControlService.getItem(
-                    serverPath,
-                    LatestVersionSpec.INSTANCE,
-                    DeletedState.NON_DELETED,
-                    GetItemsOptions.NONE);
+            Item rootServerItem = versionControlService.getItem(
+                serverPath,
+                LatestVersionSpec.INSTANCE,
+                DeletedState.NON_DELETED,
+                GetItemsOptions.NONE);
 
             String serverPathToUse = rootServerItem.getServerItem();
 
@@ -151,12 +144,11 @@ public abstract class CreateCommitForPendingSetsTask
             Set<String> foldersRenamedInPendingSet = new TreeSet<String>(Collections.reverseOrder());
             Set<String> foldersDeletedInPendingSet = new TreeSet<String>();
 
-            progressMonitor.displayVerbose(Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsProcessedFromPendingSets")); //$NON-NLS-1$
+            progressMonitor.displayVerbose(
+                Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsProcessedFromPendingSets")); //$NON-NLS-1$
 
-            for (PendingSet set : pendingSets)
-            {
-                for (PendingChange change : set.getPendingChanges())
-                {
+            for (PendingSet set : pendingSets) {
+                for (PendingChange change : set.getPendingChanges()) {
                     String serverItem = change.getServerItem();
                     String sourceServerItem =
                         change.getSourceServerItem() != null ? change.getSourceServerItem() : null;
@@ -165,47 +157,33 @@ public abstract class CreateCommitForPendingSetsTask
 
                     ChangeType changeType = change.getChangeType();
 
-                    if (change.getItemType() == ItemType.FILE)
-                    {
+                    if (change.getItemType() == ItemType.FILE) {
                         if (changeType.contains(ChangeType.ADD)
                             || changeType.contains(ChangeType.BRANCH)
-                            || changeType.contains(ChangeType.UNDELETE))
-                        {
+                            || changeType.contains(ChangeType.UNDELETE)) {
                             itemsAddedInPendingSet.add(serverItem);
-                        }
-                        else if (changeType.contains(ChangeType.RENAME))
-                        {
+                        } else if (changeType.contains(ChangeType.RENAME)) {
                             itemsRenamedInPendingSet.add(sourceServerItem);
 
                             pathToUse = sourceServerItem;
-                        }
-                        else if (changeType.contains(ChangeType.DELETE))
-                        {
+                        } else if (changeType.contains(ChangeType.DELETE)) {
                             itemsDeletedInPendingSet.add(serverItem);
-                        }
-                        else
-                        {
+                        } else {
                             /*
                              * in case there is a source server item use that.
                              * This will be true in the case of a file edit and
                              * its parent has been renamed
                              */
-                            if (change.getSourceServerItem() != null)
-                            {
+                            if (change.getSourceServerItem() != null) {
                                 pathToUse = sourceServerItem;
                             }
                         }
-                    }
-                    else if (change.getItemType() == ItemType.FOLDER)
-                    {
-                        if (changeType.contains(ChangeType.RENAME))
-                        {
+                    } else if (change.getItemType() == ItemType.FOLDER) {
+                        if (changeType.contains(ChangeType.RENAME)) {
                             foldersRenamedInPendingSet.add(sourceServerItem);
 
                             pathToUse = sourceServerItem;
-                        }
-                        else if (changeType.contains(ChangeType.DELETE))
-                        {
+                        } else if (changeType.contains(ChangeType.DELETE)) {
                             foldersDeletedInPendingSet.add(serverItem);
                         }
                     }
@@ -226,15 +204,13 @@ public abstract class CreateCommitForPendingSetsTask
             walk = new RevWalk(repository);
 
             ObjectId baseCommitId = parentCommitID;
-            if (baseCommitId == null)
-            {
+            if (baseCommitId == null) {
                 ChangesetCommitMap commitMap = new ChangesetCommitMap(repository);
                 baseCommitId = commitMap.getCommitID(commitMap.getLastBridgedChangesetID(true), false);
             }
 
             RevCommit parentCommit = walk.parseCommit(baseCommitId);
-            if (parentCommit == null)
-            {
+            if (parentCommit == null) {
                 throw new Exception(
                     Messages.getString("CreateCommitForPendingSetsTask.LatestDownloadedChangesetNotFound")); //$NON-NLS-1$
             }
@@ -261,19 +237,17 @@ public abstract class CreateCommitForPendingSetsTask
              * parent tree
              */
 
-            progressMonitor.displayVerbose(Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsDownloadedFromPendingSets")); //$NON-NLS-1$
+            progressMonitor.displayVerbose(
+                Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsDownloadedFromPendingSets")); //$NON-NLS-1$
 
-            while (treeWalker.next())
-            {
+            while (treeWalker.next()) {
                 String itemServerPath = ServerPath.combine(serverPathToUse, treeWalker.getPathString());
 
                 /* if the item has a pending change apply the pending change */
-                if (pendingSetItemPath.contains(itemServerPath))
-                {
+                if (pendingSetItemPath.contains(itemServerPath)) {
                     progressMonitor.displayVerbose(itemServerPath);
 
-                    if (createStashCommit)
-                    {
+                    if (createStashCommit) {
                         createBlob(
                             repositoryInserter,
                             baseTreeHeirarchy,
@@ -283,8 +257,7 @@ public abstract class CreateCommitForPendingSetsTask
                     }
 
                     if (!itemsDeletedInPendingSet.contains(itemServerPath)
-                        && !itemsRenamedInPendingSet.contains(itemServerPath))
-                    {
+                        && !itemsRenamedInPendingSet.contains(itemServerPath)) {
                         createBlob(
                             repositoryInserter,
                             pendingSetTreeHeirarchy,
@@ -296,10 +269,8 @@ public abstract class CreateCommitForPendingSetsTask
                     progressMonitor.worked(1);
                 }
                 /* if the item parent is renamed handle this case */
-                else if (isParentInCollection(foldersRenamedInPendingSet, itemServerPath))
-                {
-                    if (createStashCommit)
-                    {
+                else if (isParentInCollection(foldersRenamedInPendingSet, itemServerPath)) {
+                    if (createStashCommit) {
                         createBlob(
                             repositoryInserter,
                             baseTreeHeirarchy,
@@ -311,8 +282,7 @@ public abstract class CreateCommitForPendingSetsTask
 
                     String destinationServerItem =
                         updateServerItemWithParentRename(foldersRenamedInPendingSet, itemServerPath, pendingSetMap);
-                    if (ServerPath.isChild(serverPathToUse, destinationServerItem))
-                    {
+                    if (ServerPath.isChild(serverPathToUse, destinationServerItem)) {
                         createBlob(
                             repositoryInserter,
                             pendingSetTreeHeirarchy,
@@ -326,10 +296,8 @@ public abstract class CreateCommitForPendingSetsTask
                  * add all other items to the tree unless their parent was
                  * deleted
                  */
-                else
-                {
-                    if (createStashCommit)
-                    {
+                else {
+                    if (createStashCommit) {
                         createBlob(
                             repositoryInserter,
                             baseTreeHeirarchy,
@@ -339,8 +307,7 @@ public abstract class CreateCommitForPendingSetsTask
                             progressMonitor);
                     }
 
-                    if (!isParentInCollection(foldersDeletedInPendingSet, itemServerPath))
-                    {
+                    if (!isParentInCollection(foldersDeletedInPendingSet, itemServerPath)) {
                         createBlob(
                             repositoryInserter,
                             pendingSetTreeHeirarchy,
@@ -356,12 +323,11 @@ public abstract class CreateCommitForPendingSetsTask
 
             /* for items that were added in the shelveset add those here */
 
-            progressMonitor.displayVerbose(Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsDownloadedFromPendingSetsAdds")); //$NON-NLS-1$
+            progressMonitor.displayVerbose(
+                Messages.getString("CreateCommitForPendingSetsTask.VerboseItemsDownloadedFromPendingSetsAdds")); //$NON-NLS-1$
 
-            for (String newItem : itemsAddedInPendingSet)
-            {
-                if (!ServerPath.isChild(serverPathToUse, newItem))
-                {
+            for (String newItem : itemsAddedInPendingSet) {
+                if (!ServerPath.isChild(serverPathToUse, newItem)) {
                     // Ignore files that are added that are not mapped in the
                     // repository
                     continue;
@@ -379,12 +345,10 @@ public abstract class CreateCommitForPendingSetsTask
                 progressMonitor.worked(1);
             }
 
-            for (String renamedItem : itemsRenamedInPendingSet)
-            {
+            for (String renamedItem : itemsRenamedInPendingSet) {
                 PendingChange change = pendingSetMap.get(renamedItem);
 
-                if (!ServerPath.isChild(serverPathToUse, change.getServerItem()))
-                {
+                if (!ServerPath.isChild(serverPathToUse, change.getServerItem())) {
                     // Ignore files that are renamed to server items that are
                     // outside the repository
                     continue;
@@ -408,52 +372,41 @@ public abstract class CreateCommitForPendingSetsTask
             /* Phase three: create the commit. */
             progressMonitor.setDetail(Messages.getString("CreateCommitTask.CreatingCommit")); //$NON-NLS-1$
 
-            if (createStashCommit)
-            {
-                this.commitId =
-                    StashUtil.create(
-                        repository,
-                        repositoryInserter,
-                        rootBaseTree,
-                        rootPendingSetTree,
-                        rootBaseTree,
-                        parentCommitID,
-                        getOwnerDisplayName(),
-                        getOwner(),
-                        getComment(),
-                        getName());
-            }
-            else
-            {
+            if (createStashCommit) {
+                this.commitId = StashUtil.create(
+                    repository,
+                    repositoryInserter,
+                    rootBaseTree,
+                    rootPendingSetTree,
+                    rootBaseTree,
+                    parentCommitID,
+                    getOwnerDisplayName(),
+                    getOwner(),
+                    getComment(),
+                    getName());
+            } else {
                 this.commitId = createCommit(repositoryInserter, rootPendingSetTree, parentCommitID);
             }
 
             progressMonitor.endTask();
 
             return TaskStatus.OK_STATUS;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e);
             return new TaskStatus(TaskStatus.ERROR, e);
-        }
-        finally
-        {
+        } finally {
             FileHelpers.deleteDirectory(tempDir);
 
-            if (repositoryInserter != null)
-            {
-                repositoryInserter.release();
+            if (repositoryInserter != null) {
+                repositoryInserter.close();
             }
 
-            if (treeWalker != null)
-            {
-                treeWalker.release();
+            if (treeWalker != null) {
+                treeWalker.close();
             }
 
-            if (walk != null)
-            {
-                walk.release();
+            if (walk != null) {
+                walk.close();
             }
         }
     }
@@ -461,8 +414,7 @@ public abstract class CreateCommitForPendingSetsTask
     private String updateServerItemWithParentRename(
         Set<String> folderCollection,
         String serverPath,
-        Map<String, PendingChange> pendingSetMap)
-    {
+        Map<String, PendingChange> pendingSetMap) {
         String parentToUpdate = getParentInCollection(folderCollection, serverPath);
 
         Check.notNull(parentToUpdate, "parentToUpdate"); //$NON-NLS-1$
@@ -476,18 +428,14 @@ public abstract class CreateCommitForPendingSetsTask
         return newParentName + serverPath.substring(parentToUpdate.length());
     }
 
-    private boolean isParentInCollection(Set<String> folderCollection, String serverPath)
-    {
+    private boolean isParentInCollection(Set<String> folderCollection, String serverPath) {
         return getParentInCollection(folderCollection, serverPath) != null;
     }
 
-    private String getParentInCollection(Set<String> folderCollection, String serverPath)
-    {
+    private String getParentInCollection(Set<String> folderCollection, String serverPath) {
         String currentPath = ServerPath.getParent(serverPath);
-        while (currentPath != null && currentPath.length() > 0 && !currentPath.equals(ServerPath.ROOT))
-        {
-            if (folderCollection.contains(currentPath))
-            {
+        while (currentPath != null && currentPath.length() > 0 && !currentPath.equals(ServerPath.ROOT)) {
+            if (folderCollection.contains(currentPath)) {
                 return currentPath;
             }
 
@@ -502,11 +450,8 @@ public abstract class CreateCommitForPendingSetsTask
         final Map<CommitTreePath, Map<CommitTreePath, CommitTreeEntry>> treeHierarchy,
         final PendingChange pendingChange,
         final boolean addBaseContent,
-        final TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
-        if (pendingChange.getItemType() == ItemType.FOLDER)
-        {
+        final TaskProgressMonitor progressMonitor) throws Exception {
+        if (pendingChange.getItemType() == ItemType.FOLDER) {
             return;
         }
 
@@ -514,73 +459,55 @@ public abstract class CreateCommitForPendingSetsTask
         InputStream tempInputStream = null;
         ObjectId blobID = null;
 
-        try
-        {
+        try {
             tempFile = File.createTempFile(GitTFConstants.GIT_TF_NAME, null, tempDir);
 
-            if (addBaseContent)
-            {
+            if (addBaseContent) {
                 versionControlService.downloadBaseFile(pendingChange, tempFile.getAbsolutePath());
-            }
-            else
-            {
+            } else {
                 versionControlService.downloadShelvedFile(pendingChange, tempFile.getAbsolutePath());
             }
 
-            if (tempFile.exists())
-            {
+            if (tempFile.exists()) {
                 tempInputStream = new FileInputStream(tempFile);
                 blobID = repositoryInserter.insert(OBJ_BLOB, tempFile.length(), tempInputStream);
-            }
-            else
-            {
+            } else {
                 blobID = ObjectId.zeroId();
             }
 
             FileMode fileMode;
 
             /* handle executable files */
-            if (pendingChange.getPropertyValues() != null)
-            {
-                if (PropertyConstants.EXECUTABLE_ENABLED_VALUE.equals(PropertyUtils.selectMatching(
-                    pendingChange.getPropertyValues(),
-                    PropertyConstants.EXECUTABLE_KEY)))
-                {
+            if (pendingChange.getPropertyValues() != null) {
+                if (PropertyConstants.EXECUTABLE_ENABLED_VALUE.equals(
+                    PropertyUtils.selectMatching(
+                        pendingChange.getPropertyValues(),
+                        PropertyConstants.EXECUTABLE_KEY))) {
                     fileMode = addBaseContent ? FileMode.REGULAR_FILE : FileMode.EXECUTABLE_FILE;
-                }
-                else
-                {
+                } else {
                     fileMode = addBaseContent ? FileMode.EXECUTABLE_FILE : FileMode.REGULAR_FILE;
                 }
-            }
-            else
-            {
+            } else {
                 fileMode = FileMode.MISSING;
             }
 
-            String serverItem =
-                pendingChange.getSourceServerItem() != null && addBaseContent ? pendingChange.getSourceServerItem()
-                    : pendingChange.getServerItem();
+            String serverItem = pendingChange.getSourceServerItem() != null && addBaseContent
+                ? pendingChange.getSourceServerItem() : pendingChange.getServerItem();
 
             createBlob(repositoryInserter, treeHierarchy, serverItem, blobID, fileMode, progressMonitor);
-        }
-        finally
-        {
-            if (tempInputStream != null)
-            {
+        } finally {
+            if (tempInputStream != null) {
                 tempInputStream.close();
             }
 
-            if (tempFile != null)
-            {
+            if (tempFile != null) {
                 tempFile.delete();
             }
         }
     }
 
     private ObjectId createCommit(ObjectInserter repositoryInserter, ObjectId rootPendingSetTree, ObjectId parentId)
-        throws IOException
-    {
+        throws IOException {
         Check.notNull(repositoryInserter, "repositoryInserter"); //$NON-NLS-1$
         Check.notNull(rootPendingSetTree, "rootTree"); //$NON-NLS-1$
 

@@ -37,14 +37,12 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.Shelveset;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.ChangesetVersionSpec;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
 
-public interface VersionControlService
-{
+public interface VersionControlService {
     Item getItem(String path, VersionSpec version, DeletedState deletedState, GetItemsOptions options);
 
     Item[] getItems(String path, ChangesetVersionSpec version, RecursionType recursion);
 
-    void downloadFile(Item item, String downloadTo)
-        throws IOException;
+    void downloadFile(Item item, String downloadTo) throws IOException;
 
     void downloadShelvedFile(PendingChange shelvedChange, String downloadTo);
 

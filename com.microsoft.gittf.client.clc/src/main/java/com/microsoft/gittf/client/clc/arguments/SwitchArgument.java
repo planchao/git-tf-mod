@@ -32,31 +32,26 @@ import com.microsoft.gittf.core.util.Check;
  * either specified or not.
  * 
  */
-public class SwitchArgument
-    extends NamedArgument
-{
+public class SwitchArgument extends NamedArgument {
     /**
      * @equivalence SwitchArgument(name, (char) 0, helpText,
      *              ArgumentOptions.NONE)
      */
-    public SwitchArgument(String name, String helpText)
-    {
+    public SwitchArgument(String name, String helpText) {
         this(name, (char) 0, helpText, ArgumentOptions.NONE);
     }
 
     /**
      * @equivalence SwitchArgument(name, (char) 0, helpText, options)
      */
-    public SwitchArgument(String name, String helpText, ArgumentOptions options)
-    {
+    public SwitchArgument(String name, String helpText, ArgumentOptions options) {
         this(name, (char) 0, helpText, options);
     }
 
     /**
      * @equivalence SwitchArgument(name, alias, helpText, ArgumentOptions.NONE)
      */
-    public SwitchArgument(String name, char alias, String helpText)
-    {
+    public SwitchArgument(String name, char alias, String helpText) {
         this(name, alias, helpText, ArgumentOptions.NONE);
     }
 
@@ -77,45 +72,37 @@ public class SwitchArgument
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public SwitchArgument(String name, char alias, String helpText, ArgumentOptions options)
-    {
+    public SwitchArgument(String name, char alias, String helpText, ArgumentOptions options) {
         super(name, alias, helpText, options);
     }
 
-    private SwitchArgument(SwitchArgument other)
-    {
+    private SwitchArgument(SwitchArgument other) {
         super(other);
 
         Check.notNull(other, "other"); //$NON-NLS-1$
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         return new SwitchArgument(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return super.hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof SwitchArgument))
-        {
+        if (!(o instanceof SwitchArgument)) {
             return false;
         }
 
-        if (!super.equals(o))
-        {
+        if (!super.equals(o)) {
             return false;
         }
 

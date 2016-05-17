@@ -31,9 +31,7 @@ import org.eclipse.jgit.lib.ObjectId;
  * TFS
  * 
  */
-public class EditChange
-    extends Change
-{
+public class EditChange extends Change {
     /**
      * Constructor
      * 
@@ -42,8 +40,7 @@ public class EditChange
      * @param objectID
      *        the object id of the item
      */
-    public EditChange(String path, ObjectId objectID)
-    {
+    public EditChange(String path, ObjectId objectID) {
         super(path, objectID);
     }
 }

@@ -28,8 +28,7 @@ package com.microsoft.gittf.core.tasks.framework;
  * Task abstract class
  * 
  */
-public abstract class Task
-{
+public abstract class Task {
     /**
      * Runs the task
      * 
@@ -39,6 +38,5 @@ public abstract class Task
      * @return
      * @throws Exception
      */
-    public abstract TaskStatus run(final TaskProgressMonitor progressMonitor)
-        throws Exception;
+    public abstract TaskStatus run(final TaskProgressMonitor progressMonitor) throws Exception;
 }

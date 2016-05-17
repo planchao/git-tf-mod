@@ -33,16 +33,13 @@ import com.microsoft.gittf.core.util.Check;
  * specified as a "free argument".
  * 
  */
-public class FreeArgument
-    extends Argument
-{
+public class FreeArgument extends Argument {
     private String value;
 
     /**
      * @equivalence FreeArgument(name, helpText, ArgumentOptions.NONE)
      */
-    public FreeArgument(String name, String helpText)
-    {
+    public FreeArgument(String name, String helpText) {
         this(name, helpText, ArgumentOptions.NONE);
     }
 
@@ -58,13 +55,11 @@ public class FreeArgument
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public FreeArgument(String name, String helpText, ArgumentOptions options)
-    {
+    public FreeArgument(String name, String helpText, ArgumentOptions options) {
         super(name, helpText, options);
     }
 
-    private FreeArgument(FreeArgument other)
-    {
+    private FreeArgument(FreeArgument other) {
         super(other);
 
         Check.notNull(other, "other"); //$NON-NLS-1$
@@ -79,8 +74,7 @@ public class FreeArgument
      *        The value provided to this argument or <code>null</code> if it was
      *        not provided.
      */
-    public void setValue(String value)
-    {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -91,47 +85,39 @@ public class FreeArgument
      *        The value provided to this argument or <code>null</code> if it was
      *        not provided.
      */
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
     @Override
-    public Argument clone()
-    {
+    public Argument clone() {
         return new FreeArgument(this);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + ((value == null) ? 0 : value.hashCode());
         return hashCode;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof FreeArgument))
-        {
+        if (!(o instanceof FreeArgument)) {
             return false;
         }
 
-        if (!super.equals(o))
-        {
+        if (!super.equals(o)) {
             return false;
         }
 
         FreeArgument other = (FreeArgument) o;
 
-        if ((value == null && other.value != null) || (value != null && !value.equals(other)))
-        {
+        if ((value == null && other.value != null) || (value != null && !value.equals(other))) {
             return false;
         }
 

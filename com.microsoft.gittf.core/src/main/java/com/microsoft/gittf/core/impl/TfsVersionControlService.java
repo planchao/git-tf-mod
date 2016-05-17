@@ -46,9 +46,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
  * Server
  * 
  */
-public class TfsVersionControlService
-    implements VersionControlService
-{
+public class TfsVersionControlService implements VersionControlService {
 
     private final VersionControlClient versionControlClient;
 
@@ -58,41 +56,39 @@ public class TfsVersionControlService
      * @param versionControlClient
      *        the version contol client object to use
      */
-    public TfsVersionControlService(VersionControlClient versionControlClient)
-    {
+    public TfsVersionControlService(VersionControlClient versionControlClient) {
         Check.notNull(versionControlClient, "versionControlClient"); //$NON-NLS-1$
 
         this.versionControlClient = versionControlClient;
     }
 
-    public Item getItem(String path, VersionSpec version, DeletedState deletedState, GetItemsOptions options)
-    {
+    public Item getItem(String path, VersionSpec version, DeletedState deletedState, GetItemsOptions options) {
         return versionControlClient.getItem(path, version, deletedState, options);
     }
 
-    public Item[] getItems(String path, ChangesetVersionSpec version, RecursionType recursion)
-    {
-        return versionControlClient.getItems(path, version, recursion, DeletedState.NON_DELETED, ItemType.ANY, true).getItems();
+    public Item[] getItems(String path, ChangesetVersionSpec version, RecursionType recursion) {
+        return versionControlClient.getItems(
+            path,
+            version,
+            recursion,
+            DeletedState.NON_DELETED,
+            ItemType.ANY,
+            true).getItems();
     }
 
-    public void downloadFile(Item item, String downloadTo)
-        throws IOException
-    {
+    public void downloadFile(Item item, String downloadTo) throws IOException {
         item.downloadFile(versionControlClient, downloadTo);
     }
 
-    public void downloadShelvedFile(PendingChange shelvedChange, String downloadTo)
-    {
+    public void downloadShelvedFile(PendingChange shelvedChange, String downloadTo) {
         shelvedChange.downloadShelvedFile(versionControlClient, downloadTo);
     }
 
-    public void downloadBaseFile(PendingChange pendingChange, String downloadTo)
-    {
+    public void downloadBaseFile(PendingChange pendingChange, String downloadTo) {
         pendingChange.downloadBaseFile(versionControlClient, downloadTo);
     }
 
-    public Changeset getChangeset(int changesetID)
-    {
+    public Changeset getChangeset(int changesetID) {
         return versionControlClient.getChangeset(changesetID);
     }
 
@@ -108,8 +104,7 @@ public class TfsVersionControlService
         boolean includeFileDetails,
         boolean slotMode,
         boolean generateDownloadURLs,
-        boolean sortAscending)
-    {
+        boolean sortAscending) {
         return versionControlClient.queryHistory(
             serverOrLocalPath,
             version,
@@ -125,13 +120,11 @@ public class TfsVersionControlService
             sortAscending);
     }
 
-    public Shelveset[] queryShelvesets(String shelvesetName, String shelvesetOwner)
-    {
+    public Shelveset[] queryShelvesets(String shelvesetName, String shelvesetOwner) {
         return versionControlClient.queryShelvesets(shelvesetName, shelvesetOwner, null);
     }
 
-    public PendingSet[] queryShelvesetChanges(Shelveset shelveset, boolean includeDownloadInfo)
-    {
+    public PendingSet[] queryShelvesetChanges(Shelveset shelveset, boolean includeDownloadInfo) {
         return versionControlClient.queryShelvedChanges(
             shelveset.getName(),
             shelveset.getOwnerName(),
@@ -139,8 +132,7 @@ public class TfsVersionControlService
             includeDownloadInfo);
     }
 
-    public void deleteShelveset(Shelveset shelveset)
-    {
+    public void deleteShelveset(Shelveset shelveset) {
         versionControlClient.deleteShelveset(shelveset.getName(), shelveset.getOwnerName());
     }
 }

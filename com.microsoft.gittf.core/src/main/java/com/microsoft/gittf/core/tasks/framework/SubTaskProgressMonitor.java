@@ -31,9 +31,7 @@ import com.microsoft.gittf.core.util.Check;
  * A progress monitor for sub tasks
  * 
  */
-public class SubTaskProgressMonitor
-    extends BaseTaskProgressMonitor
-{
+public class SubTaskProgressMonitor extends BaseTaskProgressMonitor {
     private final TaskProgressMonitor parent;
     private final int parentWork;
     private final String parentDetail;
@@ -52,8 +50,7 @@ public class SubTaskProgressMonitor
      * @param parent
      * @param parentWork
      */
-    public SubTaskProgressMonitor(final TaskProgressMonitor parent, final int parentWork)
-    {
+    public SubTaskProgressMonitor(final TaskProgressMonitor parent, final int parentWork) {
         Check.notNull(parent, "parent"); //$NON-NLS-1$
         Check.isTrue(parentWork >= 0, "parentWork >= 0"); //$NON-NLS-1$
 
@@ -62,13 +59,11 @@ public class SubTaskProgressMonitor
         this.parentDetail = parent.getDetail();
     }
 
-    public void beginTask(String task, int work, TaskProgressDisplay displayOptions)
-    {
+    public void beginTask(String task, int work, TaskProgressDisplay displayOptions) {
         Check.notNull(task, "task"); //$NON-NLS-1$
         Check.isTrue(work >= TaskProgressMonitor.INDETERMINATE, "work >= INDETERMINATE"); //$NON-NLS-1$
 
-        if (this.inTask)
-        {
+        if (this.inTask) {
             return;
         }
 
@@ -78,98 +73,75 @@ public class SubTaskProgressMonitor
         this.displayOptions = displayOptions;
     }
 
-    public String getTask()
-    {
+    public String getTask() {
         return task;
     }
 
-    public int getWork()
-    {
+    public int getWork() {
         return workTotal;
     }
 
-    public void setWork(int workTotal)
-    {
+    public void setWork(int workTotal) {
         this.workTotal = workTotal;
         worked(0);
     }
 
-    public TaskProgressDisplay getTaskProgressDisplayOptions()
-    {
+    public TaskProgressDisplay getTaskProgressDisplayOptions() {
         return displayOptions;
     }
 
-    public TaskProgressMonitor newSubTask(int subWork)
-    {
+    public TaskProgressMonitor newSubTask(int subWork) {
         return new SubTaskProgressMonitor(this, subWork);
     }
 
-    public void setDetail(String detail)
-    {
+    public void setDetail(String detail) {
         this.detail = detail;
 
-        if (parent.getTaskProgressDisplayOptions().contains(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL))
-        {
-            if (parentDetail != null && parentDetail.length() > 0 && detail != null && detail.length() > 0)
-            {
+        if (parent.getTaskProgressDisplayOptions().contains(TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL)) {
+            if (parentDetail != null && parentDetail.length() > 0 && detail != null && detail.length() > 0) {
                 parent.setDetail(Messages.formatString("SubTaskProgressMonitor.DetailFormat", parentDetail, detail)); //$NON-NLS-1$
-            }
-            else if (parentDetail != null && parentDetail.length() > 0)
-            {
+            } else if (parentDetail != null && parentDetail.length() > 0) {
                 parent.setDetail(parentDetail);
-            }
-            else
-            {
+            } else {
                 parent.setDetail(detail);
             }
         }
     }
 
-    public String getDetail()
-    {
+    public String getDetail() {
         return detail;
     }
 
-    public void worked(double amount)
-    {
-        if (worked + amount > workTotal)
-        {
+    public void worked(double amount) {
+        if (worked + amount > workTotal) {
             amount = workTotal - worked;
             worked = workTotal;
-        }
-        else
-        {
+        } else {
             this.worked += amount;
         }
 
         parent.worked(((amount / workTotal) * (double) parentWork));
     }
 
-    public void displayMessage(String message)
-    {
+    public void displayMessage(String message) {
         parent.displayMessage(message);
     }
 
-    public void displayWarning(String message)
-    {
+    public void displayWarning(String message) {
         parent.displayWarning(message);
     }
 
-    public void displayVerbose(String message)
-    {
+    public void displayVerbose(String message) {
         parent.displayVerbose(message);
     }
 
-    public void endTask()
-    {
-        if (!this.inTask)
-        {
+    public void endTask() {
+        if (!this.inTask) {
             return;
         }
 
         /* This task is done, notify the parent of remaining work */
-        if (this.worked < this.workTotal)
-        {
+        if (this.worked < this.workTotal) {
             this.worked(this.workTotal - this.worked);
         }
 
@@ -182,7 +154,6 @@ public class SubTaskProgressMonitor
         this.displayOptions = TaskProgressDisplay.NONE;
     }
 
-    public void dispose()
-    {
+    public void dispose() {
     }
 }

@@ -39,16 +39,13 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.LockLevel;
 import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.RecursionType;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.ItemSpec;
 
-public class LockTask
-    extends Task
-{
+public class LockTask extends Task {
     private static final Log log = LogFactory.getLog(LockTask.class);
 
     private final WorkspaceService workspace;
     private final String serverPath;
 
-    public LockTask(final WorkspaceService workspace, final String serverPath)
-    {
+    public LockTask(final WorkspaceService workspace, final String serverPath) {
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
         Check.notNullOrEmpty(serverPath, "serverPath"); //$NON-NLS-1$
 
@@ -57,15 +54,14 @@ public class LockTask
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         progressMonitor.beginTask(
-            Messages.formatString("LockTask.LockingFormat", serverPath), TaskProgressMonitor.INDETERMINATE); //$NON-NLS-1$
+            Messages.formatString("LockTask.LockingFormat", serverPath), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE);
 
         log.debug("Trying to lock " + serverPath); //$NON-NLS-1$
 
-        int pended = workspace.setLock(new ItemSpec[]
-        {
+        int pended = workspace.setLock(new ItemSpec[] {
             new ItemSpec(serverPath, RecursionType.FULL)
         }, LockLevel.CHECKIN, GetOptions.NO_DISK_UPDATE, PendChangesOptions.NONE);
 
@@ -73,20 +69,17 @@ public class LockTask
          * If we cannot lock the item because it does not exist, we pend an add
          * for the root folder and lock it
          */
-        if (pended == 0)
-        {
+        if (pended == 0) {
 
             log.debug("Cannot lock " + serverPath + "because it does not exist"); //$NON-NLS-1$ //$NON-NLS-2$
 
             log.debug("Trying to pend add for " + serverPath); //$NON-NLS-1$
 
-            pended = workspace.pendAdd(new String[]
-            {
+            pended = workspace.pendAdd(new String[] {
                 serverPath
             }, true, null, LockLevel.CHECKIN, GetOptions.NO_DISK_UPDATE, PendChangesOptions.NONE);
 
-            if (pended != 1)
-            {
+            if (pended != 1) {
                 return new TaskStatus(TaskStatus.ERROR, Messages.formatString("LockTask.LockFailedFormat", serverPath)); //$NON-NLS-1$
             }
         }

@@ -45,9 +45,7 @@ import com.microsoft.tfs.util.StringUtil;
  * Shelves the changes pended in the workspace
  * 
  */
-public class ShelvePendingChangesTask
-    extends Task
-{
+public class ShelvePendingChangesTask extends Task {
     private static String CRLF = "" + NewlineUtils.CARRIAGE_RETURN + NewlineUtils.LINE_FEED; //$NON-NLS-1$
     private final String message;
     private final WorkspaceService workspace;
@@ -76,8 +74,7 @@ public class ShelvePendingChangesTask
         final String message,
         final WorkspaceService workspace,
         final PendingChange[] changes,
-        final String shelvesetName)
-    {
+        final String shelvesetName) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(workspace, "workspace"); //$NON-NLS-1$
         Check.notNull(changes, "changes"); //$NON-NLS-1$
@@ -95,8 +92,7 @@ public class ShelvePendingChangesTask
      * 
      * @param workItems
      */
-    public void setWorkItemCheckinInfo(WorkItemCheckinInfo[] workItems)
-    {
+    public void setWorkItemCheckinInfo(WorkItemCheckinInfo[] workItems) {
         this.workItems = workItems;
     }
 
@@ -106,42 +102,37 @@ public class ShelvePendingChangesTask
      * 
      * @param replace
      */
-    public void setReplaceExistingShelveset(boolean replace)
-    {
+    public void setReplaceExistingShelveset(boolean replace) {
         this.replace = replace;
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         progressMonitor.beginTask(
-            Messages.formatString("ShelvePendingChangesTask.ShelvingChangesFormat", changes.length), TaskProgressMonitor.INDETERMINATE); //$NON-NLS-1$
+            Messages.formatString("ShelvePendingChangesTask.ShelvingChangesFormat", changes.length), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE);
 
         final String normalizedMessage =
             (message == null ? StringUtil.EMPTY : NewlineUtils.replaceNewlines(message, CRLF).trim());
 
-        try
-        {
+        try {
             /* Create shelveset */
-            final Shelveset shelveset =
-                new Shelveset(
-                    shelvesetName,
-                    VersionControlConstants.AUTHENTICATED_USER,
-                    VersionControlConstants.AUTHENTICATED_USER,
-                    normalizedMessage,
-                    null,
-                    null,
-                    workItems,
-                    Calendar.getInstance(),
-                    false,
-                    null);
+            final Shelveset shelveset = new Shelveset(
+                shelvesetName,
+                VersionControlConstants.AUTHENTICATED_USER,
+                VersionControlConstants.AUTHENTICATED_USER,
+                normalizedMessage,
+                null,
+                null,
+                workItems,
+                Calendar.getInstance(),
+                false,
+                null);
 
             workspace.shelve(shelveset, changes, replace, true);
 
             progressMonitor.endTask();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return new TaskStatus(TaskStatus.ERROR, e);
         }
 

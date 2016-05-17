@@ -26,21 +26,17 @@ package com.microsoft.gittf.client.clc.arguments.parser;
 
 import com.microsoft.tfs.util.BitField;
 
-public class ArgumentParserOptions
-    extends BitField
-{
+public class ArgumentParserOptions extends BitField {
     private static final long serialVersionUID = 1743092155757121266L;
 
     public static final ArgumentParserOptions NONE = new ArgumentParserOptions(0);
     public static final ArgumentParserOptions ALLOW_UNKNOWN_ARGUMENTS = new ArgumentParserOptions(1);
 
-    private ArgumentParserOptions(int value)
-    {
+    private ArgumentParserOptions(int value) {
         super(value);
     }
 
-    public boolean contains(ArgumentParserOptions other)
-    {
+    public boolean contains(ArgumentParserOptions other) {
         return super.containsInternal(other);
     }
 }

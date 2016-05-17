@@ -28,8 +28,7 @@ package com.microsoft.gittf.core;
  * Constants used by the Git TF Library
  * 
  */
-public final class GitTFConstants
-{
+public final class GitTFConstants {
     /**
      * The Application Name
      */
@@ -81,7 +80,6 @@ public final class GitTFConstants
      */
     public static final String GIT_TF_DEFAULT_USER_MAP = "./USERMAP"; //$NON-NLS-1$
 
-    private GitTFConstants()
-    {
+    private GitTFConstants() {
     }
 }

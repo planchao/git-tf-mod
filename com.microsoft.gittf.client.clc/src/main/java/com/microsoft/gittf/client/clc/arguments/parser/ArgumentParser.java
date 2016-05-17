@@ -91,8 +91,7 @@ import com.microsoft.gittf.core.util.Check;
  * as a free argument, not a switch argument.
  * 
  */
-public class ArgumentParser
-{
+public class ArgumentParser {
     /**
      * Parses the given command line provided by the user and returns a
      * collection of {@link Argument}s that were specified.
@@ -107,8 +106,7 @@ public class ArgumentParser
      *         if the command line was not valid or could not be parsed
      */
     public static ArgumentCollection parse(final String[] commandLine, final Argument[] allowedArguments)
-        throws ArgumentParserException
-    {
+        throws ArgumentParserException {
         return parse(commandLine, allowedArguments, ArgumentParserOptions.NONE);
     }
 
@@ -132,9 +130,7 @@ public class ArgumentParser
     public static ArgumentCollection parse(
         final String[] commandLine,
         final Argument[] allowedArguments,
-        final ArgumentParserOptions options)
-        throws ArgumentParserException
-    {
+        final ArgumentParserOptions options) throws ArgumentParserException {
         Check.notNull(commandLine, "args"); //$NON-NLS-1$
         Check.notNull(allowedArguments, "allowedArguments"); //$NON-NLS-1$
         Check.notNull(options, "options"); //$NON-NLS-1$
@@ -148,8 +144,7 @@ public class ArgumentParser
         boolean nextArgumentLiteral = false;
         FreeArgumentCollection currentFreeArgumentCollection = null;
 
-        for (int i = 0; i < commandLine.length; i++)
-        {
+        for (int i = 0; i < commandLine.length; i++) {
             /*
              * Optionally allow "--" to specify that the remaining arguments
              * will be literal arguments.
@@ -158,18 +153,15 @@ public class ArgumentParser
             {
                 boolean allowsLiteral = false;
 
-                for (Argument possibleArgument : allAllowedArguments)
-                {
-                    if (possibleArgument instanceof LiteralArgument)
-                    {
+                for (Argument possibleArgument : allAllowedArguments) {
+                    if (possibleArgument instanceof LiteralArgument) {
                         allowsLiteral = true;
                         nextArgumentLiteral = true;
                         break;
                     }
                 }
 
-                if (!allowsLiteral)
-                {
+                if (!allowsLiteral) {
                     handleUnknownArgument(commandLine[i], arguments, options);
                 }
             }
@@ -181,14 +173,11 @@ public class ArgumentParser
                 String name = commandLine[i].substring(2);
                 Argument argument = null;
 
-                for (Argument possibleArgument : allAllowedArguments)
-                {
-                    if (possibleArgument instanceof NamedArgument && name.equals(possibleArgument.getName()))
-                    {
+                for (Argument possibleArgument : allAllowedArguments) {
+                    if (possibleArgument instanceof NamedArgument && name.equals(possibleArgument.getName())) {
                         argument = possibleArgument.clone();
 
-                        if (argument instanceof ValueArgument)
-                        {
+                        if (argument instanceof ValueArgument) {
                             /*
                              * Consume the next argument as the value for this
                              * one, unless it appears to be another argument.
@@ -196,9 +185,7 @@ public class ArgumentParser
                             if ((i + 1) >= commandLine.length || commandLine[i + 1].startsWith("-")) //$NON-NLS-1$
                             {
                                 ((ValueArgument) argument).setValue(""); //$NON-NLS-1$
-                            }
-                            else
-                            {
+                            } else {
                                 i++;
                                 ((ValueArgument) argument).setValue(commandLine[i]);
                             }
@@ -214,36 +201,31 @@ public class ArgumentParser
                 {
                     String[] nameValue = name.split("=", 2); //$NON-NLS-1$
 
-                    for (Argument possibleArgument : allAllowedArguments)
-                    {
+                    for (Argument possibleArgument : allAllowedArguments) {
                         if (possibleArgument instanceof ValueArgument
-                            && nameValue[0].equals(possibleArgument.getName()))
-                        {
+                            && nameValue[0].equals(possibleArgument.getName())) {
                             /*
                              * Handle comma or semicolon separated multiple
                              * arguments
                              */
-                            if (possibleArgument.getOptions().contains(ArgumentOptions.MULTIPLE))
-                            {
+                            if (possibleArgument.getOptions().contains(ArgumentOptions.MULTIPLE)) {
                                 String[] multipleValues = nameValue[1].split(",|;"); //$NON-NLS-1$
 
-                                if (multipleValues.length <= 0)
-                                {
-                                    throw new ArgumentParserException(Messages.formatString(
-                                        "ArgumentParser.ArgumentRequiresValueFormat", possibleArgument)); //$NON-NLS-1$
+                                if (multipleValues.length <= 0) {
+                                    throw new ArgumentParserException(
+                                        Messages.formatString(
+                                            "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
+                                            possibleArgument));
                                 }
 
                                 allValues = new ArrayList<Argument>();
-                                for (String value : multipleValues)
-                                {
+                                for (String value : multipleValues) {
                                     Argument valueArgument = possibleArgument.clone();
                                     ((ValueArgument) valueArgument).setValue(value);
                                     allValues.add(valueArgument);
                                 }
                                 break;
-                            }
-                            else
-                            {
+                            } else {
                                 argument = possibleArgument.clone();
                                 ((ValueArgument) argument).setValue(nameValue[1]);
                             }
@@ -251,18 +233,12 @@ public class ArgumentParser
                     }
                 }
 
-                if (argument == null && allValues == null)
-                {
+                if (argument == null && allValues == null) {
                     handleUnknownArgument(commandLine[i], arguments, options);
-                }
-                else if (argument != null)
-                {
+                } else if (argument != null) {
                     arguments.add(argument);
-                }
-                else
-                {
-                    for (Argument valueArgument : allValues)
-                    {
+                } else {
+                    for (Argument valueArgument : allValues) {
                         arguments.add(valueArgument);
                     }
                 }
@@ -283,73 +259,65 @@ public class ArgumentParser
                  * Multiple switches may be combined, eg "-asdf" ==
                  * "-a -s -d -f"
                  */
-                char[] switches =
-                    nameValue != null ? nameValue[0].substring(1).toCharArray()
-                        : commandLine[i].substring(1).toCharArray();
+                char[] switches = nameValue != null ? nameValue[0].substring(1).toCharArray()
+                    : commandLine[i].substring(1).toCharArray();
 
-                for (int j = 0; j < switches.length; j++)
-                {
+                for (int j = 0; j < switches.length; j++) {
                     Argument argument = null;
 
-                    for (Argument possibleArgument : allAllowedArguments)
-                    {
-                        if (possibleArgument instanceof NamedArgument)
-                        {
-                            if (((NamedArgument) possibleArgument).getAlias() == switches[j])
-                            {
+                    for (Argument possibleArgument : allAllowedArguments) {
+                        if (possibleArgument instanceof NamedArgument) {
+                            if (((NamedArgument) possibleArgument).getAlias() == switches[j]) {
                                 argument = possibleArgument.clone();
                                 break;
                             }
                         }
                     }
 
-                    if (argument == null)
-                    {
+                    if (argument == null) {
                         handleUnknownArgument(MessageFormat.format("-{0}", switches[j]), arguments, options); //$NON-NLS-1$
                     }
 
                     /* The first switch may be a value argument */
-                    if (j == 0 && nameValue == null && commandLine[i].length() > 2 && argument instanceof ValueArgument)
-                    {
+                    if (j == 0
+                        && nameValue == null
+                        && commandLine[i].length() > 2
+                        && argument instanceof ValueArgument) {
                         ((ValueArgument) argument).setValue(commandLine[i].substring(2));
                         arguments.add(argument);
                         break;
                     }
                     /* The last switch may be a value argument */
-                    else if (j == switches.length - 1 && argument instanceof ValueArgument)
-                    {
-                        if (nameValue != null)
-                        {
+                    else if (j == switches.length - 1 && argument instanceof ValueArgument) {
+                        if (nameValue != null) {
                             ((ValueArgument) argument).setValue(nameValue[1]);
                         }
-                        /* Consume the next argument as the value for this one */
-                        else
-                        {
-                            if ((i + 1) >= commandLine.length)
-                            {
-                                throw new ArgumentParserException(Messages.formatString(
-                                    "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
-                                    MessageFormat.format("-{0}", switches[j]) //$NON-NLS-1$
-                                ));
+                        /*
+                         * Consume the next argument as the value for this one
+                         */
+                        else {
+                            if ((i + 1) >= commandLine.length) {
+                                throw new ArgumentParserException(
+                                    Messages.formatString(
+                                        "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
+                                        MessageFormat.format("-{0}", switches[j]) //$NON-NLS-1$
+                                    ));
                             }
 
                             i++;
                             ((ValueArgument) argument).setValue(commandLine[i]);
                         }
-                    }
-                    else if (j < switches.length && argument instanceof ValueArgument)
-                    {
+                    } else if (j < switches.length && argument instanceof ValueArgument) {
                         // add 2 to make up for the - & the argument alias
                         ((ValueArgument) argument).setValue(commandLine[i].substring(j + 2));
                         arguments.add(argument);
                         break;
-                    }
-                    else if (argument instanceof ValueArgument)
-                    {
-                        throw new ArgumentParserException(Messages.formatString(
-                            "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
-                            MessageFormat.format("-{0}", switches[j]) //$NON-NLS-1$
-                        ));
+                    } else if (argument instanceof ValueArgument) {
+                        throw new ArgumentParserException(
+                            Messages.formatString(
+                                "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
+                                MessageFormat.format("-{0}", switches[j]) //$NON-NLS-1$
+                            ));
                     }
 
                     arguments.add(argument);
@@ -359,40 +327,32 @@ public class ArgumentParser
              * If we are currently in a free argument collection, this argument
              * also applies.
              */
-            else if (currentFreeArgumentCollection != null)
-            {
+            else if (currentFreeArgumentCollection != null) {
                 currentFreeArgumentCollection.addValue(commandLine[i]);
             }
             /*
              * Otherwise, see if this free argument will be accepted.
              */
-            else
-            {
+            else {
                 /* Find the next free argument */
                 Argument argument = null;
                 int freeArgumentIdx = 0;
 
-                for (Argument possibleArgument : allAllowedArguments)
-                {
-                    if (possibleArgument instanceof FreeArgumentCollection)
-                    {
+                for (Argument possibleArgument : allAllowedArguments) {
+                    if (possibleArgument instanceof FreeArgumentCollection) {
                         argument = possibleArgument.clone();
                         currentFreeArgumentCollection = (FreeArgumentCollection) argument;
 
                         ((FreeArgumentCollection) argument).addValue(commandLine[i]);
                         arguments.add(argument);
 
-                        if (currentFreeArgumentCollection.getOptions().contains(ArgumentOptions.LITERAL))
-                        {
+                        if (currentFreeArgumentCollection.getOptions().contains(ArgumentOptions.LITERAL)) {
                             nextArgumentLiteral = true;
                         }
 
                         break;
-                    }
-                    else if (possibleArgument instanceof FreeArgument)
-                    {
-                        if (freeArgumentIdx == freeArgumentCount)
-                        {
+                    } else if (possibleArgument instanceof FreeArgument) {
+                        if (freeArgumentIdx == freeArgumentCount) {
                             argument = possibleArgument.clone();
 
                             ((FreeArgument) argument).setValue(commandLine[i]);
@@ -408,15 +368,13 @@ public class ArgumentParser
                     }
                 }
 
-                if (argument == null)
-                {
+                if (argument == null) {
                     handleUnknownArgument(commandLine[i], arguments, options);
                 }
             }
         }
 
-        if (enforceRequirements(arguments))
-        {
+        if (enforceRequirements(arguments)) {
             enforceChoiceArguments(arguments, allowedArguments);
             enforceRequiredArguments(arguments, allowedArguments);
             enforceRequiredValueArguments(arguments, allowedArguments);
@@ -425,18 +383,13 @@ public class ArgumentParser
         return arguments;
     }
 
-    private static List<Argument> flattenArguments(Argument[] arguments)
-    {
+    private static List<Argument> flattenArguments(Argument[] arguments) {
         List<Argument> flattened = new ArrayList<Argument>();
 
-        for (Argument argument : arguments)
-        {
-            if (argument instanceof ChoiceArgument)
-            {
+        for (Argument argument : arguments) {
+            if (argument instanceof ChoiceArgument) {
                 flattened.addAll(flattenArguments(((ChoiceArgument) argument).getArguments()));
-            }
-            else
-            {
+            } else {
                 flattened.add(argument);
             }
         }
@@ -444,25 +397,21 @@ public class ArgumentParser
         return flattened;
     }
 
-    private static void validateAllowedArguments(List<Argument> arguments)
-    {
+    private static void validateAllowedArguments(List<Argument> arguments) {
         Set<String> names = new HashSet<String>();
         Set<Character> aliases = new HashSet<Character>();
 
-        for (Argument argument : arguments)
-        {
+        for (Argument argument : arguments) {
             /* Ensure this list has been flattened */
             Check.isTrue(!(argument instanceof ChoiceArgument), "argument != ChoiceArgument"); //$NON-NLS-1$
 
-            if (argument.getName() == null)
-            {
+            if (argument.getName() == null) {
                 continue;
             }
 
             Check.isTrue(names.add(argument.getName()), "names.add"); //$NON-NLS-1$
 
-            if (argument instanceof NamedArgument && ((NamedArgument) argument).getAlias() != 0)
-            {
+            if (argument instanceof NamedArgument && ((NamedArgument) argument).getAlias() != 0) {
                 Check.isTrue(aliases.add(((NamedArgument) argument).getAlias()), "aliases.add"); //$NON-NLS-1$
             }
         }
@@ -471,31 +420,24 @@ public class ArgumentParser
     private static void handleUnknownArgument(
         String unknownArg,
         ArgumentCollection arguments,
-        ArgumentParserOptions options)
-        throws ArgumentParserException
-    {
+        ArgumentParserOptions options) throws ArgumentParserException {
         Check.notNull(unknownArg, "unknownArg"); //$NON-NLS-1$
         Check.notNull(arguments, "arguments"); //$NON-NLS-1$
         Check.notNull(options, "options"); //$NON-NLS-1$
 
-        if (options.contains(ArgumentParserOptions.ALLOW_UNKNOWN_ARGUMENTS))
-        {
+        if (options.contains(ArgumentParserOptions.ALLOW_UNKNOWN_ARGUMENTS)) {
             arguments.addUnknownArgument(unknownArg);
-        }
-        else
-        {
-            throw new ArgumentParserException(Messages.formatString("ArgumentParser.UnknownArgumentFormat", unknownArg)); //$NON-NLS-1$
+        } else {
+            throw new ArgumentParserException(
+                Messages.formatString("ArgumentParser.UnknownArgumentFormat", unknownArg)); //$NON-NLS-1$
         }
     }
 
-    private static boolean enforceRequirements(final ArgumentCollection specified)
-    {
+    private static boolean enforceRequirements(final ArgumentCollection specified) {
         Check.notNull(specified, "specified"); //$NON-NLS-1$
 
-        for (Argument a : specified.getArguments())
-        {
-            if (a.getOptions().contains(ArgumentOptions.SUPPRESS_REQUIREMENTS))
-            {
+        for (Argument a : specified.getArguments()) {
+            if (a.getOptions().contains(ArgumentOptions.SUPPRESS_REQUIREMENTS)) {
                 return false;
             }
         }
@@ -504,31 +446,24 @@ public class ArgumentParser
     }
 
     private static void enforceChoiceArguments(ArgumentCollection specified, Argument[] allowed)
-        throws ArgumentParserException
-    {
+        throws ArgumentParserException {
         Check.notNull(specified, "specified"); //$NON-NLS-1$
         Check.notNull(allowed, "allowed"); //$NON-NLS-1$
 
-        for (Argument a : allowed)
-        {
-            if (a instanceof ChoiceArgument)
-            {
+        for (Argument a : allowed) {
+            if (a instanceof ChoiceArgument) {
                 String existingName = null;
                 List<Argument> allChoices = flattenArguments(((ChoiceArgument) a).getArguments());
 
-                for (Argument choice : allChoices)
-                {
-                    if (specified.contains(choice.getName()))
-                    {
-                        if (existingName != null)
-                        {
-                            throw new ArgumentParserException(Messages.formatString(
-                                "ArgumentParser.MultipleChoicesSpecifiedFormat", //$NON-NLS-1$
-                                choice.getName(),
-                                existingName));
-                        }
-                        else
-                        {
+                for (Argument choice : allChoices) {
+                    if (specified.contains(choice.getName())) {
+                        if (existingName != null) {
+                            throw new ArgumentParserException(
+                                Messages.formatString(
+                                    "ArgumentParser.MultipleChoicesSpecifiedFormat", //$NON-NLS-1$
+                                    choice.getName(),
+                                    existingName));
+                        } else {
                             existingName = choice.getName();
                         }
                     }
@@ -538,38 +473,34 @@ public class ArgumentParser
     }
 
     private static void enforceRequiredArguments(ArgumentCollection specified, Argument[] allowed)
-        throws ArgumentParserException
-    {
+        throws ArgumentParserException {
         Check.notNull(specified, "specified"); //$NON-NLS-1$
         Check.notNull(allowed, "allowed"); //$NON-NLS-1$
 
-        for (Argument a : allowed)
-        {
-            if (a.getOptions().contains(ArgumentOptions.REQUIRED))
-            {
-                if (!specified.contains(a.getName()))
-                {
-                    throw new ArgumentParserException(Messages.formatString(
-                        "ArgumentParser.RequiredArgumentMissingFormat", //$NON-NLS-1$
-                        a.getName()));
+        for (Argument a : allowed) {
+            if (a.getOptions().contains(ArgumentOptions.REQUIRED)) {
+                if (!specified.contains(a.getName())) {
+                    throw new ArgumentParserException(
+                        Messages.formatString(
+                            "ArgumentParser.RequiredArgumentMissingFormat", //$NON-NLS-1$
+                            a.getName()));
                 }
             }
         }
     }
 
     private static void enforceRequiredValueArguments(ArgumentCollection specified, Argument[] allowed)
-        throws ArgumentParserException
-    {
+        throws ArgumentParserException {
         Check.notNull(specified, "specified"); //$NON-NLS-1$
         Check.notNull(allowed, "allowed"); //$NON-NLS-1$
 
-        for (Argument a : specified.getArguments())
-        {
+        for (Argument a : specified.getArguments()) {
             if (a.getOptions().contains(ArgumentOptions.VALUE_REQUIRED)
                 && a instanceof ValueArgument
                 && ((ValueArgument) a).getValue().equals("")) //$NON-NLS-1$
             {
-                throw new ArgumentParserException(Messages.formatString("ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
+                throw new ArgumentParserException(Messages.formatString(
+                    "ArgumentParser.ArgumentRequiresValueFormat", //$NON-NLS-1$
                     a.getName()));
             }
 
@@ -577,9 +508,10 @@ public class ArgumentParser
                 && a instanceof FreeArgument
                 && ((FreeArgument) a).getValue().equals("")) //$NON-NLS-1$
             {
-                throw new ArgumentParserException(Messages.formatString(
-                    "ArgumentParser.FreeArgumentRequiresValueFormat", //$NON-NLS-1$
-                    a.getName()));
+                throw new ArgumentParserException(
+                    Messages.formatString(
+                        "ArgumentParser.FreeArgumentRequiresValueFormat", //$NON-NLS-1$
+                        a.getName()));
             }
         }
     }

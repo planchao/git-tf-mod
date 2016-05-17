@@ -28,7 +28,6 @@ package com.microsoft.gittf.core.tasks.framework;
  * An event handler called before a task is started by the TaskExecutor
  * 
  */
-public interface TaskStartedHandler
-{
+public interface TaskStartedHandler {
     void onTaskStarted(final Task task);
 }

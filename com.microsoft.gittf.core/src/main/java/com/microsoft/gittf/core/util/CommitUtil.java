@@ -39,10 +39,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 
 import com.microsoft.gittf.core.Messages;
 
-public final class CommitUtil
-{
-    private CommitUtil()
-    {
+public final class CommitUtil {
+    private CommitUtil() {
     }
 
     /**
@@ -54,25 +52,18 @@ public final class CommitUtil
      *        the commit object id
      * @return
      */
-    public static boolean isValidCommitId(final Repository repository, ObjectId objectId)
-    {
+    public static boolean isValidCommitId(final Repository repository, ObjectId objectId) {
         final RevWalk walker = new RevWalk(repository);
 
-        try
-        {
+        try {
             RevCommit commit = walker.parseCommit(objectId);
 
             return commit != null;
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             return false;
-        }
-        finally
-        {
-            if (walker != null)
-            {
-                walker.release();
+        } finally {
+            if (walker != null) {
+                walker.close();
             }
         }
     }
@@ -87,11 +78,8 @@ public final class CommitUtil
      * @return
      * @throws Exception
      */
-    public static ObjectId getRefNameCommitID(final Repository repository, String ref)
-        throws Exception
-    {
-        if (AbbreviatedObjectId.isId(ref) || ObjectId.isId(ref))
-        {
+    public static ObjectId getRefNameCommitID(final Repository repository, String ref) throws Exception {
+        if (AbbreviatedObjectId.isId(ref) || ObjectId.isId(ref)) {
             return peelRef(repository, repository.resolve(ref));
         }
 
@@ -106,9 +94,7 @@ public final class CommitUtil
      * @return
      * @throws Exception
      */
-    public static ObjectId getCurrentBranchHeadCommitID(final Repository repository)
-        throws Exception
-    {
+    public static ObjectId getCurrentBranchHeadCommitID(final Repository repository) throws Exception {
         return getCommitId(repository, Constants.HEAD);
     }
 
@@ -120,28 +106,22 @@ public final class CommitUtil
      * @return
      * @throws Exception
      */
-    public static ObjectId getMasterHeadCommitID(final Repository repository)
-        throws Exception
-    {
+    public static ObjectId getMasterHeadCommitID(final Repository repository) throws Exception {
         return getCommitId(repository, Constants.R_HEADS + Constants.MASTER);
     }
 
-    private static ObjectId getCommitId(final Repository repository, String refName)
-        throws Exception
-    {
+    private static ObjectId getCommitId(final Repository repository, String refName) throws Exception {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
 
-        Ref ref = repository.getRef(refName);
+        Ref ref = repository.findRef(refName);
 
-        if (ref == null)
-        {
+        if (ref == null) {
             throw new Exception(Messages.formatString("RepositoryUtil.NoRefFormat", refName)); //$NON-NLS-1$
         }
 
         ObjectId commitId = peelRef(repository, ref.getObjectId());
 
-        if (commitId == null)
-        {
+        if (commitId == null) {
             throw new Exception(Messages.formatString("RepositoryUtil.NoObjectForRefFormat", refName)); //$NON-NLS-1$
         }
 
@@ -151,18 +131,13 @@ public final class CommitUtil
 
     private static ObjectId peelRef(final Repository repository, ObjectId refId)
         throws MissingObjectException,
-            IOException
-    {
+            IOException {
         RevWalk walker = new RevWalk(repository);
-        try
-        {
+        try {
             return walker.peel(walker.parseAny(refId));
-        }
-        finally
-        {
-            if (walker != null)
-            {
-                walker.release();
+        } finally {
+            if (walker != null) {
+                walker.close();
             }
         }
     }
@@ -176,41 +151,28 @@ public final class CommitUtil
      *        objectid to expand
      * @return
      */
-    public static final ObjectId resolveAbbreviatedId(final Repository repository, final AbbreviatedObjectId objectID)
-    {
+    public static final ObjectId resolveAbbreviatedId(final Repository repository, final AbbreviatedObjectId objectID) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         Check.notNull(objectID, "objectID"); //$NON-NLS-1$
 
-        if (repository != null)
-        {
+        if (repository != null) {
             ObjectReader objReader = repository.getObjectDatabase().newReader();
 
-            try
-            {
+            try {
                 Collection<ObjectId> objects = objReader.resolve(objectID);
 
-                if (objects.size() == 0)
-                {
+                if (objects.size() == 0) {
                     return null;
-                }
-                else if (objects.size() == 1)
-                {
+                } else if (objects.size() == 1) {
                     return objects.iterator().next();
-                }
-                else
-                {
+                } else {
                     throw new RuntimeException(Messages.formatString("RepositoryUtil.AmbiguousObjectFormat", objectID)); //$NON-NLS-1$
                 }
-            }
-            catch (IOException exception)
-            {
+            } catch (IOException exception) {
                 throw new RuntimeException(exception);
-            }
-            finally
-            {
-                if (objReader != null)
-                {
-                    objReader.release();
+            } finally {
+                if (objReader != null) {
+                    objReader.close();
                 }
             }
         }

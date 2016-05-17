@@ -73,16 +73,14 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.PropertyValu
 import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.RecursionType;
 import com.microsoft.tfs.core.clients.versioncontrol.specs.ItemSpec;
 import com.microsoft.tfs.jni.PlatformMiscUtils;
-import com.microsoft.tfs.util.StringHelpers;
+import com.microsoft.tfs.util.StringUtil;
 
 /**
  * The task converts the differences between two commits into a list of pending
  * changes and pends these changes in the workspace specified
  * 
  */
-public class PendDifferenceTask
-    extends Task
-{
+public class PendDifferenceTask extends Task {
     /**
      * Error code - there was no differences between the two commits, there is
      * nothing to pend
@@ -132,8 +130,7 @@ public class PendDifferenceTask
         final RevCommit commitTo,
         final WorkspaceService workspace,
         final String serverPathRoot,
-        final File localWorkingFolder)
-    {
+        final File localWorkingFolder) {
         Check.notNull(repository, "repository"); //$NON-NLS-1$
         /* Commit from may be null to add all files */
         Check.notNull(commitTo, "commitTo"); //$NON-NLS-1$
@@ -162,8 +159,7 @@ public class PendDifferenceTask
      * 
      * @return
      */
-    public PendingChange[] getPendingChanges()
-    {
+    public PendingChange[] getPendingChanges() {
         return pendingChanges;
     }
 
@@ -173,25 +169,23 @@ public class PendDifferenceTask
      * 
      * @param renameMode
      */
-    public void setRenameMode(RenameMode renameMode)
-    {
+    public void setRenameMode(RenameMode renameMode) {
         this.renameMode = renameMode;
     }
 
     @Override
-    public TaskStatus run(final TaskProgressMonitor progressMonitor)
-    {
+    public TaskStatus run(final TaskProgressMonitor progressMonitor) {
         log.debug("Pend differences task started."); //$NON-NLS-1$
 
         progressMonitor.beginTask(
             Messages.formatString(
-                "PendDifferencesTask.PendingChangesFormat", ObjectIdUtil.abbreviate(repository, commitTo.getId())), //$NON-NLS-1$
+                "PendDifferencesTask.PendingChangesFormat", //$NON-NLS-1$
+                ObjectIdUtil.abbreviate(repository, commitTo.getId())),
             100,
             TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL);
 
         /* Nothing to do if we're not going anywhere */
-        if (commitFrom != null && commitFrom.getId().equals(commitTo.getId()))
-        {
+        if (commitFrom != null && commitFrom.getId().equals(commitTo.getId())) {
             return TaskStatus.OK_STATUS;
         }
 
@@ -200,19 +194,14 @@ public class PendDifferenceTask
         /*
          * Sanity check: we do not expect any pending changes in the workspace
          */
-        PendingSet existingChanges = workspace.getPendingChanges(new String[]
-        {
+        PendingSet existingChanges = workspace.getPendingChanges(new String[] {
             ServerPath.combine(serverPathRoot, "*") //$NON-NLS-1$
-            },
-            RecursionType.FULL,
-            false);
+        }, RecursionType.FULL, false);
 
-        if (existingChanges != null && existingChanges.getPendingChanges().length > 0)
-        {
+        if (existingChanges != null && existingChanges.getPendingChanges().length > 0) {
             log.info("Workspace has existing pending changes - was a previous check-in aborted?"); //$NON-NLS-1$
 
-            workspace.undo(new ItemSpec[]
-            {
+            workspace.undo(new ItemSpec[] {
                 new ItemSpec(ServerPath.combine(serverPathRoot, "*"), RecursionType.FULL) //$NON-NLS-1$
             });
         }
@@ -228,8 +217,7 @@ public class PendDifferenceTask
         final TaskProgressMonitor analyzeMonitor = progressMonitor.newSubTask(75);
         final CheckinAnalysisChangeCollection analysis;
 
-        try
-        {
+        try {
             log.debug("Validate the commit tree objects for any violations"); //$NON-NLS-1$
 
             /* Validate the commit tree objects for any violations */
@@ -239,8 +227,7 @@ public class PendDifferenceTask
              * If we are comparing two commits analyze the difference between
              * both commits
              */
-            if (fromTree != null)
-            {
+            if (fromTree != null) {
                 log.debug("Analyzing differences"); //$NON-NLS-1$
 
                 analysis = analyzeDifferences(repository, fromTree, toTree, renameMode, analyzeMonitor);
@@ -249,15 +236,12 @@ public class PendDifferenceTask
              * Otherwise we need to create ADD changes for all the items in the
              * tree
              */
-            else
-            {
+            else {
                 log.debug("Analyzing entire tree to pend ADDs"); //$NON-NLS-1$
 
                 analysis = analyzeTree(repository, toTree, analyzeMonitor);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.debug("Pend differences task error:", e); //$NON-NLS-1$
 
             return new TaskStatus(TaskStatus.ERROR, e);
@@ -268,25 +252,20 @@ public class PendDifferenceTask
         final TaskProgressMonitor pendMonitor = progressMonitor.newSubTask(20);
 
         /* If the analysis is empty then there is nothing to pend */
-        if (analysis.isEmpty())
-        {
+        if (analysis.isEmpty()) {
             log.debug("Nothing to pend."); //$NON-NLS-1$
 
             return new TaskStatus(TaskStatus.OK, NOTHING_TO_PEND);
         }
 
-        try
-        {
+        try {
             /* Pend the changes found in the analysis in the workspace */
             pendingChanges = pendChanges(analysis, pendMonitor);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.debug("Pend differences task error:", e); //$NON-NLS-1$
             log.debug("Undoing pended changes."); //$NON-NLS-1$
 
-            workspace.undo(new ItemSpec[]
-            {
+            workspace.undo(new ItemSpec[] {
                 new ItemSpec(ServerPath.ROOT, RecursionType.FULL)
             });
 
@@ -306,11 +285,8 @@ public class PendDifferenceTask
      * 
      * @throws Exception
      */
-    public void validate()
-        throws Exception
-    {
-        if (!validated)
-        {
+    public void validate() throws Exception {
+        if (!validated) {
             validateTree(commitTo);
         }
 
@@ -325,9 +301,7 @@ public class PendDifferenceTask
      * 
      * @throws Exception
      */
-    private void validateTree(RevCommit commit)
-        throws Exception
-    {
+    private void validateTree(RevCommit commit) throws Exception {
         /* Validates TFS case sensitivity requirements */
         validateCaseSensitivityRequirements(commit);
     }
@@ -340,15 +314,12 @@ public class PendDifferenceTask
      * @param commit
      * @throws Exception
      */
-    private void validateCaseSensitivityRequirements(RevCommit commit)
-        throws Exception
-    {
+    private void validateCaseSensitivityRequirements(RevCommit commit) throws Exception {
         /* Create a tree walker */
         RevTree tree = commit.getTree();
         final TreeWalk treeWalker = new NameConflictTreeWalk(repository);
 
-        try
-        {
+        try {
             treeWalker.addTree(tree);
             treeWalker.setFilter(TreeFilter.ALL);
 
@@ -359,31 +330,27 @@ public class PendDifferenceTask
             Set<String> existingTreeItems = new HashSet<String>();
 
             /* Walk the tree looking for duplicates in the tree */
-            while (treeWalker.next())
-            {
+            while (treeWalker.next()) {
                 String pathString = treeWalker.getPathString().toLowerCase();
 
-                if (existingTreeItems.contains(pathString))
-                {
+                if (existingTreeItems.contains(pathString)) {
                     throw new Exception(
                         Messages.formatString(
-                            "PendDifferenceTask.SimilarItemWithDifferentCaseInCommitFormat", pathString, ObjectIdUtil.abbreviate(repository, commit.getId()))); //$NON-NLS-1$
+                            "PendDifferenceTask.SimilarItemWithDifferentCaseInCommitFormat", //$NON-NLS-1$
+                            pathString,
+                            ObjectIdUtil.abbreviate(repository, commit.getId())));
                 }
 
                 existingTreeItems.add(pathString);
 
                 int objectType = treeWalker.getFileMode(0).getObjectType();
-                if (objectType == OBJ_TREE)
-                {
+                if (objectType == OBJ_TREE) {
                     treeWalker.enterSubtree();
                 }
             }
-        }
-        finally
-        {
-            if (treeWalker != null)
-            {
-                treeWalker.release();
+        } finally {
+            if (treeWalker != null) {
+                treeWalker.close();
             }
         }
     }
@@ -411,15 +378,15 @@ public class PendDifferenceTask
         RevObject fromRootTree,
         RevObject toRootTree,
         RenameMode renameMode,
-        final TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+        final TaskProgressMonitor progressMonitor) throws Exception {
         Check.notNull(fromRootTree, "fromRootTree"); //$NON-NLS-1$
         Check.notNull(toRootTree, "toRootTree"); //$NON-NLS-1$
         Check.notNull(progressMonitor, "progressMonitor"); //$NON-NLS-1$
 
         progressMonitor.beginTask(
-            Messages.getString("PendDifferencesTask.AnalyzingCommits"), TaskProgressMonitor.INDETERMINATE, TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL); //$NON-NLS-1$
+            Messages.getString("PendDifferencesTask.AnalyzingCommits"), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE,
+            TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL);
 
         /* Init the analysis object */
         final CheckinAnalysisChangeCollection analysis =
@@ -431,8 +398,7 @@ public class PendDifferenceTask
         final TreeWalk treeWalker = new NameConflictTreeWalk(repository);
         final RenameDetector repositoryRenameDetector = new RenameDetector(repository);
 
-        try
-        {
+        try {
             treeWalker.setRecursive(true);
 
             treeWalker.addTree(fromRootTree);
@@ -448,8 +414,7 @@ public class PendDifferenceTask
              * If we need to detect file renames then use the rename detector to
              * analayze the differences first
              */
-            if (renameMode != RenameMode.NONE)
-            {
+            if (renameMode != RenameMode.NONE) {
                 repositoryRenameDetector.addAll(treeDifferences);
                 treeDifferences = repositoryRenameDetector.compute();
             }
@@ -460,18 +425,15 @@ public class PendDifferenceTask
              * folders that have items that have been renamed out is not
              * supported in TFS
              */
-            if (renameMode != RenameMode.ALL)
-            {
+            if (renameMode != RenameMode.ALL) {
                 analysis.setProcessDeletedFolders(false);
             }
 
             Map<String, DiffEntry> deleteChanges = new HashMap<String, DiffEntry>();
             Map<String, DiffEntry> addChanges = new HashMap<String, DiffEntry>();
 
-            for (DiffEntry change : treeDifferences)
-            {
-                switch (change.getChangeType())
-                {
+            for (DiffEntry change : treeDifferences) {
+                switch (change.getChangeType()) {
                     case ADD:
                         addChanges.put(change.getNewPath().toUpperCase(), change);
                         break;
@@ -479,80 +441,82 @@ public class PendDifferenceTask
                     case DELETE:
                         deleteChanges.put(change.getOldPath().toUpperCase(), change);
                         break;
+
+                    default:
+                        continue;
                 }
             }
 
             /* Append each change in to the analysis object */
-            for (DiffEntry change : treeDifferences)
-            {
-                switch (change.getChangeType())
-                {
+            for (DiffEntry change : treeDifferences) {
+                switch (change.getChangeType()) {
                     case ADD:
                     case COPY:
-                        if (!isCaseSensitiveRename(change, deleteChanges, addChanges))
-                        {
-                            analysis.pendAdd(new AddChange(change.getNewPath(), CommitUtil.resolveAbbreviatedId(
-                                repository,
-                                change.getNewId())));
-                            analysis.pendPropertyIfChanged(new PropertyChange(
-                                change.getNewPath(),
-                                CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
-                                change.getNewMode()));
+                        if (!isCaseSensitiveRename(change, deleteChanges, addChanges)) {
+                            analysis.pendAdd(
+                                new AddChange(
+                                    change.getNewPath(),
+                                    CommitUtil.resolveAbbreviatedId(repository, change.getNewId())));
+                            analysis.pendPropertyIfChanged(
+                                new PropertyChange(
+                                    change.getNewPath(),
+                                    CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
+                                    change.getNewMode()));
                         }
                         break;
 
                     case DELETE:
-                        if (isCaseSensitiveRename(change, deleteChanges, addChanges))
-                        {
+                        if (isCaseSensitiveRename(change, deleteChanges, addChanges)) {
                             DiffEntry addChange = addChanges.get(change.getOldPath().toUpperCase());
 
-                            analysis.pendRename(new RenameChange(
-                                change.getOldPath(),
-                                addChange.getNewPath(),
-                                CommitUtil.resolveAbbreviatedId(repository, addChange.getNewId()),
-                                !change.getOldId().equals(addChange.getNewId())));
-                            analysis.pendPropertyIfChanged(new PropertyChange(
-                                addChange.getNewPath(),
-                                CommitUtil.resolveAbbreviatedId(repository, addChange.getNewId()),
-                                change.getOldMode(),
-                                addChange.getNewMode()));
-                        }
-                        else
-                        {
+                            analysis.pendRename(
+                                new RenameChange(
+                                    change.getOldPath(),
+                                    addChange.getNewPath(),
+                                    CommitUtil.resolveAbbreviatedId(repository, addChange.getNewId()),
+                                    !change.getOldId().equals(addChange.getNewId())));
+                            analysis.pendPropertyIfChanged(
+                                new PropertyChange(
+                                    addChange.getNewPath(),
+                                    CommitUtil.resolveAbbreviatedId(repository, addChange.getNewId()),
+                                    change.getOldMode(),
+                                    addChange.getNewMode()));
+                        } else {
                             analysis.pendDelete(new DeleteChange(change.getOldPath(), change.getOldMode()));
                         }
                         break;
 
                     case MODIFY:
-                        analysis.pendEdit(new EditChange(change.getNewPath(), CommitUtil.resolveAbbreviatedId(
-                            repository,
-                            change.getNewId())));
-                        analysis.pendPropertyIfChanged(new PropertyChange(
-                            change.getNewPath(),
-                            CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
-                            change.getOldMode(),
-                            change.getNewMode()));
+                        analysis.pendEdit(
+                            new EditChange(
+                                change.getNewPath(),
+                                CommitUtil.resolveAbbreviatedId(repository, change.getNewId())));
+                        analysis.pendPropertyIfChanged(
+                            new PropertyChange(
+                                change.getNewPath(),
+                                CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
+                                change.getOldMode(),
+                                change.getNewMode()));
                         break;
 
                     case RENAME:
-                        analysis.pendRename(new RenameChange(
-                            change.getOldPath(),
-                            change.getNewPath(),
-                            CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
-                            !change.getOldId().equals(change.getNewId())));
-                        analysis.pendPropertyIfChanged(new PropertyChange(
-                            change.getNewPath(),
-                            CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
-                            change.getOldMode(),
-                            change.getNewMode()));
+                        analysis.pendRename(
+                            new RenameChange(
+                                change.getOldPath(),
+                                change.getNewPath(),
+                                CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
+                                !change.getOldId().equals(change.getNewId())));
+                        analysis.pendPropertyIfChanged(
+                            new PropertyChange(
+                                change.getNewPath(),
+                                CommitUtil.resolveAbbreviatedId(repository, change.getNewId()),
+                                change.getOldMode(),
+                                change.getNewMode()));
                 }
             }
-        }
-        finally
-        {
-            if (treeWalker != null)
-            {
-                treeWalker.release();
+        } finally {
+            if (treeWalker != null) {
+                treeWalker.close();
             }
 
             progressMonitor.endTask();
@@ -566,10 +530,8 @@ public class PendDifferenceTask
     private static boolean isCaseSensitiveRename(
         DiffEntry change,
         Map<String, DiffEntry> deleteChanges,
-        Map<String, DiffEntry> addChanges)
-    {
-        switch (change.getChangeType())
-        {
+        Map<String, DiffEntry> addChanges) {
+        switch (change.getChangeType()) {
             case ADD:
                 return deleteChanges.containsKey(change.getNewPath().toUpperCase());
 
@@ -597,14 +559,14 @@ public class PendDifferenceTask
     public static CheckinAnalysisChangeCollection analyzeTree(
         Repository repository,
         RevTree toRootTree,
-        TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+        TaskProgressMonitor progressMonitor) throws Exception {
         Check.notNull(toRootTree, "toRootTree"); //$NON-NLS-1$
         Check.notNull(progressMonitor, "progressMonitor"); //$NON-NLS-1$
 
         progressMonitor.beginTask(
-            Messages.getString("PendDifferencesTask.AnalyzingCommits"), TaskProgressMonitor.INDETERMINATE, TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL); //$NON-NLS-1$
+            Messages.getString("PendDifferencesTask.AnalyzingCommits"), //$NON-NLS-1$
+            TaskProgressMonitor.INDETERMINATE,
+            TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL);
 
         /* Create the CheckinAnalysisChangeCollection object */
         final CheckinAnalysisChangeCollection analysis = new CheckinAnalysisChangeCollection();
@@ -612,34 +574,27 @@ public class PendDifferenceTask
 
         log.debug("Walking thru the git-repository tree."); //$NON-NLS-1$
 
-        try
-        {
+        try {
             treeWalker.setRecursive(true);
             treeWalker.addTree(toRootTree);
             treeWalker.setFilter(TreeFilter.ANY_DIFF);
 
             /* Walk the tree and pend and add for every item in the tree */
-            while (treeWalker.next())
-            {
+            while (treeWalker.next()) {
                 final ObjectId toID = treeWalker.getObjectId(0);
 
-                if (!ObjectId.zeroId().equals(toID))
-                {
+                if (!ObjectId.zeroId().equals(toID)) {
                     analysis.pendAdd(new AddChange(treeWalker.getPathString(), toID));
-                }
-                else
-                {
-                    log.info(MessageFormat.format("Ignoring item {0} - type {1}", //$NON-NLS-1$
+                } else {
+                    log.info(MessageFormat.format(
+                        "Ignoring item {0} - type {1}", //$NON-NLS-1$
                         treeWalker.getPathString(),
                         (toRootTree != null ? treeWalker.getFileMode(1).getObjectType() : "none"))); //$NON-NLS-1$
                 }
             }
-        }
-        finally
-        {
-            if (treeWalker != null)
-            {
-                treeWalker.release();
+        } finally {
+            if (treeWalker != null) {
+                treeWalker.close();
             }
 
             progressMonitor.endTask();
@@ -662,18 +617,17 @@ public class PendDifferenceTask
      */
     private PendingChange[] pendChanges(
         CheckinAnalysisChangeCollection analysis,
-        final TaskProgressMonitor progressMonitor)
-        throws Exception
-    {
+        final TaskProgressMonitor progressMonitor) throws Exception {
         Check.notNull(analysis, "analysis"); //$NON-NLS-1$
 
         progressMonitor.beginTask(
-            Messages.getString("PendDifferencesTask.PendingChanges"), 6, TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL); //$NON-NLS-1$
+            Messages.getString("PendDifferencesTask.PendingChanges"), //$NON-NLS-1$
+            6,
+            TaskProgressDisplay.DISPLAY_SUBTASK_DETAIL);
 
         WorkspaceOperationErrorListener errorListener = null;
 
-        try
-        {
+        try {
             errorListener = workspace.getErrorListener();
 
             /* Pend Renames */
@@ -707,20 +661,14 @@ public class PendDifferenceTask
              * that.
              */
             progressMonitor.setDetail(Messages.getString("PendDifferencesTask.QueryingPendingChanges")); //$NON-NLS-1$
-            PendingSet pendingSet = workspace.getPendingChanges(new String[]
-            {
+            PendingSet pendingSet = workspace.getPendingChanges(new String[] {
                 ServerPath.combine(serverPathRoot, "*") //$NON-NLS-1$
-                },
-                RecursionType.FULL,
-                false);
+            }, RecursionType.FULL, false);
             progressMonitor.worked(1);
 
             return pendingSet != null ? pendingSet.getPendingChanges() : null;
-        }
-        finally
-        {
-            if (errorListener != null)
-            {
+        } finally {
+            if (errorListener != null) {
                 errorListener.dispose();
             }
 
@@ -739,15 +687,11 @@ public class PendDifferenceTask
      */
     private void pendDeletes(
         final CheckinAnalysisChangeCollection analysis,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         final List<DeleteChange> deletesChunk = new ArrayList<DeleteChange>();
 
-        for (final DeleteChange delete : analysis.getDeletes())
-        {
-            if (deletesChunk.size() == MAX_CHANGES_TO_SEND)
-            {
+        for (final DeleteChange delete : analysis.getDeletes()) {
+            if (deletesChunk.size() == MAX_CHANGES_TO_SEND) {
                 pendDeletesInt(deletesChunk, errorListener);
                 deletesChunk.clear();
             }
@@ -759,12 +703,10 @@ public class PendDifferenceTask
     }
 
     private void pendDeletesInt(final List<DeleteChange> deletes, final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        throws Exception {
         Check.notNull(deletes, "deletes"); //$NON-NLS-1$
 
-        if (deletes.size() == 0)
-        {
+        if (deletes.size() == 0) {
             return;
         }
 
@@ -772,15 +714,14 @@ public class PendDifferenceTask
 
         /* Build the delete specs */
         ItemSpec[] deleteSpecs = new ItemSpec[deletes.size()];
-        for (int i = 0; i < deletes.size(); i++)
-        {
+        for (int i = 0; i < deletes.size(); i++) {
             final DeleteChange delete = deletes.get(i);
 
             log.debug(MessageFormat.format("    {0}, mode={1}", delete.getPath(), delete.getType())); //$NON-NLS-1$
 
-            deleteSpecs[i] =
-                new ItemSpec(ServerPath.combine(serverPathRoot, delete.getPath()), delete.getType() == FileMode.TREE
-                    ? RecursionType.FULL : RecursionType.NONE);
+            deleteSpecs[i] = new ItemSpec(
+                ServerPath.combine(serverPathRoot, delete.getPath()),
+                delete.getType() == FileMode.TREE ? RecursionType.FULL : RecursionType.NONE);
         }
 
         /* Pend the deletes in the workspace */
@@ -794,9 +735,9 @@ public class PendDifferenceTask
          */
         errorListener.validate();
 
-        if (count < deleteSpecs.length)
-        {
-            log.error(MessageFormat.format("Server added {0} DELETE changes instead of {1}", count, deleteSpecs.length)); //$NON-NLS-1$
+        if (count < deleteSpecs.length) {
+            log.error(
+                MessageFormat.format("Server added {0} DELETE changes instead of {1}", count, deleteSpecs.length)); //$NON-NLS-1$
             throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
         }
     }
@@ -812,15 +753,11 @@ public class PendDifferenceTask
      */
     private void pendEdits(
         final CheckinAnalysisChangeCollection analysis,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         final List<EditChange> editsChunk = new ArrayList<EditChange>();
 
-        for (final EditChange edit : analysis.getEdits())
-        {
-            if (editsChunk.size() == MAX_CHANGES_TO_SEND)
-            {
+        for (final EditChange edit : analysis.getEdits()) {
+            if (editsChunk.size() == MAX_CHANGES_TO_SEND) {
                 pendEditsInt(editsChunk, errorListener);
                 editsChunk.clear();
             }
@@ -832,12 +769,10 @@ public class PendDifferenceTask
     }
 
     private void pendEditsInt(final List<EditChange> edits, final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        throws Exception {
         Check.notNull(edits, "edits"); //$NON-NLS-1$
 
-        if (edits.size() == 0)
-        {
+        if (edits.size() == 0) {
             return;
         }
 
@@ -847,8 +782,7 @@ public class PendDifferenceTask
         final List<ItemSpec> editSpecs = new ArrayList<ItemSpec>();
         final List<LockLevel> lockLevels = new ArrayList<LockLevel>();
 
-        for (final EditChange edit : edits)
-        {
+        for (final EditChange edit : edits) {
             log.debug(MessageFormat.format("    {0}", edit.getPath())); //$NON-NLS-1$
 
             extractToWorkingFolder(edit.getPath(), edit.getObjectID());
@@ -860,21 +794,19 @@ public class PendDifferenceTask
         Check.isTrue(editSpecs.size() == lockLevels.size(), "editSpecs.size == lockLevels.size"); //$NON-NLS-1$
 
         /* Pends the edits in the workspace */
-        final int count =
-            workspace.pendEdit(
-                editSpecs.toArray(new ItemSpec[editSpecs.size()]),
-                lockLevels.toArray(new LockLevel[lockLevels.size()]),
-                null,
-                GetOptions.NO_DISK_UPDATE,
-                PendChangesOptions.NONE,
-                null,
-                true);
+        final int count = workspace.pendEdit(
+            editSpecs.toArray(new ItemSpec[editSpecs.size()]),
+            lockLevels.toArray(new LockLevel[lockLevels.size()]),
+            null,
+            GetOptions.NO_DISK_UPDATE,
+            PendChangesOptions.NONE,
+            null,
+            true);
 
         /* Validate that the items have been pended correctly */
         errorListener.validate();
 
-        if (count != editSpecs.size())
-        {
+        if (count != editSpecs.size()) {
             log.error(MessageFormat.format("Server added {0} EDIT changes instead of {1}", count, editSpecs.size())); //$NON-NLS-1$
             throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
         }
@@ -891,20 +823,15 @@ public class PendDifferenceTask
      */
     private void pendProperties(
         final CheckinAnalysisChangeCollection analysis,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
-        if (workspace.getServiceLevel().getValue() < WebServiceLevel.TFS_2012.getValue())
-        {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
+        if (workspace.getServiceLevel().getValue() < WebServiceLevel.TFS_2012.getValue()) {
             return;
         }
 
         final List<PropertyChange> propertiesChunk = new ArrayList<PropertyChange>();
 
-        for (final PropertyChange property : analysis.getProperties())
-        {
-            if (propertiesChunk.size() == MAX_CHANGES_TO_SEND)
-            {
+        for (final PropertyChange property : analysis.getProperties()) {
+            if (propertiesChunk.size() == MAX_CHANGES_TO_SEND) {
                 pendPropertiessInt(propertiesChunk, errorListener);
                 propertiesChunk.clear();
             }
@@ -917,23 +844,19 @@ public class PendDifferenceTask
 
     private void pendPropertiessInt(
         final List<PropertyChange> propertyChanges,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         Check.notNull(propertyChanges, "propertyChanges"); //$NON-NLS-1$
 
         int propertiesCount = propertyChanges.size();
 
-        if (propertiesCount == 0)
-        {
+        if (propertiesCount == 0) {
             return;
         }
 
         log.debug(MessageFormat.format("Sending PROPERTIES changes for {0} files:", propertiesCount)); //$NON-NLS-1$
 
         /* Build the adds item spec */
-        for (int i = 0; i < propertiesCount; i++)
-        {
+        for (int i = 0; i < propertiesCount; i++) {
             final PropertyChange propertyChange = propertyChanges.get(i);
 
             extractToWorkingFolder(propertyChange.getPath(), propertyChange.getObjectID());
@@ -942,33 +865,29 @@ public class PendDifferenceTask
 
             final List<PropertyValue> properties = new ArrayList<PropertyValue>();
 
-            if (propertyChange.isExecutablePropertyChanged())
-            {
+            if (propertyChange.isExecutablePropertyChanged()) {
                 log.debug(MessageFormat.format("    {0}, property=executable", path)); //$NON-NLS-1$
                 properties.add(propertyChange.getExecutablePropertyValue());
             }
 
             /* Pend the property change in the workspace */
-            final int count =
-                workspace.pendPropertyChange(
-                    path,
-                    properties.toArray(new PropertyValue[properties.size()]),
-                    RecursionType.NONE,
-                    LockLevel.NONE);
+            final int count = workspace.pendPropertyChange(
+                path,
+                properties.toArray(new PropertyValue[properties.size()]),
+                RecursionType.NONE,
+                LockLevel.NONE);
 
             /* Validate that the adds have been pended correctly */
             errorListener.validate();
 
-            if (count != 1)
-            {
+            if (count != 1) {
                 log.error(MessageFormat.format("Server added {0} EDIT changes instead of {1}", count, propertiesCount)); //$NON-NLS-1$
                 throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
             }
         }
     }
 
-    private PropertyValue createBooleanProperty(final String key, final boolean value)
-    {
+    private PropertyValue createBooleanProperty(final String key, final boolean value) {
         return new PropertyValue(key, (value ? "true" : "false")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
@@ -983,9 +902,7 @@ public class PendDifferenceTask
      */
     private void pendRenames(
         final CheckinAnalysisChangeCollection analysis,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         /*
          * If the rename mode was to detect all renames including folder renames
          * we need create a folder rename detector object to determine the
@@ -994,8 +911,7 @@ public class PendDifferenceTask
          * if it is empty and thus if we only pended renames on items TFS will
          * have stale folders.
          */
-        if (renameMode == RenameMode.ALL)
-        {
+        if (renameMode == RenameMode.ALL) {
             /* Compute folder renames */
             final TfsFolderRenameDetector folderRenameDetector = analysis.createFolderRenameDetector();
             folderRenameDetector.compute();
@@ -1005,13 +921,10 @@ public class PendDifferenceTask
              * an item inside the folder in the same pendRename call, thus we
              * are batching the rename calls by the depth of the item path
              */
-            for (final List<RenameChange> renames : folderRenameDetector.getRenameBatches())
-            {
+            for (final List<RenameChange> renames : folderRenameDetector.getRenameBatches()) {
                 pendBatchRenames(renames, errorListener);
             }
-        }
-        else
-        {
+        } else {
             pendBatchRenames(analysis.getRenames(), errorListener);
         }
     }
@@ -1026,14 +939,11 @@ public class PendDifferenceTask
      * @throws Exception
      */
     private void pendBatchRenames(final List<RenameChange> renames, final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        throws Exception {
         final List<RenameChange> renamesChunk = new ArrayList<RenameChange>();
 
-        for (final RenameChange rename : renames)
-        {
-            if (renamesChunk.size() == MAX_CHANGES_TO_SEND)
-            {
+        for (final RenameChange rename : renames) {
+            if (renamesChunk.size() == MAX_CHANGES_TO_SEND) {
                 pendBatchRenamesInt(renamesChunk, errorListener);
                 renamesChunk.clear();
             }
@@ -1046,14 +956,11 @@ public class PendDifferenceTask
 
     private void pendBatchRenamesInt(
         final List<RenameChange> renames,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         Check.notNull(renames, "renames"); //$NON-NLS-1$
         Check.notNull(errorListener, "errorListener"); //$NON-NLS-1$
 
-        if (renames.size() == 0)
-        {
+        if (renames.size() == 0) {
             return;
         }
 
@@ -1071,120 +978,111 @@ public class PendDifferenceTask
         final List<ItemSpec> editSpecs = new ArrayList<ItemSpec>();
         final List<LockLevel> lockLevels = new ArrayList<LockLevel>();
 
-        for (int i = 0; i < renames.size(); i++)
-        {
+        for (int i = 0; i < renames.size(); i++) {
             final RenameChange rename = renames.get(i);
 
-            if (rename.isEdit())
-            {
+            if (rename.isEdit()) {
                 editRenameOldPaths.add(ServerPath.combine(serverPathRoot, rename.getOldPath()));
                 editRenameNewPaths.add(ServerPath.combine(serverPathRoot, rename.getNewPath()));
 
-                editSpecs.add(new ItemSpec(ServerPath.combine(serverPathRoot, rename.getNewPath()), RecursionType.NONE));
+                editSpecs.add(
+                    new ItemSpec(ServerPath.combine(serverPathRoot, rename.getNewPath()), RecursionType.NONE));
                 lockLevels.add(LockLevel.NONE);
                 renameEdits.add(true);
-            }
-            else
-            {
+            } else {
                 renameOldPaths.add(ServerPath.combine(serverPathRoot, rename.getOldPath()));
                 renameNewPaths.add(ServerPath.combine(serverPathRoot, rename.getNewPath()));
             }
         }
 
-        if (renameOldPaths.size() > 0)
-        {
+        if (renameOldPaths.size() > 0) {
             log.debug(MessageFormat.format("Sending RENAME changes for {0} files:", renameOldPaths.size())); //$NON-NLS-1$
 
-            for (int i = 0; i < renameOldPaths.size(); i++)
-            {
+            for (int i = 0; i < renameOldPaths.size(); i++) {
                 log.debug(MessageFormat.format("    {0} ==> {1}", renameOldPaths.get(i), renameNewPaths.get(i))); //$NON-NLS-1$
             }
 
-            final int renamesCount =
-                workspace.pendRename(
-                    renameOldPaths.toArray(new String[renameOldPaths.size()]),
-                    renameNewPaths.toArray(new String[renameNewPaths.size()]),
-                    null,
-                    LockLevel.NONE,
-                    GetOptions.NO_DISK_UPDATE,
-                    false,
-                    PendChangesOptions.NONE);
+            final int renamesCount = workspace.pendRename(
+                renameOldPaths.toArray(new String[renameOldPaths.size()]),
+                renameNewPaths.toArray(new String[renameNewPaths.size()]),
+                null,
+                LockLevel.NONE,
+                GetOptions.NO_DISK_UPDATE,
+                false,
+                PendChangesOptions.NONE);
 
             /* Validate that the renames were pended correctly */
             errorListener.validate();
 
-            if (renamesCount < renameOldPaths.size())
-            {
+            if (renamesCount < renameOldPaths.size()) {
                 log.error(MessageFormat.format(
-                    "Server added {0} RENAME changes instead of {1}", renamesCount, renameOldPaths.size())); //$NON-NLS-1$
+                    "Server added {0} RENAME changes instead of {1}", //$NON-NLS-1$
+                    renamesCount,
+                    renameOldPaths.size()));
                 throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
             }
         }
 
         /* Pend the edited renames */
-        if (editRenameOldPaths.size() > 0)
-        {
+        if (editRenameOldPaths.size() > 0) {
             log.debug(MessageFormat.format("Sending RENAME changes for {0} files:", editRenameOldPaths.size())); //$NON-NLS-1$
 
-            for (int i = 0; i < renameOldPaths.size(); i++)
-            {
-                log.debug(MessageFormat.format("    {0} ==> {1}", editRenameOldPaths.get(i), editRenameNewPaths.get(i))); //$NON-NLS-1$
+            for (int i = 0; i < renameOldPaths.size(); i++) {
+                log.debug(
+                    MessageFormat.format("    {0} ==> {1}", editRenameOldPaths.get(i), editRenameNewPaths.get(i))); //$NON-NLS-1$
             }
 
-            final int count =
-                workspace.pendRename(
-                    editRenameOldPaths.toArray(new String[editRenameOldPaths.size()]),
-                    editRenameNewPaths.toArray(new String[editRenameNewPaths.size()]),
-                    renameEdits.toArray(new Boolean[renameEdits.size()]),
-                    LockLevel.NONE,
-                    GetOptions.NO_DISK_UPDATE,
-                    false,
-                    PendChangesOptions.NONE);
+            final int count = workspace.pendRename(
+                editRenameOldPaths.toArray(new String[editRenameOldPaths.size()]),
+                editRenameNewPaths.toArray(new String[editRenameNewPaths.size()]),
+                renameEdits.toArray(new Boolean[renameEdits.size()]),
+                LockLevel.NONE,
+                GetOptions.NO_DISK_UPDATE,
+                false,
+                PendChangesOptions.NONE);
 
             /* Validate that the renames were pended correctly */
             errorListener.validate();
 
-            if (count < editRenameOldPaths.size())
-            {
+            if (count < editRenameOldPaths.size()) {
                 log.error(MessageFormat.format(
-                    "Server added {0} RENAME changes instead of {1}", count, editRenameOldPaths.size())); //$NON-NLS-1$
+                    "Server added {0} RENAME changes instead of {1}", //$NON-NLS-1$
+                    count,
+                    editRenameOldPaths.size()));
                 throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
             }
 
-            for (int i = 0; i < renames.size(); i++)
-            {
+            for (int i = 0; i < renames.size(); i++) {
                 final RenameChange rename = renames.get(i);
 
-                if (rename.isEdit())
-                {
+                if (rename.isEdit()) {
                     extractToWorkingFolder(rename.getNewPath(), rename.getObjectID());
                 }
             }
 
             log.debug(MessageFormat.format("Sending EDIT changes for {0} files:", editSpecs.size())); //$NON-NLS-1$
 
-            for (int i = 0; i < editSpecs.size(); i++)
-            {
+            for (int i = 0; i < editSpecs.size(); i++) {
                 log.debug(MessageFormat.format("    {0}", editSpecs.get(i).getItem())); //$NON-NLS-1$
             }
 
-            final int editsCount =
-                workspace.pendEdit(
-                    editSpecs.toArray(new ItemSpec[editSpecs.size()]),
-                    lockLevels.toArray(new LockLevel[lockLevels.size()]),
-                    null,
-                    GetOptions.NO_DISK_UPDATE,
-                    PendChangesOptions.NONE,
-                    null,
-                    editSpecs.size() == 0);
+            final int editsCount = workspace.pendEdit(
+                editSpecs.toArray(new ItemSpec[editSpecs.size()]),
+                lockLevels.toArray(new LockLevel[lockLevels.size()]),
+                null,
+                GetOptions.NO_DISK_UPDATE,
+                PendChangesOptions.NONE,
+                null,
+                editSpecs.size() == 0);
 
             /* Validate that the edits were pended correctly */
             errorListener.validate();
 
-            if (editsCount < editSpecs.size())
-            {
+            if (editsCount < editSpecs.size()) {
                 log.error(MessageFormat.format(
-                    "Server added {0} EDIT changes instead of {1}", editsCount, editSpecs.size())); //$NON-NLS-1$
+                    "Server added {0} EDIT changes instead of {1}", //$NON-NLS-1$
+                    editsCount,
+                    editSpecs.size()));
                 throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
             }
         }
@@ -1201,15 +1099,11 @@ public class PendDifferenceTask
      */
     private void pendAdds(
         final CheckinAnalysisChangeCollection analysis,
-        final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        final WorkspaceOperationErrorListener errorListener) throws Exception {
         final List<AddChange> addsChunk = new ArrayList<AddChange>();
 
-        for (final AddChange add : analysis.getAdds())
-        {
-            if (addsChunk.size() == MAX_CHANGES_TO_SEND)
-            {
+        for (final AddChange add : analysis.getAdds()) {
+            if (addsChunk.size() == MAX_CHANGES_TO_SEND) {
                 pendAddsInt(addsChunk, errorListener);
                 addsChunk.clear();
             }
@@ -1221,14 +1115,12 @@ public class PendDifferenceTask
     }
 
     private void pendAddsInt(final List<AddChange> adds, final WorkspaceOperationErrorListener errorListener)
-        throws Exception
-    {
+        throws Exception {
         Check.notNull(adds, "adds"); //$NON-NLS-1$
 
         int addCount = adds.size();
 
-        if (addCount == 0)
-        {
+        if (addCount == 0) {
             return;
         }
 
@@ -1236,8 +1128,7 @@ public class PendDifferenceTask
 
         /* Build the adds item spec */
         final String[] addPaths = new String[addCount];
-        for (int i = 0; i < addCount; i++)
-        {
+        for (int i = 0; i < addCount; i++) {
             final AddChange add = adds.get(i);
 
             extractToWorkingFolder(add.getPath(), add.getObjectID());
@@ -1247,14 +1138,18 @@ public class PendDifferenceTask
         }
 
         /* Pend the adds in the workspace */
-        final int count =
-            workspace.pendAdd(addPaths, false, null, LockLevel.NONE, GetOptions.NO_DISK_UPDATE, PendChangesOptions.NONE);
+        final int count = workspace.pendAdd(
+            addPaths,
+            false,
+            null,
+            LockLevel.NONE,
+            GetOptions.NO_DISK_UPDATE,
+            PendChangesOptions.NONE);
 
         /* Validate that the adds have been pended correctly */
         errorListener.validate();
 
-        if (count != addCount)
-        {
+        if (count != addCount) {
             log.error(MessageFormat.format("Server added {0} ADD changes instead of {1}", count, addCount)); //$NON-NLS-1$
             throw new Exception(Messages.getString("PendDifferencesTask.PendFailed")); //$NON-NLS-1$
         }
@@ -1271,51 +1166,42 @@ public class PendDifferenceTask
      *        the object id of the blob to extract to the file
      * @throws Exception
      */
-    private void extractToWorkingFolder(String itemPath, ObjectId objectID)
-        throws Exception
-    {
+    private void extractToWorkingFolder(String itemPath, ObjectId objectID) throws Exception {
         /* Ensure that the location exits */
         File workingFile = new File(localWorkingFolder, itemPath);
 
         File parentDir = workingFile.getParentFile();
         boolean parentDirExist = parentDir.exists();
-        if (!parentDirExist)
-        {
+        if (!parentDirExist) {
             parentDirExist = parentDir.mkdirs();
         }
 
-        if (!parentDirExist)
-        {
+        if (!parentDirExist) {
             throw new Exception(Messages.formatString(
-                "PendDifferenceTask.CouldNotCreateItemPathFormat", parentDir.getAbsolutePath())); //$NON-NLS-1$
+                "PendDifferenceTask.CouldNotCreateItemPathFormat", //$NON-NLS-1$
+                parentDir.getAbsolutePath()));
         }
 
-        if (workingFile.exists())
-        {
+        if (workingFile.exists()) {
             workingFile.delete();
         }
 
         /* Extract the item from git */
         FileOutputStream workingOutput = new FileOutputStream(workingFile);
 
-        try
-        {
+        try {
             /* Copy the blob from the object database to the file */
             repository.getObjectDatabase().open(objectID, OBJ_BLOB).copyTo(workingOutput);
 
-            if (!workingFile.exists())
-            {
+            if (!workingFile.exists()) {
                 throw new Exception(Messages.formatString("PendDifferenceTask.CouldNotCreateItemFormat", itemPath)); //$NON-NLS-1$
             }
-        }
-        finally
-        {
+        } finally {
             workingOutput.close();
         }
     }
 
-    private static int getMaxChangesToSend()
-    {
+    private static int getMaxChangesToSend() {
         final String MAX_CHANGES_TO_PEND_NAME = "GITTF_MAX_CHANGES"; //$NON-NLS-1$
         final String MAX_CHANGES_TO_PEND_NAME_ALTERNATE = "gittf_max_changes"; //$NON-NLS-1$
         final int DEFAULT_MAX_CHANGES_TO_PEND = 10;
@@ -1324,21 +1210,16 @@ public class PendDifferenceTask
 
         String value = PlatformMiscUtils.getInstance().getEnvironmentVariable(MAX_CHANGES_TO_PEND_NAME);
 
-        if (StringHelpers.isNullOrEmpty(value))
-        {
+        if (StringUtil.isNullOrEmpty(value)) {
             value = PlatformMiscUtils.getInstance().getEnvironmentVariable(MAX_CHANGES_TO_PEND_NAME_ALTERNATE);
         }
 
-        try
-        {
-            if (!StringHelpers.isNullOrEmpty(value))
-            {
+        try {
+            if (!StringUtil.isNullOrEmpty(value)) {
                 count = Integer.parseInt(value);
             }
 
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
         }
 
         return count > 0 ? count : DEFAULT_MAX_CHANGES_TO_PEND;

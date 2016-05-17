@@ -32,14 +32,12 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 
-public final class ObjectIdUtil
-{
+public final class ObjectIdUtil {
     private static final int ABBREVIATED_LENGTH = 7;
 
     private static final Log log = LogFactory.getLog(ObjectIdUtil.class);
 
-    private ObjectIdUtil()
-    {
+    private ObjectIdUtil() {
     }
 
     /**
@@ -50,8 +48,7 @@ public final class ObjectIdUtil
      * 
      * @return String representation of the abbreviated object id
      */
-    public static final String abbreviate(final ObjectId objectID)
-    {
+    public static final String abbreviate(final ObjectId objectID) {
         return abbreviate(null, objectID);
     }
 
@@ -64,27 +61,19 @@ public final class ObjectIdUtil
      * 
      * @return String representation of the abbreviated object id
      */
-    public static final String abbreviate(final Repository repository, final ObjectId objectID)
-    {
+    public static final String abbreviate(final Repository repository, final ObjectId objectID) {
         Check.notNull(objectID, "objectID"); //$NON-NLS-1$
 
-        if (repository != null)
-        {
+        if (repository != null) {
             ObjectReader objReader = repository.getObjectDatabase().newReader();
 
-            try
-            {
+            try {
                 return objReader.abbreviate(objectID, ABBREVIATED_LENGTH).name();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 log.warn("Could not read object from object database", e); //$NON-NLS-1$
-            }
-            finally
-            {
-                if (objReader != null)
-                {
-                    objReader.release();
+            } finally {
+                if (objReader != null) {
+                    objReader.close();
                 }
             }
         }

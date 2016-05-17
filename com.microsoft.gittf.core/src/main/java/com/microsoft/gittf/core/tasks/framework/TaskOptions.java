@@ -31,9 +31,7 @@ import com.microsoft.tfs.util.BitField;
  * Task options
  * 
  */
-public class TaskOptions
-    extends BitField
-{
+public class TaskOptions extends BitField {
     private static final long serialVersionUID = 1206939419418542765L;
 
     public static final TaskOptions NONE = new TaskOptions(0);
@@ -43,8 +41,7 @@ public class TaskOptions
      * 
      * @param value
      */
-    private TaskOptions(int value)
-    {
+    private TaskOptions(int value) {
         super(value);
     }
 
@@ -54,8 +51,7 @@ public class TaskOptions
      * @param other
      * @return
      */
-    public boolean contains(TaskOptions other)
-    {
+    public boolean contains(TaskOptions other) {
         Check.notNull(other, "other"); //$NON-NLS-1$
 
         return super.containsInternal(other);
@@ -67,8 +63,7 @@ public class TaskOptions
      * @param other
      * @return
      */
-    public TaskOptions combine(TaskOptions other)
-    {
+    public TaskOptions combine(TaskOptions other) {
         Check.notNull(other, "other"); //$NON-NLS-1$
 
         return new TaskOptions(super.combineInternal(other));

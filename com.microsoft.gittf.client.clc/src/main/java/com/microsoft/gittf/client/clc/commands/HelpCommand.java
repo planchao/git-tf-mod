@@ -38,41 +38,34 @@ import com.microsoft.gittf.client.clc.commands.framework.Command;
  * Provides help for the given command.
  * 
  */
-public class HelpCommand
-    extends Command
-{
+public class HelpCommand extends Command {
     public static final String COMMAND_NAME = "help"; //$NON-NLS-1$
 
-    private static Argument[] ARGUMENTS = new Argument[]
-    {
+    private static Argument[] ARGUMENTS = new Argument[] {
         new SwitchArgument("help", Messages.getString("Command.Argument.Help.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
 
-        new FreeArgument("command", //$NON-NLS-1$
+        new FreeArgument(
+            "command", //$NON-NLS-1$
             Messages.getString("HelpCommand.Argument.Command.HelpText")), //$NON-NLS-1$
     };
 
     @Override
-    protected String getCommandName()
-    {
+    protected String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override
-    public Argument[] getPossibleArguments()
-    {
+    public Argument[] getPossibleArguments() {
         return ARGUMENTS;
     }
 
     @Override
-    public String getHelpDescription()
-    {
+    public String getHelpDescription() {
         return Messages.getString("HelpCommand.HelpDescription"); //$NON-NLS-1$
     }
 
     @Override
-    public int run()
-        throws Exception
-    {
+    public int run() throws Exception {
         if (!getArguments().contains("command")) //$NON-NLS-1$
         {
             Main.showHelp();
@@ -84,18 +77,16 @@ public class HelpCommand
         /* Locate the specified command by name */
         CommandDefinition commandDefinition = null;
 
-        for (CommandDefinition c : Main.COMMANDS)
-        {
-            if (c.getName().equals(commandName))
-            {
+        for (CommandDefinition c : Main.COMMANDS) {
+            if (c.getName().equals(commandName)) {
                 commandDefinition = c;
                 break;
             }
         }
 
-        if (commandDefinition == null)
-        {
-            Main.printError(Messages.formatString("HelpCommand.CommandNotFoundFormat", //$NON-NLS-1$
+        if (commandDefinition == null) {
+            Main.printError(Messages.formatString(
+                "HelpCommand.CommandNotFoundFormat", //$NON-NLS-1$
                 commandName,
                 ProductInformation.getProductName()));
 
@@ -105,12 +96,9 @@ public class HelpCommand
         /* Invoke the command's help */
         Command command = null;
 
-        try
-        {
+        try {
             command = commandDefinition.getType().newInstance();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Main.printError(Messages.formatString("Main.CommandCreationFailedFormat", commandName)); //$NON-NLS-1$
             Runtime.getRuntime().exit(1);
         }

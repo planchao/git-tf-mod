@@ -31,8 +31,7 @@ import com.microsoft.gittf.core.util.Check;
  * Defines a git-tf command
  * 
  */
-public class CommandDefinition
-{
+public class CommandDefinition {
     private final String name;
     private final Class<? extends Command> type;
     private final String helpText;
@@ -47,8 +46,7 @@ public class CommandDefinition
      * @param helpText
      *        - help text to be displayed for the command
      */
-    public CommandDefinition(final String name, final Class<? extends Command> type, final String helpText)
-    {
+    public CommandDefinition(final String name, final Class<? extends Command> type, final String helpText) {
         Check.notNullOrEmpty(name, "name"); //$NON-NLS-1$
         Check.notNull(type, "type"); //$NON-NLS-1$
         Check.notNullOrEmpty(helpText, "helpText"); //$NON-NLS-1$
@@ -58,18 +56,15 @@ public class CommandDefinition
         this.helpText = helpText;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public Class<? extends Command> getType()
-    {
+    public Class<? extends Command> getType() {
         return type;
     }
 
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return helpText;
     }
 }

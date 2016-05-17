@@ -41,36 +41,40 @@ import com.microsoft.tfs.core.clients.versioncontrol.specs.version.LatestVersion
 import com.microsoft.tfs.core.clients.versioncontrol.specs.version.VersionSpec;
 import com.microsoft.tfs.core.clients.workitem.WorkItemClient;
 
-public class FetchCommand
-    extends Command
-{
+public class FetchCommand extends Command {
     public static final String COMMAND_NAME = "fetch"; //$NON-NLS-1$
 
-    private static final Argument[] ARGUMENTS = new Argument[]
-    {
+    private static final Argument[] ARGUMENTS = new Argument[] {
         new SwitchArgument("help", Messages.getString("Command.Argument.Help.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
 
-        new ChoiceArgument(Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
-            new SwitchArgument("quiet", //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
+            new SwitchArgument(
+                "quiet", //$NON-NLS-1$
                 'q',
                 Messages.getString("Command.Argument.Quiet.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("verbose", //$NON-NLS-1$
+            new SwitchArgument(
+                "verbose", //$NON-NLS-1$
                 Messages.getString("Command.Argument.Verbose.HelpText")) //$NON-NLS-1$
         ),
 
-        new ValueArgument("version", //$NON-NLS-1$
+        new ValueArgument(
+            "version", //$NON-NLS-1$
             Messages.getString("Command.Argument.Version.ValueDescription"), //$NON-NLS-1$
             Messages.getString("FetchCommand.Argument.Version.HelpText"), //$NON-NLS-1$
             ArgumentOptions.VALUE_REQUIRED),
 
-        new ChoiceArgument(Messages.getString("FetchCommand.Argument.DepthChoice.HelpText"), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("FetchCommand.Argument.DepthChoice.HelpText"), //$NON-NLS-1$
 
             /* Users can specify one of --depth, --deep or --shallow. */
-            new SwitchArgument("deep", //$NON-NLS-1$
+            new SwitchArgument(
+                "deep", //$NON-NLS-1$
                 Messages.getString("FetchCommand.Argument.Deep.HelpText")), //$NON-NLS-1$
 
-            new SwitchArgument("shallow", //$NON-NLS-1$
+            new SwitchArgument(
+                "shallow", //$NON-NLS-1$
                 Messages.getString("FetchCommand.Argument.Shallow.HelpText")) //$NON-NLS-1$
         ),
 
@@ -80,44 +84,37 @@ public class FetchCommand
     };
 
     @Override
-    protected String getCommandName()
-    {
+    protected String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override
-    public Argument[] getPossibleArguments()
-    {
+    public Argument[] getPossibleArguments() {
         return ARGUMENTS;
     }
 
     @Override
-    public String getHelpDescription()
-    {
+    public String getHelpDescription() {
         return Messages.getString("FetchCommand.HelpDescription"); //$NON-NLS-1$
     }
 
     @Override
-    public int run()
-        throws Exception
-    {
+    public int run() throws Exception {
         verifyGitTfConfigured();
 
-        final VersionSpec versionSpec =
-            getArguments().contains("version") ? //$NON-NLS-1$
-                VersionSpecUtil.parseVersionSpec(((ValueArgument) getArguments().getArgument("version")).getValue()) : LatestVersionSpec.INSTANCE; //$NON-NLS-1$
+        final VersionSpec versionSpec = getArguments().contains("version") ? //$NON-NLS-1$
+            VersionSpecUtil.parseVersionSpec(((ValueArgument) getArguments().getArgument("version")).getValue()) //$NON-NLS-1$
+            : LatestVersionSpec.INSTANCE;
 
         verifyVersionSpec(versionSpec);
 
         boolean deep = GitTFConfiguration.loadFrom(getRepository()).getDeep();
-        if (isDepthSpecified())
-        {
+        if (isDepthSpecified()) {
             deep = getDeepFromArguments();
         }
 
         final boolean mentions = getArguments().contains("mentions"); //$NON-NLS-1$
-        if (mentions && !deep)
-        {
+        if (mentions && !deep) {
             throw new Exception(Messages.getString("Command.MentionsOnlyAvailableWithDeep")); //$NON-NLS-1$
         }
 

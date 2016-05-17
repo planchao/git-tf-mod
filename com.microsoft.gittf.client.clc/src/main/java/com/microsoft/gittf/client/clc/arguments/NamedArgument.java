@@ -34,9 +34,7 @@ import com.microsoft.gittf.core.util.Check;
  * example "--foo", or may optionally be specified in short form with a
  * single-character alias prefixed by a single dash ('-'), for example '-f'.
  */
-public abstract class NamedArgument
-    extends Argument
-{
+public abstract class NamedArgument extends Argument {
     private final char alias;
 
     /**
@@ -55,15 +53,13 @@ public abstract class NamedArgument
      * @param options
      *        Options for this argument. May not be <code>null</code>.
      */
-    public NamedArgument(String name, char alias, String helpText, ArgumentOptions options)
-    {
+    public NamedArgument(String name, char alias, String helpText, ArgumentOptions options) {
         super(name, helpText, options);
 
         this.alias = alias;
     }
 
-    protected NamedArgument(NamedArgument other)
-    {
+    protected NamedArgument(NamedArgument other) {
         super(other);
 
         Check.notNull(other, "other"); //$NON-NLS-1$
@@ -77,54 +73,43 @@ public abstract class NamedArgument
      * 
      * @return The single character alias for this argument or <code>0</code>.
      */
-    public char getAlias()
-    {
+    public char getAlias() {
         return alias;
     }
 
     @Override
-    public String toString()
-    {
-        if (alias == 0)
-        {
+    public String toString() {
+        if (alias == 0) {
             return MessageFormat.format("--{0}", getName()); //$NON-NLS-1$
-        }
-        else
-        {
+        } else {
             return MessageFormat.format("--{0}/-{1}", getName(), alias); //$NON-NLS-1$
         }
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hashCode = super.hashCode();
         hashCode = 31 * hashCode + alias;
         return hashCode;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
 
-        if (!(o instanceof NamedArgument))
-        {
+        if (!(o instanceof NamedArgument)) {
             return false;
         }
 
-        if (!super.equals(o))
-        {
+        if (!super.equals(o)) {
             return false;
         }
 
         NamedArgument other = (NamedArgument) o;
 
-        if (alias != other.alias)
-        {
+        if (alias != other.alias) {
             return false;
         }
 

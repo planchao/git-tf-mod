@@ -35,9 +35,7 @@ import com.microsoft.tfs.core.clients.versioncontrol.soapextensions.PropertyValu
  * against TFS
  * 
  */
-public class PropertyChange
-    extends Change
-{
+public class PropertyChange extends Change {
     final FileMode oldMode;
     final FileMode newMode;
 
@@ -51,8 +49,7 @@ public class PropertyChange
      * @param mode
      *        the file mode of the item
      */
-    public PropertyChange(final String path, final ObjectId objectID, final FileMode mode)
-    {
+    public PropertyChange(final String path, final ObjectId objectID, final FileMode mode) {
         this(path, objectID, FileMode.MISSING, mode);
     }
 
@@ -68,37 +65,29 @@ public class PropertyChange
      * @param newMode
      *        the new file mode of the item
      */
-    public PropertyChange(final String path, final ObjectId objectID, final FileMode oldMode, final FileMode newMode)
-    {
+    public PropertyChange(final String path, final ObjectId objectID, final FileMode oldMode, final FileMode newMode) {
         super(path, objectID);
         this.oldMode = oldMode;
         this.newMode = newMode;
     }
 
-    public boolean isExecutablePropertyChanged()
-    {
+    public boolean isExecutablePropertyChanged() {
         return (oldMode == FileMode.EXECUTABLE_FILE) != (newMode == FileMode.EXECUTABLE_FILE);
     }
 
-    public boolean isPropertyChanged()
-    {
+    public boolean isPropertyChanged() {
         return isExecutablePropertyChanged();
     }
 
-    public PropertyValue getExecutablePropertyValue()
-    {
-        if (isExecutable())
-        {
+    public PropertyValue getExecutablePropertyValue() {
+        if (isExecutable()) {
             return PropertyConstants.EXECUTABLE_ENABLED_VALUE;
-        }
-        else
-        {
+        } else {
             return PropertyConstants.EXECUTABLE_DISABLED_VALUE;
         }
     }
 
-    private boolean isExecutable()
-    {
+    private boolean isExecutable() {
         return newMode == FileMode.EXECUTABLE_FILE;
     }
 }

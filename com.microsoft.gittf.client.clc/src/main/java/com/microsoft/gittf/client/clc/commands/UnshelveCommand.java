@@ -37,61 +37,61 @@ import com.microsoft.gittf.client.clc.commands.framework.CommandTaskExecutor;
 import com.microsoft.gittf.core.tasks.UnshelveTask;
 import com.microsoft.gittf.core.tasks.framework.TaskStatus;
 
-public class UnshelveCommand
-    extends Command
-{
+public class UnshelveCommand extends Command {
     public static final String COMMAND_NAME = "unshelve"; //$NON-NLS-1$
 
-    private static Argument[] ARGUMENTS =
-        new Argument[]
-        {
-            new SwitchArgument("help", //$NON-NLS-1$
-                Messages.getString("Command.Argument.Help.HelpText"), //$NON-NLS-1$
-                ArgumentOptions.SUPPRESS_REQUIREMENTS),
+    private static Argument[] ARGUMENTS = new Argument[] {
+        new SwitchArgument(
+            "help", //$NON-NLS-1$
+            Messages.getString("Command.Argument.Help.HelpText"), //$NON-NLS-1$
+            ArgumentOptions.SUPPRESS_REQUIREMENTS),
 
-            new ChoiceArgument(Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
-                new SwitchArgument("quiet", //$NON-NLS-1$
-                    'q',
-                    Messages.getString("Command.Argument.Quiet.HelpText")), //$NON-NLS-1$
+        new ChoiceArgument(
+            Messages.getString("Command.Argument.Display.HelpText"), //$NON-NLS-1$
+            new SwitchArgument(
+                "quiet", //$NON-NLS-1$
+                'q',
+                Messages.getString("Command.Argument.Quiet.HelpText")), //$NON-NLS-1$
 
-                new SwitchArgument("verbose", //$NON-NLS-1$
-                    Messages.getString("Command.Argument.Verbose.HelpText")) //$NON-NLS-1$
-            ),
+            new SwitchArgument(
+                "verbose", //$NON-NLS-1$
+                Messages.getString("Command.Argument.Verbose.HelpText")) //$NON-NLS-1$
+        ),
 
-            //new SwitchArgument("apply", 'a', Messages.getString("UnshelveCommand.Argument.Apply.HelpText")), //$NON-NLS-1$ //$NON-NLS-2$
+        // new SwitchArgument("apply", 'a',
+        // Messages.getString("UnshelveCommand.Argument.Apply.HelpText")),
+        // //$NON-NLS-1$ //$NON-NLS-2$
 
-            new ValueArgument("user", //$NON-NLS-1$
-                'u',
-                Messages.getString("UnshelveCommand.Argument.User.ValueDescription"), //$NON-NLS-1$
-                Messages.getString("UnshelveCommand.Argument.User.HelpText"), //$NON-NLS-1$
-                ArgumentOptions.VALUE_REQUIRED),
+        new ValueArgument(
+            "user", //$NON-NLS-1$
+            'u',
+            Messages.getString("UnshelveCommand.Argument.User.ValueDescription"), //$NON-NLS-1$
+            Messages.getString("UnshelveCommand.Argument.User.HelpText"), //$NON-NLS-1$
+            ArgumentOptions.VALUE_REQUIRED),
 
-            new FreeArgument(
-                "name", Messages.getString("UnshelveCommand.Argument.Name.HelpText"), ArgumentOptions.REQUIRED) //$NON-NLS-1$ //$NON-NLS-2$
-        };
+        new FreeArgument(
+            "name", //$NON-NLS-1$
+            Messages.getString("UnshelveCommand.Argument.Name.HelpText"), //$NON-NLS-1$
+            ArgumentOptions.REQUIRED)
+    };
 
     @Override
-    protected String getCommandName()
-    {
+    protected String getCommandName() {
         return COMMAND_NAME;
     }
 
     @Override
-    public Argument[] getPossibleArguments()
-    {
+    public Argument[] getPossibleArguments() {
         return ARGUMENTS;
     }
 
     @Override
-    public String getHelpDescription()
-    {
+    public String getHelpDescription() {
         return Messages.getString("UnshelveCommand.HelpDescription"); //$NON-NLS-1$
     }
 
     @Override
-    public int run()
-        throws Exception
-    {
+    public int run() throws Exception {
         verifyGitTfConfigured();
         verifyRepoSafeState();
 

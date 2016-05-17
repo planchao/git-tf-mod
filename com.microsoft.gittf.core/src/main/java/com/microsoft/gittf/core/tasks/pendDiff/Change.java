@@ -32,8 +32,7 @@ import com.microsoft.gittf.core.util.Check;
  * Represents a change in the git repository that can be pended against TFS
  * 
  */
-public class Change
-{
+public class Change {
     private final String path;
     protected ObjectId objectID;
 
@@ -45,8 +44,7 @@ public class Change
      * @param objectID
      *        the object id
      */
-    public Change(final String path, final ObjectId objectID)
-    {
+    public Change(final String path, final ObjectId objectID) {
         Check.notNullOrEmpty(path, "path"); //$NON-NLS-1$
         Check.notNull(objectID, "objectID"); //$NON-NLS-1$
 
@@ -59,8 +57,7 @@ public class Change
      * 
      * @return
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
@@ -69,8 +66,7 @@ public class Change
      * 
      * @return
      */
-    public ObjectId getObjectID()
-    {
+    public ObjectId getObjectID() {
         return objectID;
     }
 }
